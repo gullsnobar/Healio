@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.Python
+env/
+venv/
+.venv/
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# React Native
+frontend/.expo/
+frontend/android/
+frontend/ios/
+*.jks
+*.keystore
+
+# Backend uploads
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# AI Engine
+ai-engine/trained_models/*.pkl
+ai-engine/trained_models/*.h5
+ai-engine/data/*.csv
+
+# Test coverage
+coverage/
+.nyc_output/
+htmlcov/
+
+# Misc
+*.tgz
+*.tar.gz
+.cache/

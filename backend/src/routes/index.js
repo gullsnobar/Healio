@@ -1,0 +1,30 @@
+﻿const router = require('express').Router();
+const authRoutes = require('./authRoutes');
+const userRoutes = require('./userRoutes');
+const medicationRoutes = require('./medicationRoutes');
+const appointmentRoutes = require('./appointmentRoutes');
+const labReportRoutes = require('./labReportRoutes');
+const fitnessRoutes = require('./fitnessRoutes');
+const dashboardRoutes = require('./dashboardRoutes');
+const reportRoutes = require('./reportRoutes');
+const chatbotRoutes = require('./chatbotRoutes');
+const recommendationRoutes = require('./recommendationRoutes');
+const trustedContactRoutes = require('./trustedContactRoutes');
+const notificationRoutes = require('./notificationRoutes');
+const adminRoutes = require('./adminRoutes');
+
+router.use('/auth', authRoutes);
+router.use('/users', userRoutes);
+router.use('/medications', medicationRoutes);
+router.use('/appointments', appointmentRoutes);
+router.use('/lab-reports', labReportRoutes);
+router.use('/fitness', fitnessRoutes);
+router.use('/dashboard', dashboardRoutes);
+router.use('/reports', reportRoutes);
+router.use('/chatbot', chatbotRoutes);
+router.use('/recommendations', recommendationRoutes);
+router.use('/trusted-contacts', trustedContactRoutes);
+router.use('/notifications', notificationRoutes);
+router.use('/admin', adminRoutes);
+
+module.exports = router;

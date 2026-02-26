@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "HEALIO",
+    "slug": "healio",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./src/assets/images/logo.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./src/assets/images/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#4A90D9"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.healio.app",
+      "infoPlist": {
+        "NSMotionUsageDescription": "HEALIO needs access to motion data for step tracking.",
+        "NSHealthShareUsageDescription": "HEALIO needs access to health data for fitness tracking."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./src/assets/images/logo.png",
+        "backgroundColor": "#4A90D9"
+      },
+      "package": "com.healio.app",
+      "permissions": [
+        "ACTIVITY_RECOGNITION",
+        "ACCESS_FINE_LOCATION",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "WAKE_LOCK"
+      ]
+      
+    },
+    "plugins": [
+      "expo-notifications",
+      "expo-location",
+      "expo-image-picker",
+      "expo-document-picker"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "your-eas-project-id"
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+﻿const colors = {
+  primary: '#4A90D9',
+  primaryDark: '#3570B0',
+  primaryLight: '#E8F0FE',
+  secondary: '#6C63FF',
+  success: '#4CAF50',
+  warning: '#FF9800',
+  error: '#F44336',
+  info: '#00BCD4',
+  white: '#FFFFFF',
+  black: '#000000',
+  grey: '#9E9E9E',
+  lightGrey: '#F0F0F0',
+  darkGrey: '#616161',
+  background: '#F5F7FA',
+  card: '#FFFFFF',
+  text: '#333333',
+  textLight: '#888888',
+  border: '#E0E0E0',
+};
+export default colors;
