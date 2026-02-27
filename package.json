@@ -1,0 +1,16 @@
+{
+  "name": "healio",
+  "version": "1.0.0",
+  "description": "HEALIO - All-in-One Health Management Platform (Monorepo)",
+  "private": true,
+  "scripts": {
+    "dev": "cd frontend && npx expo start",
+    "dev:frontend": "cd frontend && npx expo start",
+    "dev:backend": "cd backend && npm run dev",
+    "start:frontend": "cd frontend && npx expo start",
+    "start:backend": "cd backend && npm start",
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && npm install",
+    "install:all": "cd frontend && npm install && cd ../backend && npm install"
+  }
+}
