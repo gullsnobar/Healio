@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "jsx": "react-native",
+    "moduleResolution": "node",
+    "noEmit": true,
+    "strict": false,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "src/**/*",
+    "App.js",
+    "firebase.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "build",
+    ".expo"
+  ],
+  "extends": "expo/tsconfig.base"
+}

@@ -52,7 +52,7 @@ const RegisterForm = ({ onSubmit }) => {
     setLoading(true);
     try {
       await onSubmit?.({
-        fullName: form.fullName.trim(),
+        name: form.fullName.trim(),
         email: form.email.trim(),
         phone: form.phone.trim(),
         password: form.password,

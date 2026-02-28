@@ -10,9 +10,10 @@ const ForgotPasswordScreen = ({ navigation }) => {
     if (!email) return Alert.alert('Error', 'Please enter your email');
     setLoading(true);
     try {
-      await authAPI.forgotPassword(email);
-      Alert.alert('Success', 'OTP sent to your email');
-      navigation.navigate('OTP', { email, mode: 'reset' });
+      const res = await authAPI.forgotPassword(email);
+      const devOtp = res.data?.data?.otp;
+      Alert.alert('Success', devOtp ? `OTP: ${devOtp}` : 'OTP sent to your email');
+      navigation.navigate('OTP', { email, mode: 'reset', devOtp });
     } catch (err) {
       Alert.alert('Error', err.message || 'Failed to send OTP');
     } finally { setLoading(false); }

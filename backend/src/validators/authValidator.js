@@ -6,6 +6,9 @@ exports.registerValidation = [
   body('phone').optional().isMobilePhone().withMessage('Valid phone number required'),
 ];
 exports.loginValidation = [
-  body('email').isEmail().withMessage('Valid email required').normalizeEmail(),
+  body('identifier')
+    .trim()
+    .notEmpty()
+    .withMessage('Email or phone number is required'),
   body('password').notEmpty().withMessage('Password is required'),
 ];

@@ -18,9 +18,13 @@ const ENV = {
   },
 };
 
-const getEnvVars = (env = Constants.manifest?.releaseChannel) => {
-  if (env === 'production') return ENV.production;
-  if (env === 'staging') return ENV.staging;
+const getEnvVars = () => {
+  // Expo SDK 50+: use expoConfig instead of deprecated manifest
+  const releaseChannel = Constants.expoConfig?.extra?.releaseChannel
+    || Constants.manifest2?.extra?.expoClient?.extra?.releaseChannel
+    || Constants.manifest?.releaseChannel;
+  if (releaseChannel === 'production') return ENV.production;
+  if (releaseChannel === 'staging') return ENV.staging;
   return ENV.development;
 };
 

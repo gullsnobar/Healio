@@ -3,7 +3,12 @@ import { authAPI } from '../../services/api/authAPI';
 import { secureStorage } from '../../services/storage/secureStorage';
 
 export const loginUser = createAsyncThunk('auth/login', async (credentials, { rejectWithValue }) => {
-  try { const res = await authAPI.login(credentials); await secureStorage.setToken(res.data.token); return res.data; }
+  try {
+    const res = await authAPI.login(credentials);
+    const { user, accessToken, refreshToken } = res.data.data;
+    await secureStorage.setToken(accessToken);
+    return { user, accessToken, refreshToken };
+  }
   catch (err) { return rejectWithValue(err.response?.data?.message || 'Login failed'); }
 });
 
@@ -23,8 +28,11 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(loginUser.pending, (state) => { state.loading = true; state.error = null; })
-      .addCase(loginUser.fulfilled, (state, action) => { state.loading = false; state.isAuthenticated = true; state.user = action.payload.user; state.token = action.payload.token; })
+      .addCase(loginUser.fulfilled, (state, action) => { state.loading = false; state.isAuthenticated = true; state.user = action.payload.user; state.token = action.payload.accessToken; })
       .addCase(loginUser.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
+      .addCase(registerUser.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(registerUser.fulfilled, (state) => { state.loading = false; state.error = null; })
+      .addCase(registerUser.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
       .addCase(logoutUser.fulfilled, (state) => { state.user = null; state.token = null; state.isAuthenticated = false; });
   },
 });

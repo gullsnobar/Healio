@@ -1,11 +1,7 @@
-// Import the functions you need from the SDKs you need
+// Import only the functions you need from the Firebase SDKs
 import { initializeApp } from "firebase/app";
-import { Platform } from "react-native";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBqdDZNyFT9rucx-4XESVia15qFtELbPgI",
   authDomain: "healio-e75ef.firebaseapp.com",
@@ -17,11 +13,6 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-                              
 const app = initializeApp(firebaseConfig);
 
-// Analytics is only supported on web
-if (Platform.OS === "web") {
-  const { getAnalytics } = require("firebase/analytics");
-  getAnalytics(app);
-}
+export default app;

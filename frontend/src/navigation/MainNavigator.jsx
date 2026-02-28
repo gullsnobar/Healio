@@ -1,45 +1,56 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { ActivityIndicator, View } from 'react-native';
 
 import TabNavigator from './TabNavigator';
 
+// Lazy-load screens to improve startup performance
+const lazyScreen = (importFn) => {
+  const LazyComponent = lazy(importFn);
+  return (props) => (
+    <Suspense fallback={<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" color="#4A90D9" /></View>}>
+      <LazyComponent {...props} />
+    </Suspense>
+  );
+};
+
 // Medication Screens
-import AddMedicationScreen from '../screens/medication/AddMedicationScreen';
-import EditMedicationScreen from '../screens/medication/EditMedicationScreen';
-import MedicationDetailsScreen from '../screens/medication/MedicationDetailsScreen';
+const AddMedicationScreen = lazyScreen(() => import('../screens/medication/AddMedicationScreen'));
+const EditMedicationScreen = lazyScreen(() => import('../screens/medication/EditMedicationScreen'));
+const MedicationDetailsScreen = lazyScreen(() => import('../screens/medication/MedicationDetailsScreen'));
 
 // Appointment Screens
-import AddAppointmentScreen from '../screens/appointments/AddAppointmentScreen';
-import EditAppointmentScreen from '../screens/appointments/EditAppointmentScreen';
-import AppointmentDetailsScreen from '../screens/appointments/AppointmentDetailsScreen';
+const AddAppointmentScreen = lazyScreen(() => import('../screens/appointments/AddAppointmentScreen'));
+const EditAppointmentScreen = lazyScreen(() => import('../screens/appointments/EditAppointmentScreen'));
+const AppointmentDetailsScreen = lazyScreen(() => import('../screens/appointments/AppointmentDetailsScreen'));
 
 // Lab Report Screens
-import UploadLabReportScreen from '../screens/labReports/UploadLabReportScreen';
-import ViewLabReportScreen from '../screens/labReports/ViewLabReportScreen';
+const UploadLabReportScreen = lazyScreen(() => import('../screens/labReports/UploadLabReportScreen'));
+const ViewLabReportScreen = lazyScreen(() => import('../screens/labReports/ViewLabReportScreen'));
 
 // Fitness Screens
-import StepsScreen from '../screens/fitness/StepsScreen';
-import SleepScreen from '../screens/fitness/SleepScreen';
-import WaterIntakeScreen from '../screens/fitness/WaterIntakeScreen';
-import DietLogScreen from '../screens/fitness/DietLogScreen';
-import ManualEntryScreen from '../screens/fitness/ManualEntryScreen';
+const StepsScreen = lazyScreen(() => import('../screens/fitness/StepsScreen'));
+const SleepScreen = lazyScreen(() => import('../screens/fitness/SleepScreen'));
+const WaterIntakeScreen = lazyScreen(() => import('../screens/fitness/WaterIntakeScreen'));
+const DietLogScreen = lazyScreen(() => import('../screens/fitness/DietLogScreen'));
+const ManualEntryScreen = lazyScreen(() => import('../screens/fitness/ManualEntryScreen'));
 
 // Reports
-import WeeklyReportScreen from '../screens/reports/WeeklyReportScreen';
-import MonthlyReportScreen from '../screens/reports/MonthlyReportScreen';
+const WeeklyReportScreen = lazyScreen(() => import('../screens/reports/WeeklyReportScreen'));
+const MonthlyReportScreen = lazyScreen(() => import('../screens/reports/MonthlyReportScreen'));
 
 // Trusted Contacts
-import TrustedContactsScreen from '../screens/trustedContacts/TrustedContactsScreen';
-import AddContactScreen from '../screens/trustedContacts/AddContactScreen';
+const TrustedContactsScreen = lazyScreen(() => import('../screens/trustedContacts/TrustedContactsScreen'));
+const AddContactScreen = lazyScreen(() => import('../screens/trustedContacts/AddContactScreen'));
 
 // Settings
-import SettingsScreen from '../screens/settings/SettingsScreen';
-import NotificationSettingsScreen from '../screens/settings/NotificationSettingsScreen';
-import PrivacySettingsScreen from '../screens/settings/PrivacySettingsScreen';
-import AboutScreen from '../screens/settings/AboutScreen';
+const SettingsScreen = lazyScreen(() => import('../screens/settings/SettingsScreen'));
+const NotificationSettingsScreen = lazyScreen(() => import('../screens/settings/NotificationSettingsScreen'));
+const PrivacySettingsScreen = lazyScreen(() => import('../screens/settings/PrivacySettingsScreen'));
+const AboutScreen = lazyScreen(() => import('../screens/settings/AboutScreen'));
 
 // Profile
-import ProfileScreen from '../screens/main/ProfileScreen';
+const ProfileScreen = lazyScreen(() => import('../screens/main/ProfileScreen'));
 
 const Stack = createNativeStackNavigator();
 

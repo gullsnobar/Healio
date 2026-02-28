@@ -19,16 +19,25 @@ exports.register = async (req, res, next) => {
     user.otpCode = otp;
     user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
-    await sendOTPEmail(email, otp);
-    res.status(201).json({ success: true, message: 'Registration successful. Please verify your email.', data: { userId: user._id } });
+    // Send OTP email (non-blocking — don't fail registration if email isn't configured)
+    try {
+      await sendOTPEmail(email, otp);
+    } catch (emailErr) {
+      logger.warn('Could not send OTP email: ' + emailErr.message + '. OTP for ' + email + ': ' + otp);
+    }
+    res.status(201).json({ success: true, message: 'Registration successful. Please verify your email.', data: { userId: user._id, otp: process.env.NODE_ENV === 'development' ? otp : undefined } });
   } catch (error) { next(error); }
 };
 
 exports.login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email }).select('+password');
-    if (!user || !(await user.comparePassword(password))) return res.status(401).json({ success: false, message: 'Invalid email or password' });
+    const { identifier, email, password } = req.body;
+    const loginId = (identifier || email || '').trim().toLowerCase();
+    const isEmail = /^\S+@\S+\.\S+$/.test(loginId);
+    const query = isEmail ? { email: loginId } : { phone: loginId };
+    const user = await User.findOne(query).select('+password');
+    if (!user || !(await user.comparePassword(password))) return res.status(401).json({ success: false, message: 'Invalid credentials. Please check your email/phone and password.' });
+    if (!user.isVerified) return res.status(403).json({ success: false, message: 'Please verify your email before logging in.' });
     if (!user.isActive) return res.status(403).json({ success: false, message: 'Account deactivated' });
     const tokens = generateTokens(user._id);
     user.refreshToken = tokens.refreshToken;
@@ -67,8 +76,30 @@ exports.forgotPassword = async (req, res, next) => {
     user.otpCode = otp;
     user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
-    await sendOTPEmail(user.email, otp);
-    res.json({ success: true, message: 'OTP sent to your email' });
+    try {
+      await sendOTPEmail(user.email, otp);
+    } catch (emailErr) {
+      logger.warn('Could not send OTP email: ' + emailErr.message + '. OTP for ' + user.email + ': ' + otp);
+    }
+    res.json({ success: true, message: 'OTP sent to your email', data: { otp: process.env.NODE_ENV === 'development' ? otp : undefined } });
+  } catch (error) { next(error); }
+};
+
+exports.resendOTP = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ success: false, message: 'Email not found' });
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.otpCode = otp;
+    user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save();
+    try {
+      await sendOTPEmail(email, otp);
+    } catch (emailErr) {
+      logger.warn('Could not send OTP email: ' + emailErr.message + '. OTP for ' + email + ': ' + otp);
+    }
+    res.json({ success: true, message: 'OTP resent successfully', data: { otp: process.env.NODE_ENV === 'development' ? otp : undefined } });
   } catch (error) { next(error); }
 };
 

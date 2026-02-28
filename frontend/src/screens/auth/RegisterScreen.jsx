@@ -11,13 +11,16 @@ const RegisterScreen = ({ navigation }) => {
 
   const handleRegister = async (data) => {
     const result = await dispatch(registerUser(data));
-    if (!result.error) navigation.navigate('OTP', { email: data.email });
+    if (registerUser.fulfilled.match(result)) {
+      const devOtp = result.payload?.data?.otp;
+      navigation.navigate('OTP', { email: data.email, devOtp });
+    }
   };
 
   return (
     <KeyboardAvoidingView style={s.c} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView contentContainerStyle={s.scroll}>
-        {error && <Alert type="error" message={error} />}
+        {error && <Alert variant="error" message={error} />}
         <RegisterForm onSubmit={handleRegister} loading={loading} />
       </ScrollView>
     </KeyboardAvoidingView>

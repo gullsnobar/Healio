@@ -11,7 +11,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#4A90D9"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.healio.app",
@@ -33,13 +35,13 @@
         "VIBRATE",
         "WAKE_LOCK"
       ]
-      
     },
     "plugins": [
       "expo-notifications",
       "expo-location",
       "expo-image-picker",
-      "expo-document-picker"
+      "expo-document-picker",
+      "expo-font"
     ],
     "extra": {
       "eas": {
