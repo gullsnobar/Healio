@@ -2,26 +2,40 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const SleepTracker = ({ hours = 0, goal = 8 }) => {
-  const progress = Math.min(hours / goal, 1);
+const QUALITY = (h) => h >= 7 ? 'Great sleep!' : h >= 5 ? 'Fair sleep' : 'Needs improvement';
+
+const SleepTracker = ({ hours = 0, goal = 8, dark = false }) => {
+  const pct = Math.min(hours / goal, 1);
+  const textColor = dark ? '#fff' : '#1E293B';
+  const subColor = dark ? 'rgba(255,255,255,0.7)' : '#64748B';
+  const trackColor = dark ? 'rgba(255,255,255,0.2)' : '#E2E8F0';
+  const fillColor = dark ? '#C4B5FD' : '#7C3AED';
+
   return (
-    <View style={styles.container}>
-      <Ionicons name="moon-outline" size={32} color="#6C63FF" />
-      <Text style={styles.count}>{hours.toFixed(1)}h</Text>
-      <Text style={styles.label}>/ {goal}h sleep goal</Text>
-      <View style={styles.progressBg}>
-        <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
+    <View style={sl.container}>
+      <View style={sl.row}>
+        <Ionicons name="moon" size={40} color={dark ? '#C4B5FD' : '#7C3AED'} />
+        <View style={sl.textWrap}>
+          <Text style={[sl.count, { color: textColor }]}>{Number(hours).toFixed(1)}h</Text>
+          <Text style={[sl.label, { color: subColor }]}>{QUALITY(hours)}</Text>
+        </View>
+        <Text style={[sl.goal, { color: subColor }]}>Goal: {goal}h</Text>
+      </View>
+      <View style={[sl.track, { backgroundColor: trackColor }]}>
+        <View style={[sl.fill, { width: `${pct * 100}%`, backgroundColor: fillColor }]} />
       </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: { alignItems: 'center', padding: 16 },
-  count: { fontSize: 28, fontWeight: '700', color: '#333', marginTop: 8 },
-  label: { fontSize: 14, color: '#888', marginTop: 2 },
-  progressBg: { width: '100%', height: 8, backgroundColor: '#E0E0E0', borderRadius: 4, marginTop: 12 },
-  progressFill: { height: 8, backgroundColor: '#6C63FF', borderRadius: 4 },
+const sl = StyleSheet.create({
+  container: { paddingVertical: 4 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  textWrap: { flex: 1 },
+  count: { fontSize: 30, fontWeight: '800', letterSpacing: -0.5 },
+  label: { fontSize: 12, fontWeight: '500', marginTop: 2 },
+  goal: { fontSize: 12, fontWeight: '600' },
+  track: { height: 6, borderRadius: 3, marginTop: 14, overflow: 'hidden' },
+  fill: { height: 6, borderRadius: 3 },
 });
-
 export default SleepTracker;

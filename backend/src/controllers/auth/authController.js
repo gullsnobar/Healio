@@ -12,8 +12,8 @@ const generateTokens = (userId) => {
 exports.register = async (req, res, next) => {
   try {
     const { name, email, password, phone, dateOfBirth, gender } = req.body;
-    const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(409).json({ success: false, message: 'Email already registered' });
+    // DEV MODE: delete any existing account so re-registration is always allowed
+    await User.deleteOne({ email });
     const user = await User.create({ name, email, password, phone, dateOfBirth, gender });
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     user.otpCode = otp;
@@ -25,7 +25,7 @@ exports.register = async (req, res, next) => {
     } catch (emailErr) {
       logger.warn('Could not send OTP email: ' + emailErr.message + '. OTP for ' + email + ': ' + otp);
     }
-    res.status(201).json({ success: true, message: 'Registration successful. Please verify your email.', data: { userId: user._id, otp: process.env.NODE_ENV === 'development' ? otp : undefined } });
+    res.status(201).json({ success: true, message: 'Registration successful. Please verify your email.', data: { userId: user._id } });
   } catch (error) { next(error); }
 };
 
@@ -81,7 +81,7 @@ exports.forgotPassword = async (req, res, next) => {
     } catch (emailErr) {
       logger.warn('Could not send OTP email: ' + emailErr.message + '. OTP for ' + user.email + ': ' + otp);
     }
-    res.json({ success: true, message: 'OTP sent to your email', data: { otp: process.env.NODE_ENV === 'development' ? otp : undefined } });
+    res.json({ success: true, message: 'OTP sent to your email' });
   } catch (error) { next(error); }
 };
 
@@ -99,19 +99,36 @@ exports.resendOTP = async (req, res, next) => {
     } catch (emailErr) {
       logger.warn('Could not send OTP email: ' + emailErr.message + '. OTP for ' + email + ': ' + otp);
     }
-    res.json({ success: true, message: 'OTP resent successfully', data: { otp: process.env.NODE_ENV === 'development' ? otp : undefined } });
+    res.json({ success: true, message: 'OTP resent successfully' });
   } catch (error) { next(error); }
 };
 
 exports.verifyOTP = async (req, res, next) => {
   try {
-    const { email, otp } = req.body;
-    const user = await User.findOne({ email, otpCode: otp, otpExpiry: { $gt: new Date() } });
+    const { email, otp, mode } = req.body;
+    // In development mode, accept "123456" as a universal test OTP
+    const isDev = process.env.NODE_ENV === 'development';
+    let user;
+    if (isDev && otp === '123456') {
+      user = await User.findOne({ email });
+    } else {
+      user = await User.findOne({ email, otpCode: otp, otpExpiry: { $gt: new Date() } });
+    }
     if (!user) return res.status(400).json({ success: false, message: 'Invalid or expired OTP' });
     user.isVerified = true;
     user.otpCode = undefined;
     user.otpExpiry = undefined;
     await user.save();
+
+    // For registration flow, auto-login by returning tokens
+    if (mode !== 'reset') {
+      const tokens = generateTokens(user._id);
+      user.refreshToken = tokens.refreshToken;
+      user.lastLogin = new Date();
+      await user.save();
+      return res.json({ success: true, message: 'Email verified successfully', data: { user: user.toObject(), ...tokens } });
+    }
+
     res.json({ success: true, message: 'OTP verified successfully' });
   } catch (error) { next(error); }
 };

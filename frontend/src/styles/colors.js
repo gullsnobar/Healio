@@ -1,21 +1,49 @@
 ﻿const colors = {
-  primary: '#4A90D9',
-  primaryDark: '#3570B0',
-  primaryLight: '#E8F0FE',
-  secondary: '#6C63FF',
-  success: '#4CAF50',
-  warning: '#FF9800',
-  error: '#F44336',
-  info: '#00BCD4',
+  // Brand
+  primary: '#3B82F6',
+  primaryDark: '#1D4ED8',
+  primaryLight: '#DBEAFE',
+  primaryGrad: ['#3B82F6', '#2563EB'],
+
+  // Accent
+  secondary: '#7C3AED',
+  secondaryLight: '#EDE9FE',
+
+  // Semantic
+  success: '#10B981',
+  successLight: '#D1FAE5',
+  warning: '#F59E0B',
+  warningLight: '#FEF3C7',
+  error: '#EF4444',
+  errorLight: '#FEE2E2',
+  info: '#06B6D4',
+  infoLight: '#CFFAFE',
+
+  // Fitness palette
+  steps: '#3B82F6',
+  sleep: '#7C3AED',
+  water: '#06B6D4',
+  diet: '#10B981',
+
+  // Neutrals
   white: '#FFFFFF',
-  black: '#000000',
-  grey: '#9E9E9E',
-  lightGrey: '#F0F0F0',
-  darkGrey: '#616161',
-  background: '#F5F7FA',
+  black: '#0F172A',
+  grey: '#94A3B8',
+  lightGrey: '#F1F5F9',
+  midGrey: '#CBD5E1',
+  darkGrey: '#475569',
+
+  // Surfaces
+  background: '#F8FAFC',
   card: '#FFFFFF',
-  text: '#333333',
-  textLight: '#888888',
-  border: '#E0E0E0',
+  cardAlt: '#F8FAFC',
+
+  // Text
+  text: '#1E293B',
+  textMid: '#475569',
+  textLight: '#94A3B8',
+
+  // Border
+  border: '#E2E8F0',
 };
 export default colors;

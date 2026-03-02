@@ -1,15 +1,25 @@
 ﻿import React from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, StatusBar } from 'react-native';
+import { useDispatch } from 'react-redux';
 import OTPVerification from '../../components/auth/OTPVerification';
 import { authAPI } from '../../services/api/authAPI';
+import { verifyOTP } from '../../redux/slices/authSlice';
 
 const OTPScreen = ({ route, navigation }) => {
-  const { email, mode, devOtp } = route.params || {};
+  const { email, mode } = route.params || {};
+  const dispatch = useDispatch();
 
   const handleVerify = async (otp) => {
-    await authAPI.verifyOTP(email, otp);
-    if (mode === 'reset') navigation.navigate('ResetPassword', { email, otp });
-    else navigation.navigate('Login');
+    if (mode === 'reset') {
+      // For password reset — just verify, then go to reset screen
+      await authAPI.verifyOTP(email, otp, 'reset');
+      navigation.navigate('ResetPassword', { email, otp });
+    } else {
+      // For registration — verify + auto-login via Redux
+      const result = await dispatch(verifyOTP({ email, otp })).unwrap();
+      // If tokens were returned, isAuthenticated becomes true and
+      // AppNavigator auto-switches to MainNavigator — no explicit nav needed
+    }
   };
 
   const handleResend = () => authAPI.resendOTP(email);
@@ -23,7 +33,7 @@ const OTPScreen = ({ route, navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         <View style={s.card}>
-          <OTPVerification email={email} onVerify={handleVerify} onResend={handleResend} devOtp={devOtp} />
+          <OTPVerification email={email} onVerify={handleVerify} onResend={handleResend} onBack={() => navigation.goBack()} />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

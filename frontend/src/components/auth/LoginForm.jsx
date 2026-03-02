@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -139,7 +140,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: '800',
-    color: '#1a1a2e',
+    color: '#1B2332',
     marginBottom: 6,
     letterSpacing: -0.5,
   },
@@ -182,6 +183,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#1a1a2e',
     letterSpacing: 0.3,
+    ...(Platform.OS === 'web' ? { outlineStyle: 'none', outlineWidth: 0 } : {}),
   },
   eyeBtn: {
     padding: 10,

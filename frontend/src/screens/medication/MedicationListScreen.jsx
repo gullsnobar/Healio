@@ -1,7 +1,8 @@
 ﻿import React, { useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
+import { View, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useSelector, useDispatch } from 'react-redux';
 import MedicationList from '../../components/medication/MedicationList';
 import { fetchMedications } from '../../redux/slices/medicationSlice';
 
@@ -11,16 +12,37 @@ const MedicationListScreen = ({ navigation }) => {
   useEffect(() => { dispatch(fetchMedications()); }, []);
 
   return (
-    <View style={s.c}>
-      <MedicationList medications={medications} loading={loading}
+    <View style={ms.c}>
+      <StatusBar barStyle="light-content" backgroundColor="#3B82F6" />
+      <MedicationList
+        medications={medications}
+        loading={loading}
         onItemPress={(med) => navigation.navigate('MedicationDetails', { id: med._id })}
         onMarkTaken={(med) => dispatch({ type: 'medication/markAsTaken', payload: med._id })}
-        onRefresh={() => dispatch(fetchMedications())} />
-      <TouchableOpacity style={s.fab} onPress={() => navigation.navigate('AddMedication')}>
-        <Ionicons name="add" size={28} color="#FFF" />
+        onRefresh={() => dispatch(fetchMedications())}
+      />
+
+      {/* Gradient FAB */}
+      <TouchableOpacity
+        style={ms.fabWrap}
+        onPress={() => navigation.navigate('AddMedication')}
+        activeOpacity={0.9}
+      >
+        <LinearGradient colors={['#3B82F6', '#1D4ED8']} style={ms.fab}>
+          <Ionicons name="add" size={30} color="#fff" />
+        </LinearGradient>
       </TouchableOpacity>
     </View>
   );
 };
-const s = StyleSheet.create({c:{flex:1,backgroundColor:'#F5F7FA'},fab:{position:'absolute',right:20,bottom:20,width:56,height:56,borderRadius:28,backgroundColor:'#4A90D9',alignItems:'center',justifyContent:'center',elevation:4}});
+
+const ms = StyleSheet.create({
+  c: { flex: 1, backgroundColor: '#F8FAFC' },
+  fabWrap: {
+    position: 'absolute', right: 20, bottom: 24,
+    shadowColor: '#3B82F6', shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4, shadowRadius: 12, elevation: 10,
+  },
+  fab: { width: 60, height: 60, borderRadius: 30, alignItems: 'center', justifyContent: 'center' },
+});
 export default MedicationListScreen;

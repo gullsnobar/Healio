@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const PRIMARY = '#4A90D9';
+const PRIMARY = '#3B82F6';
 
 const STATUS_CONFIG = {
   taken: { label: 'Taken', bg: '#e8f5e9', color: '#27ae60', icon: 'checkmark-circle' },

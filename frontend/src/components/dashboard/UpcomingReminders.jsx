@@ -1,33 +1,58 @@
 ﻿import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
+const TYPE_CONFIG = {
+  medication: { icon: 'medkit',       color: '#3B82F6', bg: '#DBEAFE' },
+  appointment: { icon: 'calendar',    color: '#7C3AED', bg: '#EDE9FE' },
+  fitness:     { icon: 'fitness',     color: '#10B981', bg: '#D1FAE5' },
+};
 
 const UpcomingReminders = ({ reminders = [] }) => (
   <View style={styles.container}>
-    <Text style={styles.title}>Upcoming Reminders</Text>
+    <View style={styles.headerRow}>
+      <View style={styles.iconBadge}>
+        <Ionicons name='notifications' size={18} color='#F59E0B' />
+      </View>
+      <Text style={styles.title}>Upcoming Reminders</Text>
+    </View>
     {reminders.length === 0 ? (
-      <Text style={styles.empty}>No upcoming reminders</Text>
+      <View style={styles.emptyWrap}>
+        <Ionicons name='checkmark-circle-outline' size={40} color='#CBD5E1' />
+        <Text style={styles.empty}>All clear — no upcoming reminders</Text>
+      </View>
     ) : (
-      <FlatList data={reminders} keyExtractor={(item) => item._id} renderItem={({ item }) => (
-        <View style={styles.item}>
-          <Ionicons name={item.type === 'medication' ? 'medkit-outline' : 'calendar-outline'} size={20} color='#4A90D9' />
-          <View style={styles.info}>
-            <Text style={styles.itemTitle}>{item.title}</Text>
-            <Text style={styles.itemTime}>{item.time}</Text>
+      reminders.slice(0, 5).map((item, i) => {
+        const cfg = TYPE_CONFIG[item.type] || TYPE_CONFIG.appointment;
+        return (
+          <View key={item._id || i} style={styles.item}>
+            <View style={[styles.itemIcon, { backgroundColor: cfg.bg }]}>
+              <Ionicons name={cfg.icon + '-outline'} size={18} color={cfg.color} />
+            </View>
+            <View style={styles.info}>
+              <Text style={styles.itemTitle} numberOfLines={1}>{item.title}</Text>
+              <Text style={styles.itemTime}>{item.time}</Text>
+            </View>
+            <View style={[styles.dot, { backgroundColor: cfg.color }]} />
           </View>
-        </View>
-      )} />
+        );
+      })
     )}
   </View>
 );
 
 const styles = StyleSheet.create({
-  container: { backgroundColor: '#FFF', borderRadius: 16, padding: 16, elevation: 2, marginBottom: 12 },
-  title: { fontSize: 16, fontWeight: '600', marginBottom: 12 },
-  empty: { color: '#888', textAlign: 'center', padding: 20 },
-  item: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  info: { marginLeft: 12 },
-  itemTitle: { fontSize: 14, fontWeight: '500' },
-  itemTime: { fontSize: 12, color: '#888' },
+  container: { backgroundColor: '#fff', borderRadius: 20, padding: 16, marginBottom: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 4 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 14 },
+  iconBadge: { width: 32, height: 32, borderRadius: 10, backgroundColor: '#FEF3C7', alignItems: 'center', justifyContent: 'center', marginRight: 10 },
+  title: { fontSize: 15, fontWeight: '700', color: '#1E293B' },
+  emptyWrap: { alignItems: 'center', paddingVertical: 24, gap: 8 },
+  empty: { color: '#94A3B8', fontSize: 13, textAlign: 'center' },
+  item: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
+  itemIcon: { width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginRight: 12 },
+  info: { flex: 1 },
+  itemTitle: { fontSize: 14, fontWeight: '600', color: '#1E293B' },
+  itemTime: { fontSize: 12, color: '#94A3B8', marginTop: 2 },
+  dot: { width: 8, height: 8, borderRadius: 4, marginLeft: 8 },
 });
 export default UpcomingReminders;

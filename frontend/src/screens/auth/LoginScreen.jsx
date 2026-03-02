@@ -1,6 +1,7 @@
-﻿import React, { useEffect } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Image, StatusBar } from 'react-native';
+﻿import React, { useCallback } from 'react';
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Image, StatusBar } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
 import LoginForm from '../../components/auth/LoginForm';
 import Loading from '../../components/common/Loading';
 import Alert from '../../components/common/Alert';
@@ -10,9 +11,11 @@ const LoginScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    return () => dispatch(clearError());
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(clearError());
+    }, [dispatch])
+  );
 
   const handleLogin = async (credentials) => {
     dispatch(loginUser(credentials));
@@ -26,12 +29,17 @@ const LoginScreen = ({ navigation }) => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
+        {/* Branding header */}
         <View style={s.header}>
           <View style={s.logoContainer}>
             <Image source={require('../../assets/images/logo.png')} style={s.logo} resizeMode="contain" />
           </View>
+          <Text style={s.brandName}>HEALIO</Text>
+          <Text style={s.tagline}>Your Health, Simplified</Text>
         </View>
+
         {error && <View style={s.alertWrap}><Alert variant="error" message={error} /></View>}
+
         <View style={s.formCard}>
           <LoginForm
             onSubmit={handleLogin}
@@ -72,10 +80,24 @@ const s = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 20,
     elevation: 8,
+    marginBottom: 14,
   },
   logo: {
     width: 70,
     height: 70,
+  },
+  brandName: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#1B2332',
+    letterSpacing: 3,
+    marginBottom: 4,
+  },
+  tagline: {
+    fontSize: 13,
+    color: '#8e8e9e',
+    letterSpacing: 0.5,
+    fontWeight: '500',
   },
   alertWrap: {
     marginBottom: 16,

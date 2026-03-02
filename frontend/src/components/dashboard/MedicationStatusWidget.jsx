@@ -1,26 +1,42 @@
 ﻿import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-const MedicationStatusWidget = ({ data = { taken: 0, missed: 0, pending: 0 } }) => (
-  <View style={styles.container}>
-    <Text style={styles.title}>Today's Medications</Text>
+const STATS = [
+  { key: 'taken',   label: 'Taken',   icon: 'checkmark-circle', color: '#10B981', bg: '#D1FAE5' },
+  { key: 'missed',  label: 'Missed',  icon: 'close-circle',     color: '#EF4444', bg: '#FEE2E2' },
+  { key: 'pending', label: 'Pending', icon: 'time',             color: '#F59E0B', bg: '#FEF3C7' },
+];
+
+const MedicationStatusWidget = ({ data = { taken: 0, missed: 0, pending: 0 }, onPress }) => (
+  <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.85}>
+    <View style={styles.headerRow}>
+      <View style={styles.iconBadge}>
+        <Ionicons name='medkit' size={18} color='#3B82F6' />
+      </View>
+      <Text style={styles.title}>Today's Medications</Text>
+      <Ionicons name='chevron-forward' size={18} color='#94A3B8' />
+    </View>
     <View style={styles.row}>
-      {[['Taken', data.taken, '#4CAF50'], ['Missed', data.missed, '#F44336'], ['Pending', data.pending, '#FF9800']].map(([label, val, color]) => (
-        <View key={label} style={styles.stat}>
-          <Text style={[styles.num, { color }]}>{val}</Text>
-          <Text style={styles.label}>{label}</Text>
+      {STATS.map(({ key, label, icon, color, bg }) => (
+        <View key={key} style={[styles.stat, { backgroundColor: bg }]}>
+          <Ionicons name={icon} size={22} color={color} />
+          <Text style={[styles.num, { color }]}>{data?.[key] ?? 0}</Text>
+          <Text style={styles.statLabel}>{label}</Text>
         </View>
       ))}
     </View>
-  </View>
+  </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({
-  container: { backgroundColor: '#FFF', borderRadius: 16, padding: 16, elevation: 2, marginBottom: 12 },
-  title: { fontSize: 16, fontWeight: '600', marginBottom: 12 },
-  row: { flexDirection: 'row', justifyContent: 'space-around' },
-  stat: { alignItems: 'center' },
-  num: { fontSize: 24, fontWeight: '700' },
-  label: { fontSize: 12, color: '#888', marginTop: 4 },
+  container: { backgroundColor: '#fff', borderRadius: 20, padding: 16, marginBottom: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 4 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 14 },
+  iconBadge: { width: 32, height: 32, borderRadius: 10, backgroundColor: '#DBEAFE', alignItems: 'center', justifyContent: 'center', marginRight: 10 },
+  title: { flex: 1, fontSize: 15, fontWeight: '700', color: '#1E293B' },
+  row: { flexDirection: 'row', gap: 10 },
+  stat: { flex: 1, alignItems: 'center', paddingVertical: 14, borderRadius: 14 },
+  num: { fontSize: 22, fontWeight: '800', marginTop: 4 },
+  statLabel: { fontSize: 11, color: '#64748B', marginTop: 3, fontWeight: '500' },
 });
 export default MedicationStatusWidget;

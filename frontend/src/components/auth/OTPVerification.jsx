@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -13,21 +14,17 @@ const PRIMARY = '#4A90D9';
 const PRIMARY_DARK = '#3A7BC8';
 const OTP_LENGTH = 6;
 
-const OTPVerification = ({ onVerify, onResend, email, devOtp }) => {
+const OTPVerification = ({ onVerify, onResend, email, onBack }) => {
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''));
   const [timer, setTimer] = useState(60);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [focusedIndex, setFocusedIndex] = useState(-1);
   const inputs = useRef([]);
 
   useEffect(() => {
-    if (devOtp) {
-      const digits = devOtp.toString().split('').slice(0, OTP_LENGTH);
-      setOtp(digits.concat(Array(OTP_LENGTH - digits.length).fill('')));
-    } else {
-      inputs.current[0]?.focus();
-    }
-  }, [devOtp]);
+    inputs.current[0]?.focus();
+  }, []);
 
   useEffect(() => {
     if (timer <= 0) return;
@@ -84,6 +81,14 @@ const OTPVerification = ({ onVerify, onResend, email, devOtp }) => {
 
   return (
     <View style={styles.container}>
+      {/* Back button */}
+      {onBack && (
+        <TouchableOpacity onPress={onBack} style={styles.backBtn}>
+          <Ionicons name="arrow-back" size={22} color="#555" />
+          <Text style={styles.backText}>Back</Text>
+        </TouchableOpacity>
+      )}
+
       {/* Icon */}
       <View style={styles.iconWrap}>
         <View style={styles.iconInner}>
@@ -113,6 +118,7 @@ const OTPVerification = ({ onVerify, onResend, email, devOtp }) => {
             ref={(ref) => (inputs.current[i] = ref)}
             style={[
               styles.otpBox,
+              focusedIndex === i && styles.otpBoxFocused,
               digit ? styles.otpBoxFilled : null,
               error ? styles.otpBoxError : null,
             ]}
@@ -121,7 +127,10 @@ const OTPVerification = ({ onVerify, onResend, email, devOtp }) => {
             value={digit}
             onChangeText={(t) => handleChange(t, i)}
             onKeyPress={(e) => handleKeyPress(e, i)}
+            onFocus={() => setFocusedIndex(i)}
+            onBlur={() => setFocusedIndex(-1)}
             selectTextOnFocus
+            caretHidden={true}
           />
         ))}
       </View>
@@ -172,6 +181,20 @@ const styles = StyleSheet.create({
     padding: 28,
     alignItems: 'center',
   },
+  backBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    marginBottom: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 4,
+  },
+  backText: {
+    fontSize: 15,
+    color: '#6B7280',
+    marginLeft: 4,
+    fontWeight: '600',
+  },
   iconWrap: {
     marginBottom: 24,
   },
@@ -188,7 +211,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontWeight: '800',
-    color: '#1a1a2e',
+    color: '#1B2332',
     marginBottom: 8,
     letterSpacing: -0.3,
   },
@@ -240,12 +263,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 24,
     fontWeight: '800',
-    color: '#1a1a2e',
+    color: '#1B2332',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 4,
     elevation: 1,
+    // Remove black browser outline on web
+    ...(Platform.OS === 'web' ? { outlineStyle: 'none', outlineWidth: 0 } : {}),
+  },
+  otpBoxFocused: {
+    borderColor: PRIMARY,
+    backgroundColor: '#EEF4FC',
+    shadowColor: PRIMARY,
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 3,
   },
   otpBoxFilled: {
     borderColor: PRIMARY,

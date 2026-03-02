@@ -8,7 +8,7 @@ import TabNavigator from './TabNavigator';
 const lazyScreen = (importFn) => {
   const LazyComponent = lazy(importFn);
   return (props) => (
-    <Suspense fallback={<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" color="#4A90D9" /></View>}>
+    <Suspense fallback={<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" color="#3B82F6" /></View>}>
       <LazyComponent {...props} />
     </Suspense>
   );
@@ -58,9 +58,9 @@ const MainNavigator = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: '#4A90D9' },
+        headerStyle: { backgroundColor: '#1D4ED8' },
         headerTintColor: '#FFFFFF',
-        headerTitleStyle: { fontWeight: '600' },
+        headerTitleStyle: { fontWeight: '700', fontSize: 17 },
         animation: 'slide_from_right',
       }}
     >

@@ -1,4 +1,5 @@
 import React from 'react';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -8,74 +9,77 @@ import MedicationListScreen from '../screens/medication/MedicationListScreen';
 import FitnessOverviewScreen from '../screens/fitness/FitnessOverviewScreen';
 import ChatbotScreen from '../screens/chatbot/ChatbotScreen';
 
-import colors from '../styles/colors';
-
 const Tab = createBottomTabNavigator();
 
-const getTabIcon = (routeName, focused) => {
-  const icons = {
-    Home: focused ? 'home' : 'home-outline',
-    Dashboard: focused ? 'grid' : 'grid-outline',
-    Medications: focused ? 'medkit' : 'medkit-outline',
-    Fitness: focused ? 'fitness' : 'fitness-outline',
-    AIChat: focused ? 'chatbubble-ellipses' : 'chatbubble-ellipses-outline',
-  };
-  return icons[routeName] || 'ellipse-outline';
-};
+const TABS = [
+  { name: 'Home',        label: 'Home',       icon: 'home',                  component: HomeScreen },
+  { name: 'Dashboard',   label: 'Analytics',  icon: 'bar-chart',             component: DashboardScreen },
+  { name: 'Medications', label: 'Meds',       icon: 'medkit',                component: MedicationListScreen },
+  { name: 'Fitness',     label: 'Fitness',    icon: 'fitness',               component: FitnessOverviewScreen },
+  { name: 'AIChat',      label: 'AI Chat',    icon: 'chatbubble-ellipses',   component: ChatbotScreen },
+];
 
-const TabNavigator = () => {
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => (
-          <Ionicons name={getTabIcon(route.name, focused)} size={size} color={color} />
-        ),
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.grey,
-        tabBarStyle: {
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 4,
-          backgroundColor: colors.white,
-          borderTopWidth: 1,
-          borderTopColor: colors.lightGrey,
-        },
-        tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '500',
-        },
-        headerStyle: { backgroundColor: colors.primary },
-        headerTintColor: colors.white,
-        headerTitleStyle: { fontWeight: '600' },
-      })}
-    >
+const TabNavigator = () => (
+  <Tab.Navigator
+    screenOptions={({ route }) => ({
+      headerStyle: { backgroundColor: '#3B82F6', elevation: 0, shadowOpacity: 0 },
+      headerTintColor: '#fff',
+      headerTitleStyle: { fontWeight: '700', fontSize: 17 },
+      tabBarStyle: {
+        height: Platform.OS === 'ios' ? 84 : 62,
+        paddingBottom: Platform.OS === 'ios' ? 24 : 10,
+        paddingTop: 8,
+        backgroundColor: '#fff',
+        borderTopWidth: 1,
+        borderTopColor: '#E2E8F0',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
+        elevation: 8,
+      },
+      tabBarActiveTintColor: '#3B82F6',
+      tabBarInactiveTintColor: '#94A3B8',
+      tabBarLabelStyle: { fontSize: 10, fontWeight: '600', marginTop: -2 },
+      tabBarIcon: ({ focused, color }) => {
+        const tab = TABS.find((t) => t.name === route.name);
+        return (
+          <View style={focused ? ts.activeWrap : ts.inactiveWrap}>
+            <Ionicons
+              name={focused ? tab.icon : `${tab.icon}-outline`}
+              size={22}
+              color={color}
+            />
+          </View>
+        );
+      },
+    })}
+  >
+    {TABS.map(({ name, label, component }) => (
       <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{ title: 'Home', headerTitle: 'HEALIO' }}
+        key={name}
+        name={name}
+        component={component}
+        options={{
+          title: label,
+          headerTitle: name === 'Home' ? 'HEALIO' : label,
+          headerShown: name === 'Home' ? false : true,
+        }}
       />
-      <Tab.Screen
-        name="Dashboard"
-        component={DashboardScreen}
-        options={{ title: 'Dashboard' }}
-      />
-      <Tab.Screen
-        name="Medications"
-        component={MedicationListScreen}
-        options={{ title: 'Meds' }}
-      />
-      <Tab.Screen
-        name="Fitness"
-        component={FitnessOverviewScreen}
-        options={{ title: 'Fitness' }}
-      />
-      <Tab.Screen
-        name="AIChat"
-        component={ChatbotScreen}
-        options={{ title: 'AI Chat' }}
-      />
-    </Tab.Navigator>
-  );
-};
+    ))}
+  </Tab.Navigator>
+);
+
+const ts = StyleSheet.create({
+  activeWrap: {
+    width: 40, height: 28, borderRadius: 14,
+    backgroundColor: '#DBEAFE',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  inactiveWrap: {
+    width: 40, height: 28,
+    alignItems: 'center', justifyContent: 'center',
+  },
+});
 
 export default TabNavigator;

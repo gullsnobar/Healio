@@ -5,11 +5,13 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
-import { Button } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const PRIMARY = '#4A90D9';
+const PRIMARY_DARK = '#3A7BC8';
 
 const getStrength = (pw) => {
   if (!pw) return { label: '', color: '#ddd', width: '0%', level: 0 };
@@ -20,9 +22,9 @@ const getStrength = (pw) => {
   if (/[0-9]/.test(pw)) score++;
   if (/[^A-Za-z0-9]/.test(pw)) score++;
 
-  if (score <= 2) return { label: 'Weak', color: '#e74c3c', width: '33%', level: 1 };
-  if (score <= 3) return { label: 'Medium', color: '#f39c12', width: '66%', level: 2 };
-  return { label: 'Strong', color: '#27ae60', width: '100%', level: 3 };
+  if (score <= 2) return { label: 'Weak', color: '#EF4444', width: '33%', level: 1 };
+  if (score <= 3) return { label: 'Medium', color: '#F59E0B', width: '66%', level: 2 };
+  return { label: 'Strong', color: '#10B981', width: '100%', level: 3 };
 };
 
 const PasswordReset = ({ onSubmit, loading: externalLoading }) => {
@@ -31,9 +33,11 @@ const PasswordReset = ({ onSubmit, loading: externalLoading }) => {
   const [securePassword, setSecurePassword] = useState(true);
   const [secureConfirm, setSecureConfirm] = useState(true);
   const [error, setError] = useState('');
+  const [focusedField, setFocusedField] = useState(null);
 
   const strength = useMemo(() => getStrength(password), [password]);
   const loading = externalLoading ?? false;
+  const canSubmit = password && confirmPassword && !loading;
 
   const handleSubmit = () => {
     if (password.length < 8) {
@@ -51,28 +55,31 @@ const PasswordReset = ({ onSubmit, loading: externalLoading }) => {
   return (
     <View style={styles.container}>
       <View style={styles.iconWrap}>
-        <Ionicons name="shield-checkmark-outline" size={48} color={PRIMARY} />
+        <View style={styles.iconInner}>
+          <Ionicons name="shield-checkmark-outline" size={40} color={PRIMARY} />
+        </View>
       </View>
 
       <Text style={styles.title}>Reset Password</Text>
-      <Text style={styles.subtitle}>Enter a new password for your account</Text>
+      <Text style={styles.subtitle}>Create a new secure password for your account</Text>
 
-      <View style={styles.inputWrapper}>
-        <Ionicons name="lock-closed-outline" size={20} color="#888" style={styles.inputIcon} />
+      <View style={[styles.inputWrapper, focusedField === 'password' && styles.inputWrapperFocused]}>
+        <View style={styles.iconContainer}>
+          <Ionicons name="lock-closed-outline" size={20} color={focusedField === 'password' ? PRIMARY : '#9CA3AF'} />
+        </View>
         <TextInput
           style={styles.input}
           placeholder="New Password"
-          placeholderTextColor="#aaa"
+          placeholderTextColor="#b0b0b0"
           secureTextEntry={securePassword}
           autoCapitalize="none"
           value={password}
-          onChangeText={(t) => {
-            setPassword(t);
-            setError('');
-          }}
+          onChangeText={(t) => { setPassword(t); setError(''); }}
+          onFocus={() => setFocusedField('password')}
+          onBlur={() => setFocusedField(null)}
         />
         <TouchableOpacity onPress={() => setSecurePassword(!securePassword)} style={styles.eyeBtn}>
-          <Ionicons name={securePassword ? 'eye-off-outline' : 'eye-outline'} size={20} color="#888" />
+          <Ionicons name={securePassword ? 'eye-off-outline' : 'eye-outline'} size={20} color="#9CA3AF" />
         </TouchableOpacity>
       </View>
 
@@ -85,104 +92,144 @@ const PasswordReset = ({ onSubmit, loading: externalLoading }) => {
         </View>
       )}
 
-      <View style={styles.inputWrapper}>
-        <Ionicons name="lock-closed-outline" size={20} color="#888" style={styles.inputIcon} />
+      <View style={[styles.inputWrapper, focusedField === 'confirm' && styles.inputWrapperFocused]}>
+        <View style={styles.iconContainer}>
+          <Ionicons name="shield-checkmark-outline" size={20} color={focusedField === 'confirm' ? PRIMARY : '#9CA3AF'} />
+        </View>
         <TextInput
           style={styles.input}
           placeholder="Confirm New Password"
-          placeholderTextColor="#aaa"
+          placeholderTextColor="#b0b0b0"
           secureTextEntry={secureConfirm}
           autoCapitalize="none"
           value={confirmPassword}
-          onChangeText={(t) => {
-            setConfirmPassword(t);
-            setError('');
-          }}
+          onChangeText={(t) => { setConfirmPassword(t); setError(''); }}
+          onFocus={() => setFocusedField('confirm')}
+          onBlur={() => setFocusedField(null)}
         />
         <TouchableOpacity onPress={() => setSecureConfirm(!secureConfirm)} style={styles.eyeBtn}>
-          <Ionicons name={secureConfirm ? 'eye-off-outline' : 'eye-outline'} size={20} color="#888" />
+          <Ionicons name={secureConfirm ? 'eye-off-outline' : 'eye-outline'} size={20} color="#9CA3AF" />
         </TouchableOpacity>
       </View>
 
-      {!!error && <Text style={styles.errorText}>{error}</Text>}
+      {!!error && (
+        <View style={styles.errorBanner}>
+          <Ionicons name="alert-circle" size={16} color="#EF4444" />
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      )}
 
-      <Button
-        mode="contained"
+      <TouchableOpacity
         onPress={handleSubmit}
-        loading={loading}
-        disabled={loading || !password || !confirmPassword}
-        style={styles.submitBtn}
-        buttonColor={PRIMARY}
-        textColor="#fff"
-        contentStyle={styles.submitBtnContent}
+        disabled={!canSubmit}
+        activeOpacity={0.85}
+        style={[styles.btnOuter, !canSubmit && styles.btnDisabled]}
       >
-        Reset Password
-      </Button>
+        <LinearGradient
+          colors={!canSubmit ? ['#B0C4DE', '#A0B8D0'] : [PRIMARY, PRIMARY_DARK]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.btnGradient}
+        >
+          {loading ? (
+            <Text style={styles.btnText}>Resetting...</Text>
+          ) : (
+            <>
+              <Ionicons name="checkmark-circle-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
+              <Text style={styles.btnText}>Reset Password</Text>
+            </>
+          )}
+        </LinearGradient>
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 24,
+    padding: 28,
     alignItems: 'center',
   },
   iconWrap: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    marginBottom: 24,
+  },
+  iconInner: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
     backgroundColor: '#EBF2FB',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
+    borderWidth: 3,
+    borderColor: '#D6E6F9',
   },
   title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#1a1a1a',
+    fontSize: 26,
+    fontWeight: '800',
+    color: '#1B2332',
     marginBottom: 8,
+    letterSpacing: -0.3,
   },
   subtitle: {
     fontSize: 14,
-    color: '#888',
+    color: '#8e8e9e',
     textAlign: 'center',
+    lineHeight: 20,
     marginBottom: 28,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
+    backgroundColor: '#fff',
+    borderRadius: 14,
+    paddingHorizontal: 4,
+    marginBottom: 16,
+    borderWidth: 1.5,
+    borderColor: '#e8edf2',
     width: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  inputIcon: {
-    marginRight: 10,
+  inputWrapperFocused: {
+    borderColor: PRIMARY,
+    shadowColor: PRIMARY,
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   input: {
     flex: 1,
-    height: 50,
+    height: 52,
     fontSize: 15,
-    color: '#1a1a1a',
+    color: '#1B2332',
+    letterSpacing: 0.3,
+    ...(Platform.OS === 'web' ? { outlineStyle: 'none', outlineWidth: 0 } : {}),
   },
   eyeBtn: {
-    padding: 6,
+    padding: 10,
   },
   strengthWrap: {
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
     marginBottom: 16,
+    marginTop: -4,
     gap: 10,
   },
   strengthTrack: {
     flex: 1,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#eee',
+    backgroundColor: '#E5E7EB',
     overflow: 'hidden',
   },
   strengthBar: {
@@ -191,22 +238,54 @@ const styles = StyleSheet.create({
   },
   strengthLabel: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
     minWidth: 50,
   },
-  errorText: {
-    color: '#e74c3c',
-    fontSize: 13,
-    marginBottom: 12,
-    alignSelf: 'flex-start',
-  },
-  submitBtn: {
-    borderRadius: 12,
+  errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FEF2F2',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginBottom: 16,
     width: '100%',
-    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#FECACA',
   },
-  submitBtnContent: {
-    height: 50,
+  errorText: {
+    color: '#EF4444',
+    fontSize: 13,
+    marginLeft: 8,
+    fontWeight: '600',
+    flex: 1,
+  },
+  btnOuter: {
+    borderRadius: 14,
+    width: '100%',
+    marginTop: 4,
+    shadowColor: PRIMARY,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  btnDisabled: {
+    shadowOpacity: 0.1,
+    elevation: 2,
+  },
+  btnGradient: {
+    flexDirection: 'row',
+    height: 54,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  btnText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
 });
 
