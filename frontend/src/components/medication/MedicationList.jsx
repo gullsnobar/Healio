@@ -10,7 +10,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import MedicationCard from './MedicationCard';
 
-const PRIMARY = '#4A90D9';
+const PRIMARY = '#0F766E';
 
 const EmptyState = () => (
   <View style={styles.emptyContainer}>

@@ -14,7 +14,7 @@ import { ActivityIndicator } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 
-const PRIMARY_COLOR = '#4A90D9';
+const PRIMARY_COLOR = '#0F766E';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const LabReportViewer = ({ report }) => {

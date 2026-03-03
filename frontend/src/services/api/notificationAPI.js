@@ -7,6 +7,7 @@ export const notificationAPI = {
   markRead: (id) => api.put('/notifications/' + id + '/read'),
   markAllRead: () => api.put('/notifications/read-all'),
   delete: (id) => api.delete('/notifications/' + id),
-  updateSettings: (settings) => api.put('/notifications/settings', settings),
+  updateSettings: (settings) => api.put('/notifications/preferences', settings),
+  getSettings: () => api.get('/users/profile'),
   registerDevice: (token) => api.post('/notifications/register-device', { token }),
 };

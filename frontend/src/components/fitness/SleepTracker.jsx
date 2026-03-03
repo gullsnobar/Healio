@@ -9,12 +9,12 @@ const SleepTracker = ({ hours = 0, goal = 8, dark = false }) => {
   const textColor = dark ? '#fff' : '#1E293B';
   const subColor = dark ? 'rgba(255,255,255,0.7)' : '#64748B';
   const trackColor = dark ? 'rgba(255,255,255,0.2)' : '#E2E8F0';
-  const fillColor = dark ? '#C4B5FD' : '#7C3AED';
+  const fillColor = dark ? '#A5B4FC' : '#6366F1';
 
   return (
     <View style={sl.container}>
       <View style={sl.row}>
-        <Ionicons name="moon" size={40} color={dark ? '#C4B5FD' : '#7C3AED'} />
+        <Ionicons name="moon" size={40} color={dark ? '#A5B4FC' : '#6366F1'} />
         <View style={sl.textWrap}>
           <Text style={[sl.count, { color: textColor }]}>{Number(hours).toFixed(1)}h</Text>
           <Text style={[sl.label, { color: subColor }]}>{QUALITY(hours)}</Text>

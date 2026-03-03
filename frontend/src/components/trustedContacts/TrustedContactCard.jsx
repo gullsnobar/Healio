@@ -8,5 +8,5 @@ const TrustedContactCard = ({ contact, onPress, onDelete }) => (
     <TouchableOpacity onPress={() => onDelete?.(contact)}><Ionicons name="trash-outline" size={20} color="#F44336" /></TouchableOpacity>
   </TouchableOpacity>
 );
-const s = StyleSheet.create({c:{flexDirection:'row',alignItems:'center',backgroundColor:'#FFF',padding:16,borderRadius:12,marginBottom:8,elevation:2},avatar:{width:48,height:48,borderRadius:24,backgroundColor:'#4A90D9',alignItems:'center',justifyContent:'center'},info:{flex:1,marginLeft:12},name:{fontSize:16,fontWeight:'600'},rel:{fontSize:13,color:'#888',marginTop:2},phone:{fontSize:13,color:'#4A90D9',marginTop:2}});
+const s = StyleSheet.create({c:{flexDirection:'row',alignItems:'center',backgroundColor:'#FFF',padding:16,borderRadius:12,marginBottom:8,elevation:2},avatar:{width:48,height:48,borderRadius:24,backgroundColor:'#0F766E',alignItems:'center',justifyContent:'center'},info:{flex:1,marginLeft:12},name:{fontSize:16,fontWeight:'600'},rel:{fontSize:13,color:'#94A3B8',marginTop:2},phone:{fontSize:13,color:'#0F766E',marginTop:2}});
 export default TrustedContactCard;

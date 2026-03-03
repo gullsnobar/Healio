@@ -10,24 +10,34 @@ import { I18nextProvider } from 'react-i18next';
 import store from './redux/store';
 import AppNavigator from './navigation/AppNavigator';
 import ErrorBoundary from './components/common/ErrorBoundary';
-import { theme } from './styles/theme';
+import { ThemeProvider, useAppTheme } from './styles/ThemeContext';
 import i18n from './localization/i18n';
+
+/** Inner shell that reads the current theme from context */
+function ThemedApp() {
+  const { paperTheme, isDark } = useAppTheme();
+  return (
+    <PaperProvider theme={paperTheme}>
+      <SafeAreaProvider>
+        <ErrorBoundary>
+          <NavigationContainer>
+            <StatusBar style={isDark ? 'light' : 'dark'} />
+            <AppNavigator />
+          </NavigationContainer>
+        </ErrorBoundary>
+      </SafeAreaProvider>
+    </PaperProvider>
+  );
+}
 
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider store={store}>
         <I18nextProvider i18n={i18n}>
-          <PaperProvider theme={theme}>
-            <SafeAreaProvider>
-              <ErrorBoundary>
-                <NavigationContainer>
-                  <StatusBar style="light" />
-                  <AppNavigator />
-                </NavigationContainer>
-              </ErrorBoundary>
-            </SafeAreaProvider>
-          </PaperProvider>
+          <ThemeProvider initialMode="system">
+            <ThemedApp />
+          </ThemeProvider>
         </I18nextProvider>
       </Provider>
     </GestureHandlerRootView>

@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import colors from '../../styles/colors';
 
-const PRIMARY = '#4A90D9';
+const PRIMARY = colors.primary;
 
 const Loading = ({ message, color = PRIMARY, size = 'large', style, overlay = false }) => {
   if (overlay) {

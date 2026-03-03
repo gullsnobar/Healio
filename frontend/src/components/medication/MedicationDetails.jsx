@@ -9,7 +9,7 @@ import {
 import { Button } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 
-const PRIMARY = '#4A90D9';
+const PRIMARY = '#0F766E';
 
 const STATUS_COLORS = {
   taken: '#27ae60',

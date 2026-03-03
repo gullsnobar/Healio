@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const METRICS = [
-  { key: 'steps', icon: 'footsteps-outline', label: 'Steps',    color: '#3B82F6', bg: '#DBEAFE', goal: 10000, fmt: (v) => (v || 0).toLocaleString() },
-  { key: 'sleep', icon: 'moon-outline',       label: 'Sleep',    color: '#7C3AED', bg: '#EDE9FE', goal: 8,     fmt: (v) => `${(v || 0).toFixed(1)}h` },
-  { key: 'water', icon: 'water-outline',      label: 'Water',    color: '#06B6D4', bg: '#CFFAFE', goal: 2500,  fmt: (v) => `${v || 0}ml` },
+  { key: 'steps', icon: 'footsteps-outline', label: 'Steps',    color: '#38BDF8', bg: '#E0F2FE', goal: 10000, fmt: (v) => (v || 0).toLocaleString() },
+  { key: 'sleep', icon: 'moon-outline',       label: 'Sleep',    color: '#6366F1', bg: '#E0E7FF', goal: 8,     fmt: (v) => `${(v || 0).toFixed(1)}h` },
+  { key: 'water', icon: 'water-outline',      label: 'Water',    color: '#22D3EE', bg: '#CFFAFE', goal: 2500,  fmt: (v) => `${v || 0}ml` },
 ];
 
 const FitnessProgressWidget = ({ data = {}, onPress }) => (

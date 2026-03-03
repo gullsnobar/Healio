@@ -3,8 +3,8 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const TYPE_CONFIG = {
-  medication: { icon: 'medkit',       color: '#3B82F6', bg: '#DBEAFE' },
-  appointment: { icon: 'calendar',    color: '#7C3AED', bg: '#EDE9FE' },
+  medication: { icon: 'medkit',       color: '#0F766E', bg: '#CCFBF1' },
+  appointment: { icon: 'calendar',    color: '#6366F1', bg: '#E0E7FF' },
   fitness:     { icon: 'fitness',     color: '#10B981', bg: '#D1FAE5' },
 };
 

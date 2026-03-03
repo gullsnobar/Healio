@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 const EditProfile = ({ user, onSubmit }) => {
   const [form, setForm] = useState({ fullName: user?.fullName || '', phone: user?.phone || '', dateOfBirth: user?.dateOfBirth || '', bloodGroup: user?.bloodGroup || '', emergencyContact: user?.emergencyContact || '' });
@@ -12,5 +12,5 @@ const EditProfile = ({ user, onSubmit }) => {
     </ScrollView>
   );
 };
-const s = StyleSheet.create({c:{padding:16},t:{fontSize:20,fontWeight:'700',marginBottom:16},i:{borderWidth:1,borderColor:'#DDD',borderRadius:8,padding:12,fontSize:16,marginBottom:12,backgroundColor:'#FFF'},b:{backgroundColor:'#4A90D9',padding:14,borderRadius:8,alignItems:'center'},bt:{color:'#FFF',fontWeight:'600',fontSize:16}});
+const s = StyleSheet.create({c:{padding:16},t:{fontSize:20,fontWeight:'700',marginBottom:16},i:{borderWidth:1,borderColor:'#DDD',borderRadius:8,padding:12,fontSize:16,marginBottom:12,backgroundColor:'#FFF'},b:{backgroundColor:'#0F766E',padding:14,borderRadius:8,alignItems:'center'},bt:{color:'#FFF',fontWeight:'600',fontSize:16}});
 export default EditProfile;

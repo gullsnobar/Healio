@@ -9,5 +9,5 @@ const ChatSuggestions = ({ suggestions = [], onSelect }) => (
     ))}
   </ScrollView>
 );
-const s = StyleSheet.create({c:{maxHeight:50,marginBottom:4},cc:{paddingHorizontal:16,gap:8,alignItems:'center'},chip:{backgroundColor:'#E8F0FE',paddingHorizontal:14,paddingVertical:8,borderRadius:20},text:{color:'#4A90D9',fontSize:13,fontWeight:'500'}});
+const s = StyleSheet.create({c:{maxHeight:50,marginBottom:4},cc:{paddingHorizontal:16,gap:8,alignItems:'center'},chip:{backgroundColor:'#CCFBF1',paddingHorizontal:14,paddingVertical:8,borderRadius:20},text:{color:'#0F766E',fontSize:13,fontWeight:'500'}});
 export default ChatSuggestions;

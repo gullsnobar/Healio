@@ -29,12 +29,12 @@ const styles = StyleSheet.create({
   container: { padding: 16 },
   title: { fontSize: 20, fontWeight: '700', marginBottom: 16 },
   typeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
-  typeBtn: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, borderWidth: 1, borderColor: '#4A90D9' },
-  active: { backgroundColor: '#4A90D9' },
-  typeText: { color: '#4A90D9', fontWeight: '600', textTransform: 'capitalize' },
+  typeBtn: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, borderWidth: 1, borderColor: '#0F766E' },
+  active: { backgroundColor: '#0F766E' },
+  typeText: { color: '#0F766E', fontWeight: '600', textTransform: 'capitalize' },
   activeText: { color: '#FFF' },
   input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12, fontSize: 16, marginBottom: 12, backgroundColor: '#FFF' },
-  submitBtn: { backgroundColor: '#4A90D9', padding: 14, borderRadius: 8, alignItems: 'center' },
+  submitBtn: { backgroundColor: '#0F766E', padding: 14, borderRadius: 8, alignItems: 'center' },
   submitText: { color: '#FFF', fontSize: 16, fontWeight: '600' },
 });
 

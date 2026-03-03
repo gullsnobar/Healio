@@ -12,7 +12,7 @@ const MedicationStatusWidget = ({ data = { taken: 0, missed: 0, pending: 0 }, on
   <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.85}>
     <View style={styles.headerRow}>
       <View style={styles.iconBadge}>
-        <Ionicons name='medkit' size={18} color='#3B82F6' />
+        <Ionicons name='medkit' size={18} color='#0F766E' />
       </View>
       <Text style={styles.title}>Today's Medications</Text>
       <Ionicons name='chevron-forward' size={18} color='#94A3B8' />

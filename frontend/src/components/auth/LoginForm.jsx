@@ -10,17 +10,15 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const PRIMARY = '#4A90D9';
-const PRIMARY_DARK = '#3A7BC8';
+const PRIMARY = '#0F766E';
+const PRIMARY_DARK = '#0D6560';
 
-const LoginForm = ({ onSubmit, onForgotPassword, onRegister }) => {
+const LoginForm = ({ onSubmit, onForgotPassword, onRegister, onGoogleSignIn }) => {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [secureEntry, setSecureEntry] = useState(true);
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
-
-  const isEmail = /\S+@\S+\.\S+/.test(identifier.trim());
 
   const handleLogin = async () => {
     if (!identifier.trim() || !password.trim()) return;
@@ -32,162 +30,112 @@ const LoginForm = ({ onSubmit, onForgotPassword, onRegister }) => {
     }
   };
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.headerSection}>
-        <Text style={styles.title}>Welcome Back</Text>
-        <Text style={styles.subtitle}>Sign in to your HEALIO account</Text>
-      </View>
+  const disabled = loading || !identifier.trim() || !password.trim();
 
-      {/* Identifier field – accepts email or phone */}
-      <View style={[styles.inputWrapper, focusedField === 'identifier' && styles.inputWrapperFocused]}>
-        <View style={styles.iconContainer}>
-          <Ionicons
-            name={isEmail ? 'mail-outline' : 'person-outline'}
-            size={20}
-            color={focusedField === 'identifier' ? PRIMARY : '#999'}
-          />
-        </View>
+  return (
+    <View style={s.container}>
+      {/* Email / Phone */}
+      <View style={[s.inputWrap, focusedField === 'id' && s.inputFocused]}>
         <TextInput
-          style={styles.input}
-          placeholder="Email or phone number"
-          placeholderTextColor="#b0b0b0"
+          style={s.input}
+          placeholder="Enter your email"
+          placeholderTextColor="#94A3B8"
           autoCapitalize="none"
           autoCorrect={false}
+          autoComplete="email"
+          textContentType="emailAddress"
+          nativeID="login-email"
+          keyboardType="email-address"
           value={identifier}
           onChangeText={setIdentifier}
-          onFocus={() => setFocusedField('identifier')}
+          onFocus={() => setFocusedField('id')}
           onBlur={() => setFocusedField(null)}
         />
       </View>
 
       {/* Password */}
-      <View style={[styles.inputWrapper, focusedField === 'password' && styles.inputWrapperFocused]}>
-        <View style={styles.iconContainer}>
-          <Ionicons
-            name="lock-closed-outline"
-            size={20}
-            color={focusedField === 'password' ? PRIMARY : '#999'}
-          />
-        </View>
+      <View style={[s.inputWrap, focusedField === 'pw' && s.inputFocused]}>
         <TextInput
-          style={[styles.input, { flex: 1 }]}
-          placeholder="Password"
-          placeholderTextColor="#b0b0b0"
+          style={s.input}
+          placeholder="Enter your password"
+          placeholderTextColor="#94A3B8"
           secureTextEntry={secureEntry}
           autoCapitalize="none"
+          autoComplete="password"
+          textContentType="password"
+          nativeID="login-password"
           value={password}
           onChangeText={setPassword}
-          onFocus={() => setFocusedField('password')}
+          onFocus={() => setFocusedField('pw')}
           onBlur={() => setFocusedField(null)}
         />
-        <TouchableOpacity onPress={() => setSecureEntry(!secureEntry)} style={styles.eyeBtn}>
-          <Ionicons name={secureEntry ? 'eye-off-outline' : 'eye-outline'} size={20} color="#999" />
+        <TouchableOpacity onPress={() => setSecureEntry(!secureEntry)} style={s.eyeBtn}>
+          <Ionicons name={secureEntry ? 'eye-off-outline' : 'eye-outline'} size={20} color="#94A3B8" />
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity onPress={onForgotPassword} style={styles.forgotBtn}>
-        <Text style={styles.forgotText}>Forgot Password?</Text>
+      {/* Forgot password */}
+      <TouchableOpacity onPress={onForgotPassword} style={s.forgotBtn}>
+        <Text style={s.forgotText}>Forgot Password?</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={handleLogin}
-        disabled={loading || !identifier.trim() || !password.trim()}
-        activeOpacity={0.85}
-        style={[styles.loginBtnOuter, (loading || !identifier.trim() || !password.trim()) && styles.loginBtnDisabled]}
-      >
-        <LinearGradient
-          colors={loading || !identifier.trim() || !password.trim() ? ['#B0C4DE', '#A0B8D0'] : [PRIMARY, PRIMARY_DARK]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.loginBtnGradient}
-        >
-          {loading ? (
-            <Text style={styles.loginBtnText}>Signing in...</Text>
-          ) : (
-            <>
-              <Text style={styles.loginBtnText}>Log In</Text>
-              <Ionicons name="arrow-forward" size={18} color="#fff" style={{ marginLeft: 8 }} />
-            </>
-          )}
+      {/* Login button */}
+      <TouchableOpacity onPress={handleLogin} disabled={disabled} activeOpacity={0.85} style={{ marginBottom: 24 }}>
+        <LinearGradient colors={disabled ? ['#94A3B8', '#94A3B8'] : [PRIMARY, PRIMARY_DARK]} style={s.primaryBtn}>
+          <Text style={s.primaryBtnText}>{loading ? 'Signing in...' : 'Login'}</Text>
         </LinearGradient>
       </TouchableOpacity>
 
-      <View style={styles.dividerRow}>
-        <View style={styles.dividerLine} />
-        <Text style={styles.dividerText}>OR</Text>
-        <View style={styles.dividerLine} />
+      {/* Divider */}
+      <View style={s.dividerRow}>
+        <View style={s.dividerLine} />
+        <Text style={s.dividerText}>Or</Text>
+        <View style={s.dividerLine} />
       </View>
 
-      <View style={styles.registerRow}>
-        <Text style={styles.registerLabel}>Don't have an account? </Text>
+      {/* Google sign-in */}
+      <TouchableOpacity style={s.googleBtn} activeOpacity={0.8} onPress={onGoogleSignIn}>
+        <Ionicons name="logo-google" size={20} color="#DB4437" />
+        <Text style={s.googleText}>Continue with Google</Text>
+      </TouchableOpacity>
+
+      {/* Register link */}
+      <View style={s.linkRow}>
+        <Text style={s.linkLabel}>Don't have an account? </Text>
         <TouchableOpacity onPress={onRegister}>
-          <Text style={styles.registerLink}>Register</Text>
+          <Text style={s.linkAction}>Register</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 8,
-    paddingTop: 8,
-  },
-  headerSection: {
-    marginBottom: 32,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: '800',
-    color: '#1B2332',
-    marginBottom: 6,
-    letterSpacing: -0.5,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: '#8e8e9e',
-    letterSpacing: 0.2,
-  },
-  inputWrapper: {
+const s = StyleSheet.create({
+  container: {},
+  inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    paddingHorizontal: 4,
+    backgroundColor: '#F1F5F9',
+    borderRadius: 12,
+    paddingHorizontal: 16,
     marginBottom: 16,
     borderWidth: 1.5,
-    borderColor: '#e8edf2',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
+    borderColor: '#F1F5F9',
+    height: 56,
   },
-  inputWrapperFocused: {
+  inputFocused: {
     borderColor: PRIMARY,
-    shadowColor: PRIMARY,
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#FFF',
   },
   input: {
     flex: 1,
-    height: 52,
     fontSize: 15,
-    color: '#1a1a2e',
-    letterSpacing: 0.3,
-    ...(Platform.OS === 'web' ? { outlineStyle: 'none', outlineWidth: 0 } : {}),
+    color: '#1E293B',
+    letterSpacing: 0.2,
+    height: '100%',
+    ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
   },
-  eyeBtn: {
-    padding: 10,
-  },
+  eyeBtn: { padding: 8 },
   forgotBtn: {
     alignSelf: 'flex-end',
     marginBottom: 28,
@@ -197,30 +145,20 @@ const styles = StyleSheet.create({
     color: PRIMARY,
     fontSize: 13,
     fontWeight: '700',
-    letterSpacing: 0.2,
   },
-  loginBtnOuter: {
-    borderRadius: 14,
-    marginBottom: 28,
-    shadowColor: PRIMARY,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  loginBtnDisabled: {
-    shadowOpacity: 0.1,
-    elevation: 2,
-  },
-  loginBtnGradient: {
-    flexDirection: 'row',
-    height: 54,
-    borderRadius: 14,
+  primaryBtn: {
+    height: 56,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: PRIMARY,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6,
   },
-  loginBtnText: {
-    color: '#fff',
+  primaryBtnText: {
+    color: '#FFF',
     fontSize: 16,
     fontWeight: '700',
     letterSpacing: 0.5,
@@ -230,31 +168,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 24,
   },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#e8edf2',
-  },
-  dividerText: {
-    marginHorizontal: 16,
-    fontSize: 12,
-    color: '#a0a0b0',
-    fontWeight: '600',
-    letterSpacing: 1,
-  },
-  registerRow: {
+  dividerLine: { flex: 1, height: 1, backgroundColor: '#E2E8F0' },
+  dividerText: { marginHorizontal: 16, fontSize: 13, color: '#94A3B8', fontWeight: '500' },
+  googleBtn: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
+    height: 56,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#E2E8F0',
+    backgroundColor: '#FFF',
+    marginBottom: 32,
+    gap: 10,
   },
-  registerLabel: {
-    fontSize: 14,
-    color: '#8e8e9e',
+  googleText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#1E293B',
   },
-  registerLink: {
-    fontSize: 14,
-    color: PRIMARY,
-    fontWeight: '700',
-  },
+  linkRow: { flexDirection: 'row', justifyContent: 'center' },
+  linkLabel: { fontSize: 14, color: '#64748B' },
+  linkAction: { fontSize: 14, color: PRIMARY, fontWeight: '700' },
 });
 
 export default LoginForm;

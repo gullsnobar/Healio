@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -10,22 +10,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const PRIMARY = '#4A90D9';
-const PRIMARY_DARK = '#3A7BC8';
-
-const getStrength = (pw) => {
-  if (!pw) return { label: '', color: '#ddd', width: '0%', level: 0 };
-  let score = 0;
-  if (pw.length >= 8) score++;
-  if (/[A-Z]/.test(pw)) score++;
-  if (/[a-z]/.test(pw)) score++;
-  if (/[0-9]/.test(pw)) score++;
-  if (/[^A-Za-z0-9]/.test(pw)) score++;
-
-  if (score <= 2) return { label: 'Weak', color: '#EF4444', width: '33%', level: 1 };
-  if (score <= 3) return { label: 'Medium', color: '#F59E0B', width: '66%', level: 2 };
-  return { label: 'Strong', color: '#10B981', width: '100%', level: 3 };
-};
+const PRIMARY = '#0F766E';
+const PRIMARY_DARK = '#0D6560';
 
 const PasswordReset = ({ onSubmit, loading: externalLoading }) => {
   const [password, setPassword] = useState('');
@@ -35,9 +21,9 @@ const PasswordReset = ({ onSubmit, loading: externalLoading }) => {
   const [error, setError] = useState('');
   const [focusedField, setFocusedField] = useState(null);
 
-  const strength = useMemo(() => getStrength(password), [password]);
   const loading = externalLoading ?? false;
   const canSubmit = password && confirmPassword && !loading;
+  const disabled = !canSubmit;
 
   const handleSubmit = () => {
     if (password.length < 8) {
@@ -53,236 +39,133 @@ const PasswordReset = ({ onSubmit, loading: externalLoading }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.iconWrap}>
-        <View style={styles.iconInner}>
-          <Ionicons name="shield-checkmark-outline" size={40} color={PRIMARY} />
-        </View>
-      </View>
+    <View style={s.container}>
+      {/* Heading */}
+      <Text style={s.title}>Create new password</Text>
+      <Text style={s.subtitle}>
+        Your new password must be unique from those previously used.
+      </Text>
 
-      <Text style={styles.title}>Reset Password</Text>
-      <Text style={styles.subtitle}>Create a new secure password for your account</Text>
-
-      <View style={[styles.inputWrapper, focusedField === 'password' && styles.inputWrapperFocused]}>
-        <View style={styles.iconContainer}>
-          <Ionicons name="lock-closed-outline" size={20} color={focusedField === 'password' ? PRIMARY : '#9CA3AF'} />
-        </View>
+      {/* New Password */}
+      <View style={[s.inputWrap, focusedField === 'pw' && s.inputFocused]}>
         <TextInput
-          style={styles.input}
+          style={s.input}
           placeholder="New Password"
-          placeholderTextColor="#b0b0b0"
+          placeholderTextColor="#94A3B8"
           secureTextEntry={securePassword}
           autoCapitalize="none"
           value={password}
           onChangeText={(t) => { setPassword(t); setError(''); }}
-          onFocus={() => setFocusedField('password')}
+          onFocus={() => setFocusedField('pw')}
           onBlur={() => setFocusedField(null)}
         />
-        <TouchableOpacity onPress={() => setSecurePassword(!securePassword)} style={styles.eyeBtn}>
-          <Ionicons name={securePassword ? 'eye-off-outline' : 'eye-outline'} size={20} color="#9CA3AF" />
+        <TouchableOpacity onPress={() => setSecurePassword(!securePassword)} style={s.eyeBtn}>
+          <Ionicons name={securePassword ? 'eye-off-outline' : 'eye-outline'} size={20} color="#94A3B8" />
         </TouchableOpacity>
       </View>
 
-      {password.length > 0 && (
-        <View style={styles.strengthWrap}>
-          <View style={styles.strengthTrack}>
-            <View style={[styles.strengthBar, { width: strength.width, backgroundColor: strength.color }]} />
-          </View>
-          <Text style={[styles.strengthLabel, { color: strength.color }]}>{strength.label}</Text>
-        </View>
-      )}
-
-      <View style={[styles.inputWrapper, focusedField === 'confirm' && styles.inputWrapperFocused]}>
-        <View style={styles.iconContainer}>
-          <Ionicons name="shield-checkmark-outline" size={20} color={focusedField === 'confirm' ? PRIMARY : '#9CA3AF'} />
-        </View>
+      {/* Confirm Password */}
+      <View style={[s.inputWrap, focusedField === 'cpw' && s.inputFocused]}>
         <TextInput
-          style={styles.input}
-          placeholder="Confirm New Password"
-          placeholderTextColor="#b0b0b0"
+          style={s.input}
+          placeholder="Confirm Password"
+          placeholderTextColor="#94A3B8"
           secureTextEntry={secureConfirm}
           autoCapitalize="none"
           value={confirmPassword}
           onChangeText={(t) => { setConfirmPassword(t); setError(''); }}
-          onFocus={() => setFocusedField('confirm')}
+          onFocus={() => setFocusedField('cpw')}
           onBlur={() => setFocusedField(null)}
         />
-        <TouchableOpacity onPress={() => setSecureConfirm(!secureConfirm)} style={styles.eyeBtn}>
-          <Ionicons name={secureConfirm ? 'eye-off-outline' : 'eye-outline'} size={20} color="#9CA3AF" />
+        <TouchableOpacity onPress={() => setSecureConfirm(!secureConfirm)} style={s.eyeBtn}>
+          <Ionicons name={secureConfirm ? 'eye-off-outline' : 'eye-outline'} size={20} color="#94A3B8" />
         </TouchableOpacity>
       </View>
 
+      {/* Error */}
       {!!error && (
-        <View style={styles.errorBanner}>
-          <Ionicons name="alert-circle" size={16} color="#EF4444" />
-          <Text style={styles.errorText}>{error}</Text>
+        <View style={s.errorBanner}>
+          <Text style={s.errorText}>{error}</Text>
         </View>
       )}
 
-      <TouchableOpacity
-        onPress={handleSubmit}
-        disabled={!canSubmit}
-        activeOpacity={0.85}
-        style={[styles.btnOuter, !canSubmit && styles.btnDisabled]}
-      >
-        <LinearGradient
-          colors={!canSubmit ? ['#B0C4DE', '#A0B8D0'] : [PRIMARY, PRIMARY_DARK]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.btnGradient}
-        >
-          {loading ? (
-            <Text style={styles.btnText}>Resetting...</Text>
-          ) : (
-            <>
-              <Ionicons name="checkmark-circle-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
-              <Text style={styles.btnText}>Reset Password</Text>
-            </>
-          )}
+      {/* Reset Button */}
+      <TouchableOpacity onPress={handleSubmit} disabled={disabled} activeOpacity={0.85}>
+        <LinearGradient colors={disabled ? ['#94A3B8', '#94A3B8'] : [PRIMARY, PRIMARY_DARK]} style={s.primaryBtn}>
+          <Text style={s.primaryBtnText}>{loading ? 'Resetting...' : 'Reset Password'}</Text>
         </LinearGradient>
       </TouchableOpacity>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 28,
-    alignItems: 'center',
-  },
-  iconWrap: {
-    marginBottom: 24,
-  },
-  iconInner: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    backgroundColor: '#EBF2FB',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 3,
-    borderColor: '#D6E6F9',
-  },
+const s = StyleSheet.create({
+  container: {},
   title: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: '800',
-    color: '#1B2332',
-    marginBottom: 8,
+    color: '#1E293B',
+    lineHeight: 38,
     letterSpacing: -0.3,
+    marginBottom: 12,
   },
   subtitle: {
-    fontSize: 14,
-    color: '#8e8e9e',
-    textAlign: 'center',
-    lineHeight: 20,
-    marginBottom: 28,
+    fontSize: 15,
+    color: '#64748B',
+    lineHeight: 22,
+    marginBottom: 32,
   },
-  inputWrapper: {
+  inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    paddingHorizontal: 4,
+    backgroundColor: '#F1F5F9',
+    borderRadius: 12,
+    paddingHorizontal: 16,
     marginBottom: 16,
     borderWidth: 1.5,
-    borderColor: '#e8edf2',
-    width: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
+    borderColor: '#F1F5F9',
+    height: 56,
   },
-  inputWrapperFocused: {
+  inputFocused: {
     borderColor: PRIMARY,
-    shadowColor: PRIMARY,
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#FFF',
   },
   input: {
     flex: 1,
-    height: 52,
     fontSize: 15,
-    color: '#1B2332',
-    letterSpacing: 0.3,
-    ...(Platform.OS === 'web' ? { outlineStyle: 'none', outlineWidth: 0 } : {}),
-  },
-  eyeBtn: {
-    padding: 10,
-  },
-  strengthWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: 16,
-    marginTop: -4,
-    gap: 10,
-  },
-  strengthTrack: {
-    flex: 1,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#E5E7EB',
-    overflow: 'hidden',
-  },
-  strengthBar: {
+    color: '#1E293B',
+    letterSpacing: 0.2,
     height: '100%',
-    borderRadius: 3,
+    ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
   },
-  strengthLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    minWidth: 50,
-  },
+  eyeBtn: { padding: 8 },
   errorBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: '#FEF2F2',
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 14,
     marginBottom: 16,
-    width: '100%',
     borderWidth: 1,
     borderColor: '#FECACA',
   },
   errorText: {
     color: '#EF4444',
     fontSize: 13,
-    marginLeft: 8,
     fontWeight: '600',
-    flex: 1,
   },
-  btnOuter: {
-    borderRadius: 14,
-    width: '100%',
-    marginTop: 4,
-    shadowColor: PRIMARY,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  btnDisabled: {
-    shadowOpacity: 0.1,
-    elevation: 2,
-  },
-  btnGradient: {
-    flexDirection: 'row',
-    height: 54,
-    borderRadius: 14,
+  primaryBtn: {
+    height: 56,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: PRIMARY,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6,
   },
-  btnText: {
-    color: '#fff',
+  primaryBtnText: {
+    color: '#FFF',
     fontSize: 16,
     fontWeight: '700',
     letterSpacing: 0.5,

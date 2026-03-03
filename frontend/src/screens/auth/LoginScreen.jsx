@@ -1,7 +1,8 @@
 ﻿import React, { useCallback } from 'react';
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Image, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import LoginForm from '../../components/auth/LoginForm';
 import Loading from '../../components/common/Loading';
 import Alert from '../../components/common/Alert';
@@ -23,30 +24,29 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <KeyboardAvoidingView style={s.c} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F5F7FA" />
+      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
       <ScrollView
         contentContainerStyle={s.scroll}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* Branding header */}
+        {/* Back button */}
+        <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
+          <Ionicons name="chevron-back" size={24} color="#475569" />
+        </TouchableOpacity>
+
+        {/* Heading */}
         <View style={s.header}>
-          <View style={s.logoContainer}>
-            <Image source={require('../../assets/images/logo.png')} style={s.logo} resizeMode="contain" />
-          </View>
-          <Text style={s.brandName}>HEALIO</Text>
-          <Text style={s.tagline}>Your Health, Simplified</Text>
+          <Text style={s.title}>Welcome back!{'\n'}Glad to see you, Again!</Text>
         </View>
 
         {error && <View style={s.alertWrap}><Alert variant="error" message={error} /></View>}
 
-        <View style={s.formCard}>
-          <LoginForm
-            onSubmit={handleLogin}
-            onForgotPassword={() => navigation.navigate('ForgotPassword')}
-            onRegister={() => navigation.navigate('Register')}
-          />
-        </View>
+        <LoginForm
+          onSubmit={handleLogin}
+          onForgotPassword={() => navigation.navigate('ForgotPassword')}
+          onRegister={() => navigation.navigate('Register')}
+        />
         {loading && <Loading message="Signing in..." />}
       </ScrollView>
     </KeyboardAvoidingView>
@@ -56,62 +56,37 @@ const LoginScreen = ({ navigation }) => {
 const s = StyleSheet.create({
   c: {
     flex: 1,
-    backgroundColor: '#F5F7FA',
+    backgroundColor: '#F8FAFC',
   },
   scroll: {
     flexGrow: 1,
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 40,
+  },
+  backBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#FFF',
+    alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 40,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    marginBottom: 24,
   },
   header: {
-    alignItems: 'center',
-    marginBottom: 28,
+    marginBottom: 32,
   },
-  logoContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 28,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#4A90D9',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
-    elevation: 8,
-    marginBottom: 14,
-  },
-  logo: {
-    width: 70,
-    height: 70,
-  },
-  brandName: {
-    fontSize: 22,
+  title: {
+    fontSize: 28,
     fontWeight: '800',
-    color: '#1B2332',
-    letterSpacing: 3,
-    marginBottom: 4,
-  },
-  tagline: {
-    fontSize: 13,
-    color: '#8e8e9e',
-    letterSpacing: 0.5,
-    fontWeight: '500',
+    color: '#1E293B',
+    lineHeight: 38,
+    letterSpacing: -0.3,
   },
   alertWrap: {
     marginBottom: 16,
-  },
-  formCard: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    paddingVertical: 28,
-    paddingHorizontal: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 16,
-    elevation: 5,
   },
 });
 export default LoginScreen;

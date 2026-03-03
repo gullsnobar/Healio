@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Button as PaperButton } from 'react-native-paper';
 
-const PRIMARY = '#4A90D9';
+const PRIMARY = '#0F766E';
 
 const Button = ({
   children,

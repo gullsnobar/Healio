@@ -10,6 +10,7 @@ import recommendationSlice from './slices/recommendationSlice';
 import trustedContactSlice from './slices/trustedContactSlice';
 import reportSlice from './slices/reportSlice';
 import notificationSlice from './slices/notificationSlice';
+import reminderSlice from './slices/reminderSlice';
 import { apiMiddleware } from './middleware/apiMiddleware';
 
 const store = configureStore({
@@ -25,6 +26,7 @@ const store = configureStore({
     trustedContact: trustedContactSlice,
     report: reportSlice,
     notification: notificationSlice,
+    reminder: reminderSlice,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }).concat(apiMiddleware),
 });

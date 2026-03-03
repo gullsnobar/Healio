@@ -7,12 +7,12 @@ const StepCounter = ({ steps = 0, goal = 10000, dark = false }) => {
   const textColor = dark ? '#fff' : '#1E293B';
   const subColor = dark ? 'rgba(255,255,255,0.7)' : '#64748B';
   const trackColor = dark ? 'rgba(255,255,255,0.2)' : '#E2E8F0';
-  const fillColor = dark ? '#fff' : '#3B82F6';
+  const fillColor = dark ? '#fff' : '#38BDF8';
 
   return (
     <View style={sc.container}>
       <View style={sc.row}>
-        <Ionicons name="footsteps" size={40} color={dark ? '#fff' : '#3B82F6'} />
+        <Ionicons name="footsteps" size={40} color={dark ? '#fff' : '#38BDF8'} />
         <View style={sc.textWrap}>
           <Text style={[sc.count, { color: textColor }]}>{steps.toLocaleString()}</Text>
           <Text style={[sc.label, { color: subColor }]}>of {goal.toLocaleString()} steps</Text>

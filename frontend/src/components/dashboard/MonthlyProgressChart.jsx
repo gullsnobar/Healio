@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
   chart: { flexDirection: 'row', alignItems: 'flex-end', height: 100, gap: 8, justifyContent: 'space-around' },
   col: { flex: 1, alignItems: 'center', justifyContent: 'flex-end' },
   val: { fontSize: 10, color: '#94A3B8', marginBottom: 4, fontWeight: '600' },
-  fill: { width: '60%', backgroundColor: '#7C3AED', borderRadius: 6 },
+  fill: { width: '60%', backgroundColor: '#10B981', borderRadius: 6 },
   label: { fontSize: 10, color: '#94A3B8', marginTop: 6, fontWeight: '600' },
 });
 export default MonthlyProgressChart;

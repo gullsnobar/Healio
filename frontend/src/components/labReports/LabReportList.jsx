@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator }
 import { Ionicons } from '@expo/vector-icons';
 import LabReportCard from './LabReportCard';
 
-const PRIMARY_COLOR = '#4A90D9';
+const PRIMARY_COLOR = '#0F766E';
 
 const FILTER_TABS = [
   { key: 'all', label: 'All' },

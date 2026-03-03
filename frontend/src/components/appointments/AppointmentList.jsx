@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, ActivityIndicator, RefreshControl } f
 import { Ionicons } from '@expo/vector-icons';
 import AppointmentCard from './AppointmentCard';
 
-const PRIMARY_COLOR = '#4A90D9';
+const PRIMARY_COLOR = '#0F766E';
 
 const EmptyState = () => (
   <View style={styles.emptyContainer}>

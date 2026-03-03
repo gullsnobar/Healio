@@ -8,8 +8,9 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import colors from '../../styles/colors';
 
-const PRIMARY = '#4A90D9';
+const PRIMARY = colors.primary;
 
 const Modal = ({
   visible = false,

@@ -4,9 +4,9 @@ import { Ionicons } from '@expo/vector-icons';
 
 const SettingsScreen = ({ navigation }) => (
   <ScrollView style={s.c}>
-    {[['notifications-outline','Notification Settings','NotificationSettings'],['lock-closed-outline','Privacy Settings','PrivacySettings'],['people-outline','Trusted Contacts','TrustedContacts'],['information-circle-outline','About HEALIO','About']].map(([icon,label,route])=>(
+    {[['alarm-outline','Reminders','Reminders'],['notifications-outline','Notification Settings','NotificationSettings'],['lock-closed-outline','Privacy Settings','PrivacySettings'],['people-outline','Trusted Contacts','TrustedContacts'],['information-circle-outline','About HEALIO','About']].map(([icon,label,route])=>(
       <TouchableOpacity key={route} style={s.item} onPress={() => navigation.navigate(route)}>
-        <Ionicons name={icon} size={22} color="#4A90D9" />
+        <Ionicons name={icon} size={22} color="#0F766E" />
         <Text style={s.label}>{label}</Text>
         <Ionicons name="chevron-forward" size={18} color="#CCC" />
       </TouchableOpacity>

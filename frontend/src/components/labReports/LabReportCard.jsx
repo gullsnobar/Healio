@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 
-const PRIMARY_COLOR = '#4A90D9';
+const PRIMARY_COLOR = '#0F766E';
 
 const TYPE_CONFIG = {
   blood: { label: 'Blood Test', icon: 'water', color: '#E53935' },

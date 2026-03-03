@@ -6,7 +6,7 @@ const VARIANT_CONFIG = {
   success: { bg: '#ECFDF5', border: '#A7F3D0', accent: '#059669', text: '#065F46', icon: 'checkmark-circle' },
   error:   { bg: '#FEF2F2', border: '#FECACA', accent: '#EF4444', text: '#991B1B', icon: 'alert-circle' },
   warning: { bg: '#FFFBEB', border: '#FDE68A', accent: '#F59E0B', text: '#92400E', icon: 'warning' },
-  info:    { bg: '#EFF6FF', border: '#BFDBFE', accent: '#3B82F6', text: '#1E40AF', icon: 'information-circle' },
+  info:    { bg: '#F0FDFA', border: '#99F6E4', accent: '#0F766E', text: '#134E4A', icon: 'information-circle' },
 };
 
 const Alert = ({

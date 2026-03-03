@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card, Badge } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 
-const PRIMARY_COLOR = '#4A90D9';
+const PRIMARY_COLOR = '#0F766E';
 
 const STATUS_CONFIG = {
   upcoming: { label: 'Upcoming', color: PRIMARY_COLOR, icon: 'time-outline' },

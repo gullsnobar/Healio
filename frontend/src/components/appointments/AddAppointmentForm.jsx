@@ -12,7 +12,7 @@ import { TextInput, Switch, Menu, Button } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-const PRIMARY_COLOR = '#4A90D9';
+const PRIMARY_COLOR = '#0F766E';
 
 const PURPOSE_OPTIONS = [
   'General Checkup',

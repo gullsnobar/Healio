@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Button from './Button';
+import colors from '../../styles/colors';
 
-const PRIMARY = '#4A90D9';
+const PRIMARY = colors.primary;
 
 class ErrorBoundary extends Component {
   constructor(props) {

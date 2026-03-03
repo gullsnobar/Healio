@@ -8,7 +8,7 @@ import TabNavigator from './TabNavigator';
 const lazyScreen = (importFn) => {
   const LazyComponent = lazy(importFn);
   return (props) => (
-    <Suspense fallback={<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" color="#3B82F6" /></View>}>
+    <Suspense fallback={<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" color="#0F766E" /></View>}>
       <LazyComponent {...props} />
     </Suspense>
   );
@@ -49,6 +49,11 @@ const NotificationSettingsScreen = lazyScreen(() => import('../screens/settings/
 const PrivacySettingsScreen = lazyScreen(() => import('../screens/settings/PrivacySettingsScreen'));
 const AboutScreen = lazyScreen(() => import('../screens/settings/AboutScreen'));
 
+// Reminders
+const RemindersScreen = lazyScreen(() => import('../screens/reminder/RemindersScreen'));
+const AddReminderScreen = lazyScreen(() => import('../screens/reminder/AddReminderScreen'));
+const ReminderDetailsScreen = lazyScreen(() => import('../screens/reminder/ReminderDetailsScreen'));
+
 // Profile
 const ProfileScreen = lazyScreen(() => import('../screens/main/ProfileScreen'));
 
@@ -58,7 +63,7 @@ const MainNavigator = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: '#1D4ED8' },
+        headerStyle: { backgroundColor: '#0F766E' },
         headerTintColor: '#FFFFFF',
         headerTitleStyle: { fontWeight: '700', fontSize: 17 },
         animation: 'slide_from_right',
@@ -104,6 +109,11 @@ const MainNavigator = () => {
       <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} options={{ title: 'Notifications' }} />
       <Stack.Screen name="PrivacySettings" component={PrivacySettingsScreen} options={{ title: 'Privacy' }} />
       <Stack.Screen name="About" component={AboutScreen} options={{ title: 'About HEALIO' }} />
+
+      {/* Reminders */}
+      <Stack.Screen name="Reminders" component={RemindersScreen} options={{ title: 'Reminders' }} />
+      <Stack.Screen name="AddReminder" component={AddReminderScreen} options={{ title: 'Add Reminder' }} />
+      <Stack.Screen name="ReminderDetails" component={ReminderDetailsScreen} options={{ title: 'Reminder Details' }} />
 
       {/* Profile */}
       <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />

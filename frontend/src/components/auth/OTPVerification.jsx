@@ -7,14 +7,13 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const PRIMARY = '#4A90D9';
-const PRIMARY_DARK = '#3A7BC8';
+const PRIMARY = '#0F766E';
+const PRIMARY_DARK = '#0D6560';
 const OTP_LENGTH = 6;
 
-const OTPVerification = ({ onVerify, onResend, email, onBack }) => {
+const OTPVerification = ({ onVerify, onResend, email }) => {
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''));
   const [timer, setTimer] = useState(60);
   const [loading, setLoading] = useState(false);
@@ -38,7 +37,6 @@ const OTPVerification = ({ onVerify, onResend, email, onBack }) => {
     next[index] = digit;
     setOtp(next);
     setError('');
-
     if (digit && index < OTP_LENGTH - 1) {
       inputs.current[index + 1]?.focus();
     }
@@ -78,49 +76,34 @@ const OTPVerification = ({ onVerify, onResend, email, onBack }) => {
 
   const code = otp.join('');
   const isComplete = code.length === OTP_LENGTH;
+  const disabled = !isComplete || loading;
 
   return (
-    <View style={styles.container}>
-      {/* Back button */}
-      {onBack && (
-        <TouchableOpacity onPress={onBack} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={22} color="#555" />
-          <Text style={styles.backText}>Back</Text>
-        </TouchableOpacity>
+    <View style={s.container}>
+      {/* Heading */}
+      <Text style={s.title}>OTP Verification</Text>
+      <Text style={s.subtitle}>
+        Enter the verification code we just sent on your email address.
+      </Text>
+
+      {/* Error */}
+      {!!error && (
+        <View style={s.errorBanner}>
+          <Text style={s.errorText}>{error}</Text>
+        </View>
       )}
 
-      {/* Icon */}
-      <View style={styles.iconWrap}>
-        <View style={styles.iconInner}>
-          <Ionicons name="shield-checkmark-outline" size={40} color={PRIMARY} />
-        </View>
-      </View>
-
-      <Text style={styles.title}>Verify Your Email</Text>
-      <Text style={styles.subtitle}>
-        We sent a {OTP_LENGTH}-digit code to
-      </Text>
-      <Text style={styles.email}>{email || 'your email'}</Text>
-
-      {/* Error message */}
-      {error ? (
-        <View style={styles.errorBanner}>
-          <Ionicons name="alert-circle" size={16} color="#E74C3C" />
-          <Text style={styles.errorText}>{error}</Text>
-        </View>
-      ) : null}
-
       {/* OTP Boxes */}
-      <View style={styles.otpRow}>
+      <View style={s.otpRow}>
         {otp.map((digit, i) => (
           <TextInput
             key={i}
             ref={(ref) => (inputs.current[i] = ref)}
             style={[
-              styles.otpBox,
-              focusedIndex === i && styles.otpBoxFocused,
-              digit ? styles.otpBoxFilled : null,
-              error ? styles.otpBoxError : null,
+              s.otpBox,
+              focusedIndex === i && s.otpBoxFocused,
+              digit ? s.otpBoxFilled : null,
+              error ? s.otpBoxError : null,
             ]}
             keyboardType="number-pad"
             maxLength={1}
@@ -130,45 +113,26 @@ const OTPVerification = ({ onVerify, onResend, email, onBack }) => {
             onFocus={() => setFocusedIndex(i)}
             onBlur={() => setFocusedIndex(-1)}
             selectTextOnFocus
-            caretHidden={true}
+            caretHidden
           />
         ))}
       </View>
 
       {/* Verify Button */}
-      <TouchableOpacity
-        onPress={handleVerify}
-        disabled={loading || !isComplete}
-        activeOpacity={0.85}
-        style={[styles.verifyBtnOuter, (!isComplete || loading) && styles.verifyBtnDisabled]}
-      >
-        <LinearGradient
-          colors={!isComplete || loading ? ['#B0C4DE', '#A0B8D0'] : [PRIMARY, PRIMARY_DARK]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.verifyBtnGradient}
-        >
-          {loading ? (
-            <Text style={styles.verifyBtnText}>Verifying...</Text>
-          ) : (
-            <>
-              <Ionicons name="checkmark-circle-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
-              <Text style={styles.verifyBtnText}>Verify</Text>
-            </>
-          )}
+      <TouchableOpacity onPress={handleVerify} disabled={disabled} activeOpacity={0.85} style={{ marginBottom: 32 }}>
+        <LinearGradient colors={disabled ? ['#94A3B8', '#94A3B8'] : [PRIMARY, PRIMARY_DARK]} style={s.primaryBtn}>
+          <Text style={s.primaryBtnText}>{loading ? 'Verifying...' : 'Verify'}</Text>
         </LinearGradient>
       </TouchableOpacity>
 
       {/* Resend */}
-      <View style={styles.resendRow}>
+      <View style={s.resendRow}>
+        <Text style={s.resendLabel}>Didn't received code? </Text>
         {timer > 0 ? (
-          <Text style={styles.timerText}>
-            Resend code in <Text style={styles.timerBold}>{timer}s</Text>
-          </Text>
+          <Text style={s.timerText}>Resend in {timer}s</Text>
         ) : (
-          <TouchableOpacity onPress={handleResend} style={styles.resendBtn}>
-            <Ionicons name="refresh-outline" size={16} color={PRIMARY} style={{ marginRight: 6 }} />
-            <Text style={styles.resendLink}>Resend Code</Text>
+          <TouchableOpacity onPress={handleResend}>
+            <Text style={s.resendAction}>Resend</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -176,76 +140,35 @@ const OTPVerification = ({ onVerify, onResend, email, onBack }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 28,
-    alignItems: 'center',
-  },
-  backBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    marginBottom: 16,
-    paddingVertical: 6,
-    paddingHorizontal: 4,
-  },
-  backText: {
-    fontSize: 15,
-    color: '#6B7280',
-    marginLeft: 4,
-    fontWeight: '600',
-  },
-  iconWrap: {
-    marginBottom: 24,
-  },
-  iconInner: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    backgroundColor: '#EBF2FB',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 3,
-    borderColor: '#D6E6F9',
-  },
+const s = StyleSheet.create({
+  container: {},
   title: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: '800',
-    color: '#1B2332',
-    marginBottom: 8,
+    color: '#1E293B',
+    lineHeight: 38,
     letterSpacing: -0.3,
+    marginBottom: 12,
   },
   subtitle: {
-    fontSize: 14,
-    color: '#8e8e9e',
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  email: {
-    color: PRIMARY,
-    fontWeight: '700',
-    fontSize: 14,
-    marginBottom: 28,
-    marginTop: 2,
+    fontSize: 15,
+    color: '#64748B',
+    lineHeight: 22,
+    marginBottom: 32,
   },
   errorBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: '#FEF2F2',
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 14,
     marginBottom: 16,
-    width: '100%',
     borderWidth: 1,
     borderColor: '#FECACA',
   },
   errorText: {
-    color: '#E74C3C',
+    color: '#EF4444',
     fontSize: 13,
-    marginLeft: 8,
     fontWeight: '600',
-    flex: 1,
   },
   otpRow: {
     flexDirection: 'row',
@@ -254,94 +177,55 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   otpBox: {
-    width: 50,
-    height: 58,
-    borderRadius: 14,
-    borderWidth: 2,
-    borderColor: '#e0e5ec',
-    backgroundColor: '#f8f9fb',
+    width: 48,
+    height: 56,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#F1F5F9',
+    backgroundColor: '#F1F5F9',
     textAlign: 'center',
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '800',
-    color: '#1B2332',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 1,
-    // Remove black browser outline on web
-    ...(Platform.OS === 'web' ? { outlineStyle: 'none', outlineWidth: 0 } : {}),
+    color: '#1E293B',
+    ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
   },
   otpBoxFocused: {
     borderColor: PRIMARY,
-    backgroundColor: '#EEF4FC',
-    shadowColor: PRIMARY,
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 3,
+    backgroundColor: '#FFF',
   },
   otpBoxFilled: {
     borderColor: PRIMARY,
-    backgroundColor: '#EBF2FB',
-    shadowColor: PRIMARY,
-    shadowOpacity: 0.1,
-    elevation: 3,
+    backgroundColor: '#ECFDF5',
   },
   otpBoxError: {
-    borderColor: '#E74C3C',
+    borderColor: '#EF4444',
     backgroundColor: '#FEF2F2',
   },
-  verifyBtnOuter: {
-    borderRadius: 14,
-    width: '100%',
-    shadowColor: PRIMARY,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  verifyBtnDisabled: {
-    shadowOpacity: 0.1,
-    elevation: 2,
-  },
-  verifyBtnGradient: {
-    flexDirection: 'row',
-    height: 54,
-    borderRadius: 14,
+  primaryBtn: {
+    height: 56,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: PRIMARY,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6,
   },
-  verifyBtnText: {
-    color: '#fff',
+  primaryBtnText: {
+    color: '#FFF',
     fontSize: 16,
     fontWeight: '700',
     letterSpacing: 0.5,
   },
   resendRow: {
-    marginTop: 28,
-    alignItems: 'center',
-  },
-  timerText: {
-    fontSize: 14,
-    color: '#8e8e9e',
-  },
-  timerBold: {
-    fontWeight: '700',
-    color: '#6b6b7b',
-  },
-  resendBtn: {
     flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    backgroundColor: '#EBF2FB',
   },
-  resendLink: {
-    fontSize: 14,
-    color: PRIMARY,
-    fontWeight: '700',
-  },
+  resendLabel: { fontSize: 14, color: '#64748B' },
+  timerText: { fontSize: 14, color: '#94A3B8', fontWeight: '600' },
+  resendAction: { fontSize: 14, color: PRIMARY, fontWeight: '700' },
 });
 
 export default OTPVerification;

@@ -1,132 +1,152 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Svg, { Rect, RoundedRect, Circle, Ellipse } from 'react-native-svg';
 
-const PRIMARY = '#4A90D9';
+const PRIMARY = '#0F766E';
 
-const MedicationReminder = ({ reminder, onTake, onSnooze, onDismiss }) => {
-  const { medicationName, dosage, timing } = reminder || {};
+/* Simple pill capsule illustration */
+const PillIllustration = () => (
+  <Svg width={80} height={80} viewBox="0 0 80 80">
+    <Circle cx={40} cy={40} r={36} fill="#FEF3C7" />
+    <Rect x={24} y={32} width={32} height={16} rx={8} fill="#F59E0B" />
+    <Rect x={40} y={32} width={16} height={16} rx={0} fill="#FBBF24" />
+    <Ellipse cx={40} cy={40} rx={3} ry={8} fill="rgba(255,255,255,0.3)" />
+  </Svg>
+);
+
+const MedicationReminder = ({ reminder, onTake, onEdit, onSnooze, onDismiss, visible = true }) => {
+  const { medicationName, dosage, timing, scheduledTime, amount } = reminder || {};
+
+  const now = new Date();
+  const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][now.getDay()];
 
   return (
-    <View style={styles.overlay}>
-      <View style={styles.card}>
-        <TouchableOpacity style={styles.dismissBtn} onPress={() => onDismiss?.(reminder)}>
-          <Ionicons name="close" size={22} color="#888" />
-        </TouchableOpacity>
-
-        <View style={styles.iconWrap}>
-          <Ionicons name="notifications" size={32} color={PRIMARY} />
-        </View>
-
-        <Text style={styles.title}>Medication Reminder</Text>
-        <Text style={styles.medName}>{medicationName}</Text>
-
-        <View style={styles.details}>
-          <View style={styles.detailRow}>
-            <Ionicons name="flask-outline" size={16} color="#888" />
-            <Text style={styles.detailText}>{dosage}</Text>
-          </View>
-          <View style={styles.detailRow}>
-            <Ionicons name="time-outline" size={16} color="#888" />
-            <Text style={styles.detailText}>{timing}</Text>
-          </View>
-        </View>
-
-        <View style={styles.actions}>
-          <TouchableOpacity
-            style={styles.takeBtn}
-            onPress={() => onTake?.(reminder)}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="checkmark-circle" size={20} color="#fff" />
-            <Text style={styles.takeBtnText}>Take Now</Text>
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={() => onDismiss?.(reminder)}>
+      <View style={s.overlay}>
+        <View style={s.card}>
+          {/* Dismiss */}
+          <TouchableOpacity style={s.dismissBtn} onPress={() => onDismiss?.(reminder)}>
+            <Ionicons name="close" size={22} color="#94A3B8" />
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.snoozeBtn}
-            onPress={() => onSnooze?.(reminder)}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="alarm-outline" size={20} color={PRIMARY} />
-            <Text style={styles.snoozeBtnText}>Snooze</Text>
-          </TouchableOpacity>
+          {/* Pill illustration */}
+          <PillIllustration />
+
+          {/* Question */}
+          <Text style={s.question}>Did you take your Medicine?</Text>
+
+          {/* Med info */}
+          <Text style={s.medName}>{medicationName || 'Medicine'}</Text>
+
+          <View style={s.infoRow}>
+            <View style={s.infoBadge}>
+              <Ionicons name="time-outline" size={14} color="#64748B" />
+              <Text style={s.infoText}>Scheduled for {scheduledTime || timing || '--:--'}, {dayName}</Text>
+            </View>
+          </View>
+
+          {(dosage || amount) && (
+            <View style={s.infoBadge}>
+              <Ionicons name="medical-outline" size={14} color="#64748B" />
+              <Text style={s.infoText}>{amount ? `${amount}, ` : ''}{dosage || ''}</Text>
+            </View>
+          )}
+
+          {/* Actions */}
+          <View style={s.actions}>
+            <TouchableOpacity
+              style={s.takeBtn}
+              onPress={() => onTake?.(reminder)}
+              activeOpacity={0.85}
+            >
+              <Ionicons name="checkmark" size={20} color="#FFF" />
+              <Text style={s.takeBtnText}>Take</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={s.editBtn}
+              onPress={() => (onEdit || onSnooze)?.(reminder)}
+              activeOpacity={0.85}
+            >
+              <Ionicons name="create-outline" size={20} color={PRIMARY} />
+              <Text style={s.editBtnText}>Edit</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
+    </Modal>
   );
 };
 
-const styles = StyleSheet.create({
+const s = StyleSheet.create({
   overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    flex: 1,
     backgroundColor: 'rgba(0,0,0,0.4)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
-    zIndex: 999,
   },
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
+    backgroundColor: '#FFF',
+    borderRadius: 24,
     padding: 28,
     width: '100%',
-    maxWidth: 360,
+    maxWidth: 340,
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowRadius: 24,
+    elevation: 12,
   },
   dismissBtn: {
     position: 'absolute',
-    top: 14,
-    right: 14,
-    padding: 4,
-  },
-  iconWrap: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#EBF2FB',
+    top: 16,
+    right: 16,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#F1F5F9',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
   },
-  title: {
-    fontSize: 14,
-    color: '#888',
-    fontWeight: '500',
-    marginBottom: 6,
+  question: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#64748B',
+    marginTop: 16,
+    marginBottom: 4,
   },
   medName: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#1a1a1a',
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#1E293B',
     textAlign: 'center',
     marginBottom: 16,
+    letterSpacing: -0.3,
   },
-  details: {
-    gap: 8,
-    marginBottom: 24,
-  },
-  detailRow: {
+  infoRow: { marginBottom: 6 },
+  infoBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
+    backgroundColor: '#F8FAFC',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginBottom: 6,
   },
-  detailText: {
-    fontSize: 15,
-    color: '#555',
+  infoText: {
+    fontSize: 13,
+    color: '#64748B',
+    fontWeight: '500',
   },
   actions: {
     flexDirection: 'row',
     gap: 12,
     width: '100%',
+    marginTop: 20,
   },
   takeBtn: {
     flex: 1,
@@ -134,29 +154,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: PRIMARY,
-    borderRadius: 12,
-    paddingVertical: 14,
-    gap: 6,
+    borderRadius: 14,
+    paddingVertical: 16,
+    gap: 8,
+    shadowColor: PRIMARY,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   takeBtnText: {
-    color: '#fff',
-    fontSize: 15,
-    fontWeight: '600',
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '700',
   },
-  snoozeBtn: {
+  editBtn: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#EBF2FB',
-    borderRadius: 12,
-    paddingVertical: 14,
-    gap: 6,
+    backgroundColor: '#F0FDF9',
+    borderRadius: 14,
+    paddingVertical: 16,
+    gap: 8,
+    borderWidth: 1.5,
+    borderColor: '#CCFBF1',
   },
-  snoozeBtnText: {
+  editBtnText: {
     color: PRIMARY,
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: 16,
+    fontWeight: '700',
   },
 });
 

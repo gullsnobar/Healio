@@ -15,13 +15,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { authAPI } from '../../services/api/authAPI';
 
-const PRIMARY = '#4A90D9';
-const PRIMARY_DARK = '#3A7BC8';
+const PRIMARY = '#0F766E';
+const PRIMARY_DARK = '#0D6560';
 
 const ForgotPasswordScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [focusedField, setFocusedField] = useState(null);
+  const [focused, setFocused] = useState(false);
 
   const handleSubmit = async () => {
     if (!email.trim()) return Alert.alert('Error', 'Please enter your email');
@@ -38,87 +38,56 @@ const ForgotPasswordScreen = ({ navigation }) => {
     }
   };
 
+  const disabled = loading || !email.trim();
+
   return (
     <KeyboardAvoidingView style={s.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F5F7FA" />
+      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
       <ScrollView
         contentContainerStyle={s.scroll}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={s.card}>
-          {/* Back button */}
-          <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
-            <Ionicons name="arrow-back" size={22} color="#6B7280" />
-            <Text style={s.backText}>Back</Text>
+        {/* Back button */}
+        <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
+          <Ionicons name="chevron-back" size={24} color="#475569" />
+        </TouchableOpacity>
+
+        {/* Heading */}
+        <Text style={s.title}>Forgot Password?</Text>
+        <Text style={s.subtitle}>
+          Don't worry! It occurs. Please enter the email address linked with your account.
+        </Text>
+
+        {/* Email input */}
+        <View style={[s.inputWrap, focused && s.inputFocused]}>
+          <TextInput
+            style={s.input}
+            placeholder="Enter your email"
+            placeholderTextColor="#94A3B8"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+          />
+        </View>
+
+        {/* Send Code button */}
+        <TouchableOpacity onPress={handleSubmit} disabled={disabled} activeOpacity={0.85} style={{ marginBottom: 32 }}>
+          <LinearGradient colors={disabled ? ['#94A3B8', '#94A3B8'] : [PRIMARY, PRIMARY_DARK]} style={s.primaryBtn}>
+            <Text style={s.primaryBtnText}>{loading ? 'Sending...' : 'Send Code'}</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        {/* Back to login */}
+        <View style={s.linkRow}>
+          <Text style={s.linkLabel}>Remember Password? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <Text style={s.linkAction}>Login</Text>
           </TouchableOpacity>
-
-          {/* Icon */}
-          <View style={s.iconWrap}>
-            <View style={s.iconInner}>
-              <Ionicons name="key-outline" size={38} color={PRIMARY} />
-            </View>
-          </View>
-
-          <Text style={s.title}>Forgot Password?</Text>
-          <Text style={s.subtitle}>
-            No worries! Enter the email address linked to your account and we'll send you a reset code.
-          </Text>
-
-          {/* Email Input */}
-          <View style={[s.inputWrapper, focusedField === 'email' && s.inputWrapperFocused]}>
-            <View style={s.iconContainer}>
-              <Ionicons
-                name="mail-outline"
-                size={20}
-                color={focusedField === 'email' ? PRIMARY : '#9CA3AF'}
-              />
-            </View>
-            <TextInput
-              style={s.input}
-              placeholder="Enter your email"
-              placeholderTextColor="#b0b0b0"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              onFocus={() => setFocusedField('email')}
-              onBlur={() => setFocusedField(null)}
-            />
-          </View>
-
-          {/* Send Button */}
-          <TouchableOpacity
-            onPress={handleSubmit}
-            disabled={loading || !email.trim()}
-            activeOpacity={0.85}
-            style={[s.btnOuter, (loading || !email.trim()) && s.btnDisabled]}
-          >
-            <LinearGradient
-              colors={loading || !email.trim() ? ['#B0C4DE', '#A0B8D0'] : [PRIMARY, PRIMARY_DARK]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={s.btnGradient}
-            >
-              {loading ? (
-                <Text style={s.btnText}>Sending...</Text>
-              ) : (
-                <>
-                  <Ionicons name="send-outline" size={18} color="#fff" style={{ marginRight: 8 }} />
-                  <Text style={s.btnText}>Send Reset Code</Text>
-                </>
-              )}
-            </LinearGradient>
-          </TouchableOpacity>
-
-          {/* Back to login link */}
-          <View style={s.loginRow}>
-            <Text style={s.loginLabel}>Remember your password? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-              <Text style={s.loginLink}>Log In</Text>
-            </TouchableOpacity>
-          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -128,145 +97,82 @@ const ForgotPasswordScreen = ({ navigation }) => {
 const s = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F7FA',
+    backgroundColor: '#F8FAFC',
   },
   scroll: {
     flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 40,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    paddingVertical: 28,
     paddingHorizontal: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 16,
-    elevation: 5,
-    alignItems: 'center',
+    paddingTop: 16,
+    paddingBottom: 40,
   },
   backBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    marginBottom: 16,
-    paddingVertical: 6,
-    paddingHorizontal: 4,
-  },
-  backText: {
-    fontSize: 15,
-    color: '#6B7280',
-    marginLeft: 4,
-    fontWeight: '600',
-  },
-  iconWrap: {
-    marginBottom: 20,
-  },
-  iconInner: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    backgroundColor: '#EBF2FB',
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#FFF',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 3,
-    borderColor: '#D6E6F9',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    marginBottom: 24,
   },
   title: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: '800',
-    color: '#1B2332',
-    marginBottom: 10,
+    color: '#1E293B',
+    lineHeight: 38,
     letterSpacing: -0.3,
+    marginBottom: 12,
   },
   subtitle: {
-    fontSize: 14,
-    color: '#8e8e9e',
-    textAlign: 'center',
-    lineHeight: 21,
-    marginBottom: 28,
-    paddingHorizontal: 8,
+    fontSize: 15,
+    color: '#64748B',
+    lineHeight: 22,
+    marginBottom: 32,
   },
-  inputWrapper: {
+  inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    paddingHorizontal: 4,
-    marginBottom: 20,
+    backgroundColor: '#F1F5F9',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    marginBottom: 32,
     borderWidth: 1.5,
-    borderColor: '#e8edf2',
-    width: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
+    borderColor: '#F1F5F9',
+    height: 56,
   },
-  inputWrapperFocused: {
+  inputFocused: {
     borderColor: PRIMARY,
-    shadowColor: PRIMARY,
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#FFF',
   },
   input: {
     flex: 1,
-    height: 52,
     fontSize: 15,
-    color: '#1B2332',
-    letterSpacing: 0.3,
-    ...(Platform.OS === 'web' ? { outlineStyle: 'none', outlineWidth: 0 } : {}),
+    color: '#1E293B',
+    letterSpacing: 0.2,
+    height: '100%',
+    ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
   },
-  btnOuter: {
-    borderRadius: 14,
-    width: '100%',
-    shadowColor: PRIMARY,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 6,
-    marginBottom: 24,
-  },
-  btnDisabled: {
-    shadowOpacity: 0.1,
-    elevation: 2,
-  },
-  btnGradient: {
-    flexDirection: 'row',
-    height: 54,
-    borderRadius: 14,
+  primaryBtn: {
+    height: 56,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: PRIMARY,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6,
   },
-  btnText: {
-    color: '#fff',
+  primaryBtnText: {
+    color: '#FFF',
     fontSize: 16,
     fontWeight: '700',
     letterSpacing: 0.5,
   },
-  loginRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 4,
-  },
-  loginLabel: {
-    fontSize: 14,
-    color: '#8e8e9e',
-  },
-  loginLink: {
-    fontSize: 14,
-    color: PRIMARY,
-    fontWeight: '700',
-  },
+  linkRow: { flexDirection: 'row', justifyContent: 'center' },
+  linkLabel: { fontSize: 14, color: '#64748B' },
+  linkAction: { fontSize: 14, color: PRIMARY, fontWeight: '700' },
 });
+
 export default ForgotPasswordScreen;

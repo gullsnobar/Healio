@@ -33,13 +33,13 @@ const styles = StyleSheet.create({
   container: { padding: 16 },
   title: { fontSize: 20, fontWeight: '700', color: '#333', marginBottom: 16 },
   typeRow: { flexDirection: 'row', gap: 8, marginBottom: 16 },
-  typeBtn: { flex: 1, paddingVertical: 8, borderRadius: 20, borderWidth: 1, borderColor: '#4A90D9', alignItems: 'center' },
-  typeBtnActive: { backgroundColor: '#4A90D9' },
-  typeText: { color: '#4A90D9', fontWeight: '600', textTransform: 'capitalize' },
+  typeBtn: { flex: 1, paddingVertical: 8, borderRadius: 20, borderWidth: 1, borderColor: '#0F766E', alignItems: 'center' },
+  typeBtnActive: { backgroundColor: '#0F766E' },
+  typeText: { color: '#0F766E', fontWeight: '600', textTransform: 'capitalize' },
   typeTextActive: { color: '#FFF' },
   input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12, fontSize: 16, marginBottom: 12, backgroundColor: '#FFF' },
   textArea: { height: 80, textAlignVertical: 'top' },
-  submitBtn: { backgroundColor: '#4A90D9', padding: 14, borderRadius: 8, alignItems: 'center', marginTop: 8 },
+  submitBtn: { backgroundColor: '#0F766E', padding: 14, borderRadius: 8, alignItems: 'center', marginTop: 8 },
   submitText: { color: '#FFF', fontSize: 16, fontWeight: '600' },
 });
 

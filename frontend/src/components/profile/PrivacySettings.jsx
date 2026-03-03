@@ -1,11 +1,11 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
 const PrivacySettings = ({ settings, onUpdate }) => {
   const [s2, setS] = useState(settings || { shareWithContacts: true, dataCollection: true, locationTracking: false });
   const toggle = (k) => { const n = { ...s2, [k]: !s2[k] }; setS(n); onUpdate?.(n); };
   return (
     <View style={s.c}>{[['shareWithContacts','Share Data with Contacts'],['dataCollection','Allow Data Collection'],['locationTracking','Location Tracking']].map(([k,l])=>(
-      <View key={k} style={s.r}><Text style={s.l}>{l}</Text><Switch value={s2[k]} onValueChange={()=>toggle(k)} trackColor={{true:'#4A90D9'}} /></View>
+      <View key={k} style={s.r}><Text style={s.l}>{l}</Text><Switch value={s2[k]} onValueChange={()=>toggle(k)} trackColor={{true:'#0F766E'}} /></View>
     ))}</View>
   );
 };

@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import colors from '../../styles/colors';
 
-const PRIMARY = '#4A90D9';
+const PRIMARY = colors.primary;
 
 const Header = ({
   title,

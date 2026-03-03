@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const PRIMARY = '#4A90D9';
+const PRIMARY = '#0F766E';
 
 const MarkAsTakenButton = ({ medicationId, onMarkTaken, isTaken = false }) => {
   const [loading, setLoading] = useState(false);

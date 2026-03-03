@@ -7,42 +7,56 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  Platform,
+  Switch,
+  Modal,
 } from 'react-native';
-import { Button, Menu } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
-const PRIMARY = '#4A90D9';
+const PRIMARY = '#0F766E';
+const PRIMARY_DARK = '#0D6560';
 
+const MED_TYPES = ['Capsule', 'Tablet', 'Drops', 'Syrup', 'Injection', 'Other'];
 const DOSAGE_UNITS = ['mg', 'ml', 'tablets', 'capsules', 'drops', 'units'];
-const FREQUENCIES = ['Daily', 'Twice Daily', 'Weekly', 'Custom'];
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 const AddMedicationForm = ({ onSubmit, initialData }) => {
   const [form, setForm] = useState({
     name: initialData?.name || '',
+    type: initialData?.type || 'Capsule',
     dosage: initialData?.dosage || '',
     dosageUnit: initialData?.dosageUnit || 'mg',
+    amount: initialData?.amount || '',
     frequency: initialData?.frequency || 'Daily',
     times: initialData?.times || ['08:00'],
     startDate: initialData?.startDate || '',
     endDate: initialData?.endDate || '',
+    selectedDays: initialData?.selectedDays || [0, 2, 4], // Mon, Wed, Fri
+    alarmEnabled: initialData?.alarmEnabled ?? true,
     doctorName: initialData?.doctorName || '',
     notes: initialData?.notes || '',
   });
-  const [unitMenuVisible, setUnitMenuVisible] = useState(false);
-  const [freqMenuVisible, setFreqMenuVisible] = useState(false);
+
+  const [showTypeMenu, setShowTypeMenu] = useState(false);
+  const [showUnitMenu, setShowUnitMenu] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [focusedField, setFocusedField] = useState(null);
 
   const update = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
 
-  const addTime = () => {
-    update('times', [...form.times, '12:00']);
+  const toggleDay = (index) => {
+    const next = form.selectedDays.includes(index)
+      ? form.selectedDays.filter((d) => d !== index)
+      : [...form.selectedDays, index];
+    update('selectedDays', next);
   };
 
+  const addTime = () => update('times', [...form.times, '12:00']);
   const removeTime = (index) => {
     if (form.times.length <= 1) return;
     update('times', form.times.filter((_, i) => i !== index));
   };
-
   const updateTime = (index, value) => {
     const next = [...form.times];
     next[index] = value;
@@ -50,24 +64,15 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
   };
 
   const handleSubmit = async () => {
-    if (!form.name.trim()) {
-      Alert.alert('Validation', 'Medication name is required');
-      return;
-    }
-    if (!form.dosage.trim()) {
-      Alert.alert('Validation', 'Dosage is required');
-      return;
-    }
-    if (!form.startDate.trim()) {
-      Alert.alert('Validation', 'Start date is required');
-      return;
-    }
+    if (!form.name.trim()) return Alert.alert('Validation', 'Medication name is required');
+    if (!form.dosage.trim()) return Alert.alert('Validation', 'Dosage is required');
     setLoading(true);
     try {
       await onSubmit?.({
         ...form,
         name: form.name.trim(),
         dosage: form.dosage.trim(),
+        amount: form.amount.trim(),
         startDate: form.startDate.trim(),
         endDate: form.endDate.trim() || null,
         doctorName: form.doctorName.trim(),
@@ -78,267 +83,334 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
     }
   };
 
-  return (
-    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-      <Text style={styles.sectionTitle}>Medication Info</Text>
+  const disabled = loading || !form.name.trim() || !form.dosage.trim();
 
-      <Text style={styles.label}>Name *</Text>
-      <View style={styles.inputWrapper}>
+  /* Dropdown picker modal */
+  const DropdownModal = ({ visible, onClose, items, onSelect, selected }) => (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <TouchableOpacity style={s.modalOverlay} activeOpacity={1} onPress={onClose}>
+        <View style={s.modalCard}>
+          {items.map((item) => (
+            <TouchableOpacity
+              key={item}
+              style={[s.modalItem, selected === item && s.modalItemActive]}
+              onPress={() => { onSelect(item); onClose(); }}
+            >
+              <Text style={[s.modalItemText, selected === item && s.modalItemTextActive]}>{item}</Text>
+              {selected === item && <Ionicons name="checkmark" size={18} color={PRIMARY} />}
+            </TouchableOpacity>
+          ))}
+        </View>
+      </TouchableOpacity>
+    </Modal>
+  );
+
+  return (
+    <ScrollView contentContainerStyle={s.container} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+      {/* Section: Medication Info */}
+      <Text style={s.sectionLabel}>Medication Info</Text>
+
+      {/* Name */}
+      <View style={[s.inputWrap, focusedField === 'name' && s.inputFocused]}>
         <TextInput
-          style={styles.input}
-          placeholder="e.g. Amoxicillin"
-          placeholderTextColor="#aaa"
+          style={s.input}
+          placeholder="Medicine Name *"
+          placeholderTextColor="#94A3B8"
           value={form.name}
           onChangeText={(v) => update('name', v)}
+          onFocus={() => setFocusedField('name')}
+          onBlur={() => setFocusedField(null)}
         />
       </View>
 
-      <Text style={styles.label}>Dosage *</Text>
-      <View style={styles.dosageRow}>
-        <View style={[styles.inputWrapper, { flex: 1 }]}>
+      {/* Type dropdown */}
+      <TouchableOpacity style={s.dropdownWrap} onPress={() => setShowTypeMenu(true)} activeOpacity={0.8}>
+        <Text style={form.type ? s.dropdownValue : s.dropdownPlaceholder}>{form.type || 'Type *'}</Text>
+        <Ionicons name="chevron-down" size={18} color="#94A3B8" />
+      </TouchableOpacity>
+      <DropdownModal
+        visible={showTypeMenu}
+        onClose={() => setShowTypeMenu(false)}
+        items={MED_TYPES}
+        onSelect={(v) => update('type', v)}
+        selected={form.type}
+      />
+
+      {/* Dose + Unit */}
+      <View style={s.rowGap}>
+        <View style={[s.inputWrap, { flex: 1 }, focusedField === 'dosage' && s.inputFocused]}>
           <TextInput
-            style={styles.input}
-            placeholder="e.g. 500"
-            placeholderTextColor="#aaa"
+            style={s.input}
+            placeholder="Dose *"
+            placeholderTextColor="#94A3B8"
             keyboardType="numeric"
             value={form.dosage}
             onChangeText={(v) => update('dosage', v)}
+            onFocus={() => setFocusedField('dosage')}
+            onBlur={() => setFocusedField(null)}
           />
         </View>
-        <Menu
-          visible={unitMenuVisible}
-          onDismiss={() => setUnitMenuVisible(false)}
-          anchor={
-            <TouchableOpacity style={styles.dropdown} onPress={() => setUnitMenuVisible(true)}>
-              <Text style={styles.dropdownText}>{form.dosageUnit}</Text>
-              <Ionicons name="chevron-down" size={16} color="#555" />
-            </TouchableOpacity>
-          }
-        >
-          {DOSAGE_UNITS.map((unit) => (
-            <Menu.Item
-              key={unit}
-              title={unit}
-              onPress={() => {
-                update('dosageUnit', unit);
-                setUnitMenuVisible(false);
-              }}
-            />
-          ))}
-        </Menu>
+        <TouchableOpacity style={[s.dropdownWrap, { flex: 0.6 }]} onPress={() => setShowUnitMenu(true)}>
+          <Text style={s.dropdownValue}>{form.dosageUnit}</Text>
+          <Ionicons name="chevron-down" size={16} color="#94A3B8" />
+        </TouchableOpacity>
+        <DropdownModal
+          visible={showUnitMenu}
+          onClose={() => setShowUnitMenu(false)}
+          items={DOSAGE_UNITS}
+          onSelect={(v) => update('dosageUnit', v)}
+          selected={form.dosageUnit}
+        />
       </View>
 
-      <Text style={styles.label}>Frequency</Text>
-      <Menu
-        visible={freqMenuVisible}
-        onDismiss={() => setFreqMenuVisible(false)}
-        anchor={
-          <TouchableOpacity style={styles.dropdownFull} onPress={() => setFreqMenuVisible(true)}>
-            <Text style={styles.dropdownText}>{form.frequency}</Text>
-            <Ionicons name="chevron-down" size={16} color="#555" />
-          </TouchableOpacity>
-        }
-      >
-        {FREQUENCIES.map((freq) => (
-          <Menu.Item
-            key={freq}
-            title={freq}
-            onPress={() => {
-              update('frequency', freq);
-              setFreqMenuVisible(false);
-            }}
-          />
-        ))}
-      </Menu>
+      {/* Amount */}
+      <View style={[s.inputWrap, focusedField === 'amount' && s.inputFocused]}>
+        <TextInput
+          style={s.input}
+          placeholder="Amount (e.g. 1 pill)"
+          placeholderTextColor="#94A3B8"
+          value={form.amount}
+          onChangeText={(v) => update('amount', v)}
+          onFocus={() => setFocusedField('amount')}
+          onBlur={() => setFocusedField(null)}
+        />
+      </View>
 
-      <Text style={styles.label}>Times</Text>
+      {/* Section: Reminders */}
+      <Text style={[s.sectionLabel, { marginTop: 8 }]}>Reminders</Text>
+
+      {/* Start Date */}
+      <View style={[s.inputWrap, focusedField === 'startDate' && s.inputFocused]}>
+        <Ionicons name="calendar-outline" size={18} color="#94A3B8" style={{ marginRight: 8 }} />
+        <TextInput
+          style={s.input}
+          placeholder="Start Date (YYYY-MM-DD)"
+          placeholderTextColor="#94A3B8"
+          value={form.startDate}
+          onChangeText={(v) => update('startDate', v)}
+          onFocus={() => setFocusedField('startDate')}
+          onBlur={() => setFocusedField(null)}
+        />
+      </View>
+
+      {/* Day chips */}
+      <View style={s.dayRow}>
+        {DAYS.map((day, i) => (
+          <TouchableOpacity
+            key={day}
+            style={[s.dayChip, form.selectedDays.includes(i) && s.dayChipActive]}
+            onPress={() => toggleDay(i)}
+          >
+            <Text style={[s.dayChipText, form.selectedDays.includes(i) && s.dayChipTextActive]}>{day}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Times */}
       {form.times.map((time, i) => (
-        <View key={i} style={styles.timeRow}>
-          <View style={[styles.inputWrapper, { flex: 1, marginBottom: 0 }]}>
-            <Ionicons name="time-outline" size={18} color="#888" style={{ marginRight: 8 }} />
+        <View key={i} style={s.timeRow}>
+          <View style={[s.inputWrap, { flex: 1, marginBottom: 0 }, focusedField === `time${i}` && s.inputFocused]}>
+            <Ionicons name="time-outline" size={18} color="#94A3B8" style={{ marginRight: 8 }} />
             <TextInput
-              style={styles.input}
+              style={s.input}
               placeholder="HH:MM"
-              placeholderTextColor="#aaa"
+              placeholderTextColor="#94A3B8"
               value={time}
               onChangeText={(v) => updateTime(i, v)}
+              onFocus={() => setFocusedField(`time${i}`)}
+              onBlur={() => setFocusedField(null)}
             />
           </View>
           {form.times.length > 1 && (
-            <TouchableOpacity onPress={() => removeTime(i)} style={styles.removeTimeBtn}>
-              <Ionicons name="close-circle" size={24} color="#e74c3c" />
+            <TouchableOpacity onPress={() => removeTime(i)} style={s.removeTimeBtn}>
+              <Ionicons name="close-circle" size={22} color="#EF4444" />
             </TouchableOpacity>
           )}
         </View>
       ))}
-      <TouchableOpacity onPress={addTime} style={styles.addTimeBtn}>
+      <TouchableOpacity onPress={addTime} style={s.addTimeBtn}>
         <Ionicons name="add-circle-outline" size={20} color={PRIMARY} />
-        <Text style={styles.addTimeText}>Add Time</Text>
+        <Text style={s.addTimeText}>Add Time</Text>
       </TouchableOpacity>
 
-      <Text style={styles.sectionTitle}>Schedule</Text>
-
-      <Text style={styles.label}>Start Date *</Text>
-      <View style={styles.inputWrapper}>
-        <Ionicons name="calendar-outline" size={18} color="#888" style={{ marginRight: 8 }} />
-        <TextInput
-          style={styles.input}
-          placeholder="YYYY-MM-DD"
-          placeholderTextColor="#aaa"
-          value={form.startDate}
-          onChangeText={(v) => update('startDate', v)}
+      {/* Alarm toggle */}
+      <View style={s.alarmRow}>
+        <View>
+          <Text style={s.alarmTitle}>Turn on Alarm</Text>
+          <Text style={s.alarmSub}>Get notified at scheduled times</Text>
+        </View>
+        <Switch
+          value={form.alarmEnabled}
+          onValueChange={(v) => update('alarmEnabled', v)}
+          trackColor={{ false: '#E2E8F0', true: '#99F6E4' }}
+          thumbColor={form.alarmEnabled ? PRIMARY : '#94A3B8'}
         />
       </View>
 
-      <Text style={styles.label}>End Date (optional)</Text>
-      <View style={styles.inputWrapper}>
-        <Ionicons name="calendar-outline" size={18} color="#888" style={{ marginRight: 8 }} />
-        <TextInput
-          style={styles.input}
-          placeholder="YYYY-MM-DD"
-          placeholderTextColor="#aaa"
-          value={form.endDate}
-          onChangeText={(v) => update('endDate', v)}
-        />
-      </View>
+      {/* Section: Additional (collapsed by default – always visible) */}
+      <Text style={[s.sectionLabel, { marginTop: 8 }]}>Additional</Text>
 
-      <Text style={styles.sectionTitle}>Additional</Text>
-
-      <Text style={styles.label}>Doctor Name</Text>
-      <View style={styles.inputWrapper}>
-        <Ionicons name="person-outline" size={18} color="#888" style={{ marginRight: 8 }} />
+      <View style={[s.inputWrap, focusedField === 'doctor' && s.inputFocused]}>
         <TextInput
-          style={styles.input}
-          placeholder="Prescribing doctor"
-          placeholderTextColor="#aaa"
+          style={s.input}
+          placeholder="Doctor Name"
+          placeholderTextColor="#94A3B8"
           value={form.doctorName}
           onChangeText={(v) => update('doctorName', v)}
+          onFocus={() => setFocusedField('doctor')}
+          onBlur={() => setFocusedField(null)}
         />
       </View>
 
-      <Text style={styles.label}>Notes</Text>
-      <View style={[styles.inputWrapper, { minHeight: 80, alignItems: 'flex-start' }]}>
+      <View style={[s.inputWrap, { minHeight: 80, alignItems: 'flex-start' }, focusedField === 'notes' && s.inputFocused]}>
         <TextInput
-          style={[styles.input, { textAlignVertical: 'top', paddingTop: 12 }]}
-          placeholder="Additional notes..."
-          placeholderTextColor="#aaa"
+          style={[s.input, { textAlignVertical: 'top', paddingTop: 14 }]}
+          placeholder="Notes"
+          placeholderTextColor="#94A3B8"
           multiline
           numberOfLines={3}
           value={form.notes}
           onChangeText={(v) => update('notes', v)}
+          onFocus={() => setFocusedField('notes')}
+          onBlur={() => setFocusedField(null)}
         />
       </View>
 
-      <Button
-        mode="contained"
-        onPress={handleSubmit}
-        loading={loading}
-        disabled={loading}
-        style={styles.submitBtn}
-        buttonColor={PRIMARY}
-        textColor="#fff"
-        contentStyle={styles.submitBtnContent}
-      >
-        {initialData ? 'Update Medication' : 'Add Medication'}
-      </Button>
+      {/* Save button */}
+      <TouchableOpacity onPress={handleSubmit} disabled={disabled} activeOpacity={0.85} style={{ marginTop: 16 }}>
+        <LinearGradient colors={disabled ? ['#94A3B8', '#94A3B8'] : [PRIMARY, PRIMARY_DARK]} style={s.saveBtn}>
+          <Text style={s.saveBtnText}>{loading ? 'Saving...' : (initialData ? 'Update Medicine' : 'Save')}</Text>
+        </LinearGradient>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    paddingBottom: 48,
-  },
-  sectionTitle: {
-    fontSize: 18,
+const s = StyleSheet.create({
+  container: { padding: 24, paddingBottom: 48 },
+  sectionLabel: {
+    fontSize: 14,
     fontWeight: '700',
-    color: '#1a1a1a',
-    marginTop: 20,
-    marginBottom: 12,
+    color: '#94A3B8',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginBottom: 14,
   },
-  label: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#555',
-    marginBottom: 6,
-  },
-  inputWrapper: {
+  inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#F1F5F9',
     borderRadius: 12,
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     marginBottom: 14,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderWidth: 1.5,
+    borderColor: '#F1F5F9',
+    height: 56,
   },
+  inputFocused: { borderColor: PRIMARY, backgroundColor: '#FFF' },
   input: {
     flex: 1,
-    height: 48,
     fontSize: 15,
-    color: '#1a1a1a',
+    color: '#1E293B',
+    letterSpacing: 0.2,
+    height: '100%',
+    ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
   },
-  dosageRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    marginBottom: 14,
-  },
-  dropdown: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    height: 48,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    gap: 6,
-  },
-  dropdownFull: {
+  dropdownWrap: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#F1F5F9',
     borderRadius: 12,
-    paddingHorizontal: 14,
-    height: 48,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
+    paddingHorizontal: 16,
+    height: 56,
     marginBottom: 14,
+    borderWidth: 1.5,
+    borderColor: '#F1F5F9',
   },
-  dropdownText: {
-    fontSize: 15,
-    color: '#1a1a1a',
+  dropdownValue: { fontSize: 15, color: '#1E293B', fontWeight: '500' },
+  dropdownPlaceholder: { fontSize: 15, color: '#94A3B8' },
+  rowGap: { flexDirection: 'row', gap: 10 },
+  dayRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 16,
   },
+  dayChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 10,
+    backgroundColor: '#F1F5F9',
+    borderWidth: 1.5,
+    borderColor: '#F1F5F9',
+  },
+  dayChipActive: { backgroundColor: '#CCFBF1', borderColor: PRIMARY },
+  dayChipText: { fontSize: 13, fontWeight: '600', color: '#64748B' },
+  dayChipTextActive: { color: PRIMARY },
   timeRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 8,
+    marginBottom: 10,
   },
-  removeTimeBtn: {
-    padding: 4,
-  },
+  removeTimeBtn: { padding: 4 },
   addTimeBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    marginBottom: 8,
+    marginBottom: 16,
   },
-  addTimeText: {
-    fontSize: 14,
-    color: PRIMARY,
-    fontWeight: '600',
+  addTimeText: { fontSize: 14, color: PRIMARY, fontWeight: '600' },
+  alarmRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#FFF',
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
-  submitBtn: {
+  alarmTitle: { fontSize: 15, fontWeight: '700', color: '#1E293B' },
+  alarmSub: { fontSize: 12, color: '#94A3B8', marginTop: 2 },
+  saveBtn: {
+    height: 56,
     borderRadius: 12,
-    marginTop: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: PRIMARY,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6,
   },
-  submitBtnContent: {
-    height: 50,
+  saveBtnText: { color: '#FFF', fontSize: 16, fontWeight: '700', letterSpacing: 0.5 },
+
+  /* Modal */
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    justifyContent: 'center',
+    padding: 40,
   },
+  modalCard: {
+    backgroundColor: '#FFF',
+    borderRadius: 16,
+    paddingVertical: 8,
+    maxHeight: 400,
+  },
+  modalItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+  },
+  modalItemActive: { backgroundColor: '#F0FDF9' },
+  modalItemText: { fontSize: 16, color: '#1E293B' },
+  modalItemTextActive: { color: PRIMARY, fontWeight: '700' },
 });
 
 export default AddMedicationForm;

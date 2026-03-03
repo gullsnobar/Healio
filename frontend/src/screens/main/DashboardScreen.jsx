@@ -23,8 +23,8 @@ const DashboardScreen = () => {
 
   return (
     <ScrollView style={ds.c} contentContainerStyle={ds.content} showsVerticalScrollIndicator={false}>
-      <StatusBar barStyle="light-content" backgroundColor="#1D4ED8" />
-      <LinearGradient colors={['#1D4ED8', '#3B82F6']} style={ds.header}>
+      <StatusBar barStyle="light-content" backgroundColor="#0D6560" />
+      <LinearGradient colors={['#0D6560', '#0F766E']} style={ds.header}>
         <Text style={ds.headerTitle}>Analytics</Text>
         <Text style={ds.headerSub}>Track your health trends</Text>
       </LinearGradient>
@@ -37,8 +37,8 @@ const DashboardScreen = () => {
         <View style={ds.statsGrid}>
           <StatCard icon="checkmark-circle" label="Taken"   value={meds.taken   ?? 0} color="#10B981" bg="#D1FAE5" />
           <StatCard icon="close-circle"     label="Missed"  value={meds.missed  ?? 0} color="#EF4444" bg="#FEE2E2" />
-          <StatCard icon="footsteps-outline" label="Steps"  value={(fit.steps   ?? 0).toLocaleString()} color="#3B82F6" bg="#DBEAFE" />
-          <StatCard icon="water-outline"    label="Water"  value={`${fit.water ?? 0}ml`}              color="#06B6D4" bg="#CFFAFE" />
+          <StatCard icon="footsteps-outline" label="Steps"  value={(fit.steps   ?? 0).toLocaleString()} color="#38BDF8" bg="#E0F2FE" />
+          <StatCard icon="water-outline"    label="Water"  value={`${fit.water ?? 0}ml`}              color="#22D3EE" bg="#CFFAFE" />
         </View>
 
         <Text style={ds.sectionTitle}>Weekly Progress</Text>

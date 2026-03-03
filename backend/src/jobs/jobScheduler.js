@@ -1,6 +1,7 @@
 ﻿const cron = require('node-cron');
 const medicationReminder = require('./medicationReminder');
 const appointmentReminder = require('./appointmentReminder');
+const genericReminderJob = require('./genericReminderJob');
 const missedDoseDetector = require('./missedDoseDetector');
 const fitnessSync = require('./fitnessSync');
 const reportGenerator = require('./weeklyReportGenerator');
@@ -12,6 +13,7 @@ const logger = require('../utils/logger');
 
 exports.startAllJobs = () => {
   cron.schedule('*/15 * * * *', () => { medicationReminder.run(); logger.info('Medication reminder job ran'); });
+  cron.schedule('*/15 * * * *', () => { genericReminderJob.run(); logger.info('Generic reminder job ran'); });
   cron.schedule('0 20 * * *', () => { appointmentReminder.run(); logger.info('Appointment reminder job ran'); });
   cron.schedule('0 */2 * * *', () => { missedDoseDetector.run(); logger.info('Missed dose detector ran'); });
   cron.schedule('0 */6 * * *', () => { fitnessSync.run(); logger.info('Fitness sync ran'); });

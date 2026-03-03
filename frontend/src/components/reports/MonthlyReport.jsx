@@ -8,5 +8,5 @@ const MonthlyReport = ({ report }) => (
   <View style={s.sec}><Text style={s.h}>Avg Sleep</Text><Text style={s.v}>{report?.avgSleep || 0}h</Text></View>
   </ScrollView>
 );
-const s = StyleSheet.create({c:{flex:1,padding:16},t:{fontSize:22,fontWeight:'700',marginBottom:4},d:{fontSize:14,color:'#888',marginBottom:16},sec:{backgroundColor:'#FFF',borderRadius:12,padding:16,marginBottom:12,elevation:2},h:{fontSize:14,color:'#666'},v:{fontSize:24,fontWeight:'700',color:'#4A90D9',marginTop:4}});
+const s = StyleSheet.create({c:{flex:1,padding:16},t:{fontSize:22,fontWeight:'700',marginBottom:4},d:{fontSize:14,color:'#94A3B8',marginBottom:16},sec:{backgroundColor:'#FFF',borderRadius:12,padding:16,marginBottom:12,elevation:2},h:{fontSize:14,color:'#475569'},v:{fontSize:24,fontWeight:'700',color:'#0F766E',marginTop:4}});
 export default MonthlyReport;

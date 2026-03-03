@@ -11,6 +11,7 @@ const chatbotRoutes = require('./chatbotRoutes');
 const recommendationRoutes = require('./recommendationRoutes');
 const trustedContactRoutes = require('./trustedContactRoutes');
 const notificationRoutes = require('./notificationRoutes');
+const reminderRoutes = require('./reminderRoutes');
 const adminRoutes = require('./adminRoutes');
 
 router.use('/auth', authRoutes);
@@ -25,6 +26,7 @@ router.use('/chatbot', chatbotRoutes);
 router.use('/recommendations', recommendationRoutes);
 router.use('/trusted-contacts', trustedContactRoutes);
 router.use('/notifications', notificationRoutes);
+router.use('/reminders', reminderRoutes);
 router.use('/admin', adminRoutes);
 
 module.exports = router;

@@ -22,7 +22,7 @@ const TABS = [
 const TabNavigator = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
-      headerStyle: { backgroundColor: '#3B82F6', elevation: 0, shadowOpacity: 0 },
+      headerStyle: { backgroundColor: '#0F766E', elevation: 0, shadowOpacity: 0 },
       headerTintColor: '#fff',
       headerTitleStyle: { fontWeight: '700', fontSize: 17 },
       tabBarStyle: {
@@ -38,7 +38,7 @@ const TabNavigator = () => (
         shadowRadius: 8,
         elevation: 8,
       },
-      tabBarActiveTintColor: '#3B82F6',
+      tabBarActiveTintColor: '#0F766E',
       tabBarInactiveTintColor: '#94A3B8',
       tabBarLabelStyle: { fontSize: 10, fontWeight: '600', marginTop: -2 },
       tabBarIcon: ({ focused, color }) => {

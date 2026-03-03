@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TextInput, HelperText } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import colors from '../../styles/colors';
 
-const PRIMARY = '#4A90D9';
+const PRIMARY = colors.primary;
 
 const Input = ({
   label,

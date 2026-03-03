@@ -21,5 +21,5 @@ const AppointmentListScreen = ({ navigation }) => {
     </View>
   );
 };
-const s = StyleSheet.create({c:{flex:1,backgroundColor:'#F5F7FA'},fab:{position:'absolute',right:20,bottom:20,width:56,height:56,borderRadius:28,backgroundColor:'#4A90D9',alignItems:'center',justifyContent:'center',elevation:4}});
+const s = StyleSheet.create({c:{flex:1,backgroundColor:'#F8FAFC'},fab:{position:'absolute',right:20,bottom:20,width:56,height:56,borderRadius:28,backgroundColor:'#0F766E',alignItems:'center',justifyContent:'center',elevation:4}});
 export default AppointmentListScreen;

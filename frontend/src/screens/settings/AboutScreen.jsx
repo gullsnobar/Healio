@@ -10,5 +10,5 @@ const AboutScreen = () => (
     <Text style={s.copy}> 2026 HEALIO. All rights reserved.</Text>
   </View>
 );
-const s = StyleSheet.create({c:{flex:1,justifyContent:'center',alignItems:'center',padding:24,backgroundColor:'#F5F7FA'},name:{fontSize:32,fontWeight:'800',color:'#4A90D9'},ver:{fontSize:14,color:'#888',marginTop:4},desc:{fontSize:16,color:'#555',marginTop:16},org:{fontSize:14,color:'#888',marginTop:24,textAlign:'center',lineHeight:22},copy:{fontSize:12,color:'#AAA',marginTop:32}});
+const s = StyleSheet.create({c:{flex:1,justifyContent:'center',alignItems:'center',padding:24,backgroundColor:'#F8FAFC'},name:{fontSize:32,fontWeight:'800',color:'#0F766E'},ver:{fontSize:14,color:'#94A3B8',marginTop:4},desc:{fontSize:16,color:'#475569',marginTop:16},org:{fontSize:14,color:'#94A3B8',marginTop:24,textAlign:'center',lineHeight:22},copy:{fontSize:12,color:'#94A3B8',marginTop:32}});
 export default AboutScreen;

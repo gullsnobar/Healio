@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, StatusBar, Alert } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, StatusBar, TouchableOpacity, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import PasswordReset from '../../components/auth/PasswordReset';
 import { authAPI } from '../../services/api/authAPI';
 
@@ -11,9 +12,7 @@ const ResetPasswordScreen = ({ route, navigation }) => {
     setLoading(true);
     try {
       await authAPI.resetPassword({ email, password });
-      Alert.alert('Success', 'Password reset successfully. Please login with your new password.', [
-        { text: 'OK', onPress: () => navigation.reset({ index: 0, routes: [{ name: 'Login' }] }) },
-      ]);
+      navigation.navigate('PasswordChanged');
     } catch (err) {
       Alert.alert('Error', err.response?.data?.message || 'Failed to reset password');
     } finally {
@@ -23,15 +22,18 @@ const ResetPasswordScreen = ({ route, navigation }) => {
 
   return (
     <KeyboardAvoidingView style={s.c} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F5F7FA" />
+      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
       <ScrollView
         contentContainerStyle={s.scroll}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={s.card}>
-          <PasswordReset onSubmit={handleSubmit} loading={loading} />
-        </View>
+        {/* Back button */}
+        <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
+          <Ionicons name="chevron-back" size={24} color="#475569" />
+        </TouchableOpacity>
+
+        <PasswordReset onSubmit={handleSubmit} loading={loading} />
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -40,24 +42,24 @@ const ResetPasswordScreen = ({ route, navigation }) => {
 const s = StyleSheet.create({
   c: {
     flex: 1,
-    backgroundColor: '#F5F7FA',
+    backgroundColor: '#F8FAFC',
   },
   scroll: {
     flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 40,
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 40,
   },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    paddingVertical: 20,
-    paddingHorizontal: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 16,
-    elevation: 5,
+  backBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#FFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    marginBottom: 24,
   },
 });
 export default ResetPasswordScreen;

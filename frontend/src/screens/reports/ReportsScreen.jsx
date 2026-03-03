@@ -6,7 +6,7 @@ const ReportsScreen = ({ navigation }) => (
   <ScrollView style={s.c}>
     {[['Weekly Report','WeeklyReport','analytics-outline','Your weekly health summary'],['Monthly Report','MonthlyReport','calendar-outline','Monthly health overview']].map(([t,r,i,d])=>(
       <TouchableOpacity key={r} style={s.card} onPress={() => navigation.navigate(r)}>
-        <Ionicons name={i} size={32} color="#4A90D9" />
+        <Ionicons name={i} size={32} color="#0F766E" />
         <View style={s.info}><Text style={s.t}>{t}</Text><Text style={s.d}>{d}</Text></View>
         <Ionicons name="chevron-forward" size={20} color="#CCC" />
       </TouchableOpacity>

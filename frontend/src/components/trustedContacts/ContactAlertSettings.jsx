@@ -6,7 +6,7 @@ const ContactAlertSettings = ({ settings, onUpdate }) => {
   return (
     <View style={s.c}><Text style={s.t}>Alert Settings</Text>
     {[['missedDose','Missed Dose Alerts'],['appointment','Appointment Alerts'],['emergency','Emergency Alerts']].map(([k,l])=>(
-      <View key={k} style={s.r}><Text style={s.l}>{l}</Text><Switch value={s2[k]} onValueChange={()=>toggle(k)} trackColor={{true:'#4A90D9'}} /></View>
+      <View key={k} style={s.r}><Text style={s.l}>{l}</Text><Switch value={s2[k]} onValueChange={()=>toggle(k)} trackColor={{true:'#0F766E'}} /></View>
     ))}</View>
   );
 };

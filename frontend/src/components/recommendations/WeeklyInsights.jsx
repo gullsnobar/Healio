@@ -6,5 +6,5 @@ const WeeklyInsights = ({ insights = {} }) => (
   {insights.highlights?.map((h, i) => <Text key={i} style={s.h}> {h}</Text>)}
   </View>
 );
-const s = StyleSheet.create({c:{backgroundColor:'#FFF',borderRadius:12,padding:16,elevation:2,marginBottom:12},t:{fontSize:16,fontWeight:'600',marginBottom:8},i:{fontSize:14,color:'#666',lineHeight:20,marginBottom:8},h:{fontSize:14,color:'#4A90D9',marginBottom:4,lineHeight:20}});
+const s = StyleSheet.create({c:{backgroundColor:'#FFF',borderRadius:12,padding:16,elevation:2,marginBottom:12},t:{fontSize:16,fontWeight:'600',marginBottom:8},i:{fontSize:14,color:'#475569',lineHeight:20,marginBottom:8},h:{fontSize:14,color:'#0F766E',marginBottom:4,lineHeight:20}});
 export default WeeklyInsights;

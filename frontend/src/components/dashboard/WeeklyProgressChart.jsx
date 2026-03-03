@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   barCol: { flex: 1, alignItems: 'center', height: '100%', justifyContent: 'flex-end' },
   barVal: { fontSize: 9, color: '#94A3B8', marginBottom: 2, fontWeight: '600' },
   barTrack: { width: '100%', height: '80%', justifyContent: 'flex-end', backgroundColor: '#F1F5F9', borderRadius: 6, overflow: 'hidden' },
-  barFill: { width: '100%', backgroundColor: '#3B82F6', borderRadius: 6 },
+  barFill: { width: '100%', backgroundColor: '#0F766E', borderRadius: 6 },
   barLabel: { fontSize: 9, color: '#94A3B8', marginTop: 4, fontWeight: '600' },
 });
 export default WeeklyProgressChart;

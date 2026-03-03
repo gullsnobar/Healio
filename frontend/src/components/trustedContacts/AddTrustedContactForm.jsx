@@ -13,5 +13,5 @@ const AddTrustedContactForm = ({ onSubmit }) => {
     </ScrollView>
   );
 };
-const s = StyleSheet.create({c:{padding:16},t:{fontSize:20,fontWeight:'700',marginBottom:16},i:{borderWidth:1,borderColor:'#DDD',borderRadius:8,padding:12,fontSize:16,marginBottom:12,backgroundColor:'#FFF'},b:{backgroundColor:'#4A90D9',padding:14,borderRadius:8,alignItems:'center',marginTop:8},bt:{color:'#FFF',fontWeight:'600',fontSize:16}});
+const s = StyleSheet.create({c:{padding:16},t:{fontSize:20,fontWeight:'700',marginBottom:16},i:{borderWidth:1,borderColor:'#DDD',borderRadius:8,padding:12,fontSize:16,marginBottom:12,backgroundColor:'#FFF'},b:{backgroundColor:'#0F766E',padding:14,borderRadius:8,alignItems:'center',marginTop:8},bt:{color:'#FFF',fontWeight:'600',fontSize:16}});
 export default AddTrustedContactForm;

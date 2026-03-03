@@ -43,13 +43,13 @@ const FitnessOverviewScreen = ({ navigation }) => {
         <GoogleFitSync lastSynced={data.lastSynced} onSync={() => dispatch(fetchFitnessData())} />
 
         <TouchableOpacity onPress={nav('Steps')} activeOpacity={0.9}>
-          <FitnessCard gradient={['#1D4ED8', '#3B82F6']}>
+          <FitnessCard gradient={['#0EA5E9', '#38BDF8']}>
             <StepCounter steps={data.steps || 0} dark />
           </FitnessCard>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={nav('Sleep')} activeOpacity={0.9}>
-          <FitnessCard gradient={['#5B21B6', '#7C3AED']}>
+          <FitnessCard gradient={['#4F46E5', '#6366F1']}>
             <SleepTracker hours={data.sleep || 0} dark />
           </FitnessCard>
         </TouchableOpacity>
@@ -61,7 +61,7 @@ const FitnessOverviewScreen = ({ navigation }) => {
         <Text style={fs.sectionTitle}>Quick Actions</Text>
         <View style={fs.actionRow}>
           <ActionBtn icon="restaurant-outline" label="Diet Log"     color="#D97706" bg="#FEF3C7" onPress={nav('DietLog')} />
-          <ActionBtn icon="create-outline"    label="Manual Entry" color="#7C3AED" bg="#EDE9FE" onPress={nav('ManualEntry')} />
+          <ActionBtn icon="create-outline"    label="Manual Entry" color="#6366F1" bg="#E0E7FF" onPress={nav('ManualEntry')} />
         </View>
       </View>
     </ScrollView>

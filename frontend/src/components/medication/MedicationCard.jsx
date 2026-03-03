@@ -2,12 +2,12 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const PRIMARY = '#3B82F6';
+const PRIMARY = '#0F766E';
 
 const STATUS_CONFIG = {
-  taken: { label: 'Taken', bg: '#e8f5e9', color: '#27ae60', icon: 'checkmark-circle' },
-  missed: { label: 'Missed', bg: '#fdecea', color: '#e74c3c', icon: 'close-circle' },
-  pending: { label: 'Pending', bg: '#fff8e1', color: '#f39c12', icon: 'time' },
+  taken: { label: 'Taken', bg: '#D1FAE5', color: '#10B981', icon: 'checkmark-circle' },
+  missed: { label: 'Missed', bg: '#FEE2E2', color: '#EF4444', icon: 'close-circle' },
+  pending: { label: 'Pending', bg: '#FEF3C7', color: '#F59E0B', icon: 'time' },
 };
 
 const MedicationCard = ({ medication, onPress, onMarkTaken }) => {

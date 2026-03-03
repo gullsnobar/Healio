@@ -1,7 +1,8 @@
 ﻿import React, { useCallback } from 'react';
-import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Image, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity, StatusBar } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import RegisterForm from '../../components/auth/RegisterForm';
 import Alert from '../../components/common/Alert';
 import Loading from '../../components/common/Loading';
@@ -27,25 +28,29 @@ const RegisterScreen = ({ navigation }) => {
 
   return (
     <KeyboardAvoidingView style={s.c} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F5F7FA" />
+      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
       <ScrollView
         contentContainerStyle={s.scroll}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
+        {/* Back button */}
+        <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
+          <Ionicons name="chevron-back" size={24} color="#475569" />
+        </TouchableOpacity>
+
+        {/* Heading */}
         <View style={s.header}>
-          <View style={s.logoContainer}>
-            <Image source={require('../../assets/images/logo.png')} style={s.logo} resizeMode="contain" />
-          </View>
+          <Text style={s.title}>Hello! Register to{'\n'}get started</Text>
         </View>
+
         {error && <View style={s.alertWrap}><Alert variant="error" message={error} /></View>}
-        <View style={s.formCard}>
-          <RegisterForm
-            onSubmit={handleRegister}
-            loading={loading}
-            onLogin={() => navigation.navigate('Login')}
-          />
-        </View>
+
+        <RegisterForm
+          onSubmit={handleRegister}
+          loading={loading}
+          onLogin={() => navigation.navigate('Login')}
+        />
         {loading && <Loading message="Creating your account..." />}
       </ScrollView>
     </KeyboardAvoidingView>
@@ -55,48 +60,37 @@ const RegisterScreen = ({ navigation }) => {
 const s = StyleSheet.create({
   c: {
     flex: 1,
-    backgroundColor: '#F5F7FA',
+    backgroundColor: '#F8FAFC',
   },
   scroll: {
     flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 30,
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 40,
   },
-  header: {
+  backBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#FFF',
     alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
     marginBottom: 24,
   },
-  logoContainer: {
-    width: 90,
-    height: 90,
-    borderRadius: 26,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#4A90D9',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
-    elevation: 8,
+  header: {
+    marginBottom: 32,
   },
-  logo: {
-    width: 60,
-    height: 60,
+  title: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#1E293B',
+    lineHeight: 38,
+    letterSpacing: -0.3,
   },
   alertWrap: {
     marginBottom: 16,
-  },
-  formCard: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    paddingVertical: 24,
-    paddingHorizontal: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 16,
-    elevation: 5,
   },
 });
 export default RegisterScreen;

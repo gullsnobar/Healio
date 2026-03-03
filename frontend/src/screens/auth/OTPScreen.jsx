@@ -1,6 +1,7 @@
 ﻿import React from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, StatusBar } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, StatusBar, TouchableOpacity } from 'react-native';
 import { useDispatch } from 'react-redux';
+import { Ionicons } from '@expo/vector-icons';
 import OTPVerification from '../../components/auth/OTPVerification';
 import { authAPI } from '../../services/api/authAPI';
 import { verifyOTP } from '../../redux/slices/authSlice';
@@ -11,14 +12,10 @@ const OTPScreen = ({ route, navigation }) => {
 
   const handleVerify = async (otp) => {
     if (mode === 'reset') {
-      // For password reset — just verify, then go to reset screen
       await authAPI.verifyOTP(email, otp, 'reset');
       navigation.navigate('ResetPassword', { email, otp });
     } else {
-      // For registration — verify + auto-login via Redux
-      const result = await dispatch(verifyOTP({ email, otp })).unwrap();
-      // If tokens were returned, isAuthenticated becomes true and
-      // AppNavigator auto-switches to MainNavigator — no explicit nav needed
+      await dispatch(verifyOTP({ email, otp })).unwrap();
     }
   };
 
@@ -26,15 +23,18 @@ const OTPScreen = ({ route, navigation }) => {
 
   return (
     <KeyboardAvoidingView style={s.c} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F5F7FA" />
+      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
       <ScrollView
         contentContainerStyle={s.scroll}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={s.card}>
-          <OTPVerification email={email} onVerify={handleVerify} onResend={handleResend} onBack={() => navigation.goBack()} />
-        </View>
+        {/* Back button */}
+        <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
+          <Ionicons name="chevron-back" size={24} color="#475569" />
+        </TouchableOpacity>
+
+        <OTPVerification email={email} onVerify={handleVerify} onResend={handleResend} />
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -43,24 +43,24 @@ const OTPScreen = ({ route, navigation }) => {
 const s = StyleSheet.create({
   c: {
     flex: 1,
-    backgroundColor: '#F5F7FA',
+    backgroundColor: '#F8FAFC',
   },
   scroll: {
     flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 40,
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 40,
   },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    paddingVertical: 20,
-    paddingHorizontal: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 16,
-    elevation: 5,
+  backBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#FFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    marginBottom: 24,
   },
 });
 export default OTPScreen;

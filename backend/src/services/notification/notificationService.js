@@ -12,5 +12,8 @@ exports.notifyAppointmentReminder = (userId, appointment) =>
 exports.notifyRefillReminder = (userId, medication) =>
   createAndSendNotification(userId, { title: 'Refill Reminder', body: medication.name + ' is running low', type: 'refill', data: { medicationId: medication._id.toString() } });
 
+exports.notifyLabReminder = (userId, lab) =>
+  createAndSendNotification(userId, { title: 'Lab Report Reminder', body: `Upcoming: ${lab.testName || lab.title}${lab.labName ? ' at ' + lab.labName : ''}`, type: 'lab', data: { labId: lab._id.toString() } });
+
 exports.notifyNewRecommendation = (userId, recommendation) =>
   createAndSendNotification(userId, { title: 'New Health Recommendation', body: recommendation.title, type: 'recommendation', data: { recommendationId: recommendation._id.toString() } });
