@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import LoginForm from '../../components/auth/LoginForm';
 import Loading from '../../components/common/Loading';
 import Alert from '../../components/common/Alert';
-import { loginUser, clearError } from '../../redux/slices/authSlice';
+import { loginUser, googleSignIn, clearError } from '../../redux/slices/authSlice';
 
 const LoginScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -20,6 +20,10 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = async (credentials) => {
     dispatch(loginUser(credentials));
+  };
+
+  const handleGoogleSignIn = () => {
+    dispatch(googleSignIn());
   };
 
   return (
@@ -46,6 +50,7 @@ const LoginScreen = ({ navigation }) => {
           onSubmit={handleLogin}
           onForgotPassword={() => navigation.navigate('ForgotPassword')}
           onRegister={() => navigation.navigate('Register')}
+          onGoogleSignIn={handleGoogleSignIn}
         />
         {loading && <Loading message="Signing in..." />}
       </ScrollView>

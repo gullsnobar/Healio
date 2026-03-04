@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import RegisterForm from '../../components/auth/RegisterForm';
 import Alert from '../../components/common/Alert';
 import Loading from '../../components/common/Loading';
-import { registerUser, clearError } from '../../redux/slices/authSlice';
+import { registerUser, googleSignIn, clearError } from '../../redux/slices/authSlice';
 
 const RegisterScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -24,6 +24,10 @@ const RegisterScreen = ({ navigation }) => {
       dispatch(clearError());
       navigation.navigate('OTP', { email: data.email });
     }
+  };
+
+  const handleGoogleSignIn = () => {
+    dispatch(googleSignIn());
   };
 
   return (
@@ -50,6 +54,7 @@ const RegisterScreen = ({ navigation }) => {
           onSubmit={handleRegister}
           loading={loading}
           onLogin={() => navigation.navigate('Login')}
+          onGoogleSignIn={handleGoogleSignIn}
         />
         {loading && <Loading message="Creating your account..." />}
       </ScrollView>

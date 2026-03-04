@@ -1,6 +1,7 @@
 ﻿import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { authAPI } from '../../services/api/authAPI';
 import { secureStorage } from '../../services/storage/secureStorage';
+import { firebaseAuth } from '../../services/firebase/firebaseAuth';
 
 export const loginUser = createAsyncThunk('auth/login', async (credentials, { rejectWithValue }) => {
   try {
@@ -17,8 +18,15 @@ export const loginUser = createAsyncThunk('auth/login', async (credentials, { re
 });
 
 export const registerUser = createAsyncThunk('auth/register', async (data, { rejectWithValue }) => {
-  try { const res = await authAPI.register(data); return res.data; }
-  catch (err) { return rejectWithValue(err.response?.data?.message || 'Registration failed'); }
+  try {
+    console.log('[AUTH] Registering with:', JSON.stringify(data));
+    const res = await authAPI.register(data);
+    console.log('[AUTH] Registration success:', JSON.stringify(res.data));
+    return res.data;
+  } catch (err) {
+    console.error('[AUTH] Registration error:', err?.message, err?.response?.status, JSON.stringify(err?.response?.data));
+    return rejectWithValue(err.response?.data?.message || err.message || 'Registration failed');
+  }
 });
 
 export const verifyOTP = createAsyncThunk('auth/verifyOTP', async ({ email, otp, mode }, { rejectWithValue }) => {
@@ -38,6 +46,21 @@ export const verifyOTP = createAsyncThunk('auth/verifyOTP', async ({ email, otp,
 
 export const logoutUser = createAsyncThunk('auth/logout', async () => {
   await authAPI.logout(); await secureStorage.removeToken();
+});
+
+export const googleSignIn = createAsyncThunk('auth/googleSignIn', async (_, { rejectWithValue }) => {
+  try {
+    // Step 1: Firebase popup sign-in
+    const { token, profile } = await firebaseAuth.signInWithGoogle();
+    // Step 2: Send to backend
+    const res = await authAPI.googleAuth(token, profile);
+    const { user, accessToken, refreshToken } = res.data.data;
+    await secureStorage.setToken(accessToken);
+    return { user, accessToken, refreshToken };
+  } catch (err) {
+    const message = err?.response?.data?.message || err?.message || 'Google sign-in failed';
+    return rejectWithValue(message);
+  }
 });
 
 const authSlice = createSlice({
@@ -64,7 +87,10 @@ const authSlice = createSlice({
         }
       })
       .addCase(verifyOTP.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
-      .addCase(logoutUser.fulfilled, (state) => { state.user = null; state.token = null; state.isAuthenticated = false; });
+      .addCase(logoutUser.fulfilled, (state) => { state.user = null; state.token = null; state.isAuthenticated = false; })
+      .addCase(googleSignIn.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(googleSignIn.fulfilled, (state, action) => { state.loading = false; state.isAuthenticated = true; state.user = action.payload.user; state.token = action.payload.accessToken; })
+      .addCase(googleSignIn.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
   },
 });
 
