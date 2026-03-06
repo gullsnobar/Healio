@@ -2,8 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
-
-const PRIMARY_COLOR = '#0F766E';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const TYPE_CONFIG = {
   blood: { label: 'Blood Test', icon: 'water', color: '#E53935' },
@@ -14,13 +13,14 @@ const TYPE_CONFIG = {
   other: { label: 'Other', icon: 'document-text', color: '#757575' },
 };
 
-const STATUS_CONFIG = {
-  pending: { label: 'Pending', color: '#FF9800' },
-  ready: { label: 'Ready', color: '#4CAF50' },
-  reviewed: { label: 'Reviewed', color: PRIMARY_COLOR },
-};
-
 const LabReportCard = ({ report, onPress }) => {
+  const { colors } = useAppTheme();
+
+  const STATUS_CONFIG = {
+    pending: { label: 'Pending', color: colors.warning },
+    ready: { label: 'Ready', color: colors.success },
+    reviewed: { label: 'Reviewed', color: colors.primary },
+  };
   const { title, type = 'other', date, status = 'pending' } = report || {};
 
   const typeInfo = TYPE_CONFIG[type] || TYPE_CONFIG.other;
@@ -62,7 +62,6 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     borderRadius: 12,
     elevation: 2,
-    backgroundColor: '#fff',
   },
   content: {
     flexDirection: 'row',
@@ -83,11 +82,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#1a1a1a',
   },
   type: {
     fontSize: 13,
-    color: '#888',
     marginTop: 2,
   },
   dateRow: {
@@ -97,7 +94,6 @@ const styles = StyleSheet.create({
   },
   date: {
     fontSize: 12,
-    color: '#999',
     marginLeft: 4,
   },
   statusBadge: {

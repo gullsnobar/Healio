@@ -7,8 +7,7 @@ import {
   Modal,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-const PRIMARY = '#0F766E';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const DeleteConfirmDialog = ({
   visible = false,
@@ -19,25 +18,27 @@ const DeleteConfirmDialog = ({
   cancelLabel = 'Cancel',
   onConfirm,
   onCancel,
-}) => (
+}) => {
+  const { colors } = useAppTheme();
+  return (
   <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
     <View style={s.overlay}>
-      <View style={s.card}>
+      <View style={[s.card, { backgroundColor: colors.card }]}>
         {/* Warning icon */}
         <View style={s.iconCircle}>
           <Ionicons name="trash-outline" size={28} color="#EF4444" />
         </View>
 
-        <Text style={s.title}>{title}</Text>
+        <Text style={[s.title, { color: colors.text }]}>{title}</Text>
 
         {!!itemName && <Text style={s.itemName}>{itemName}</Text>}
 
-        <Text style={s.message}>{message}</Text>
+        <Text style={[s.message, { color: colors.textSecondary }]}>{message}</Text>
 
         {/* Action buttons */}
         <View style={s.actions}>
-          <TouchableOpacity style={s.cancelBtn} onPress={onCancel} activeOpacity={0.8}>
-            <Text style={s.cancelText}>{cancelLabel}</Text>
+          <TouchableOpacity style={[s.cancelBtn, { backgroundColor: colors.cardAlt, borderColor: colors.border }]} onPress={onCancel} activeOpacity={0.8}>
+            <Text style={[s.cancelText, { color: colors.textSecondary }]}>{cancelLabel}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={s.deleteBtn} onPress={onConfirm} activeOpacity={0.85}>
@@ -48,7 +49,8 @@ const DeleteConfirmDialog = ({
       </View>
     </View>
   </Modal>
-);
+  );
+};
 
 const s = StyleSheet.create({
   overlay: {
@@ -59,7 +61,6 @@ const s = StyleSheet.create({
     padding: 32,
   },
   card: {
-    backgroundColor: '#FFF',
     borderRadius: 24,
     padding: 28,
     width: '100%',
@@ -83,7 +84,6 @@ const s = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#1E293B',
     marginBottom: 6,
     letterSpacing: -0.3,
   },
@@ -95,7 +95,6 @@ const s = StyleSheet.create({
   },
   message: {
     fontSize: 14,
-    color: '#64748B',
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 24,
@@ -111,14 +110,11 @@ const s = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 15,
     borderRadius: 14,
-    backgroundColor: '#F1F5F9',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
   },
   cancelText: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#64748B',
   },
   deleteBtn: {
     flex: 1,

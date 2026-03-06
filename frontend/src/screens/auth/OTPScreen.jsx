@@ -5,10 +5,12 @@ import { Ionicons } from '@expo/vector-icons';
 import OTPVerification from '../../components/auth/OTPVerification';
 import { authAPI } from '../../services/api/authAPI';
 import { verifyOTP } from '../../redux/slices/authSlice';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const OTPScreen = ({ route, navigation }) => {
   const { email, mode } = route.params || {};
   const dispatch = useDispatch();
+  const { colors, isDark } = useAppTheme();
 
   const handleVerify = async (otp) => {
     if (mode === 'reset') {
@@ -22,16 +24,16 @@ const OTPScreen = ({ route, navigation }) => {
   const handleResend = () => authAPI.resendOTP(email);
 
   return (
-    <KeyboardAvoidingView style={s.c} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+    <KeyboardAvoidingView style={[s.c, { backgroundColor: colors.background }]} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
       <ScrollView
         contentContainerStyle={s.scroll}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         {/* Back button */}
-        <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#475569" />
+        <TouchableOpacity onPress={() => navigation.goBack()} style={[s.backBtn, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <Ionicons name="chevron-back" size={24} color={colors.textSecondary} />
         </TouchableOpacity>
 
         <OTPVerification email={email} onVerify={handleVerify} onResend={handleResend} />
@@ -43,7 +45,6 @@ const OTPScreen = ({ route, navigation }) => {
 const s = StyleSheet.create({
   c: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
   },
   scroll: {
     flexGrow: 1,
@@ -55,11 +56,9 @@ const s = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: '#FFF',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
     marginBottom: 24,
   },
 });

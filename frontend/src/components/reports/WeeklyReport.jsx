@@ -1,12 +1,16 @@
 ﻿import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-const WeeklyReport = ({ report }) => (
-  <ScrollView style={s.c}><Text style={s.t}>Weekly Health Report</Text>
-  <Text style={s.d}>{report?.period || 'This Week'}</Text>
-  <View style={s.sec}><Text style={s.h}>Medication Adherence</Text><Text style={s.v}>{report?.adherence || 0}%</Text></View>
-  <View style={s.sec}><Text style={s.h}>Avg Steps</Text><Text style={s.v}>{report?.avgSteps || 0}</Text></View>
-  <View style={s.sec}><Text style={s.h}>Avg Sleep</Text><Text style={s.v}>{report?.avgSleep || 0}h</Text></View>
+import { useAppTheme } from '../../styles/theme';
+const WeeklyReport = ({ report }) => {
+  const { colors } = useAppTheme();
+  return (
+  <ScrollView style={s.c}><Text style={[s.t, { color: colors.text }]}>Weekly Health Report</Text>
+  <Text style={[s.d, { color: colors.textTertiary }]}>{report?.period || 'This Week'}</Text>
+  <View style={[s.sec, { backgroundColor: colors.card }]}><Text style={[s.h, { color: colors.textSecondary }]}>Medication Adherence</Text><Text style={[s.v, { color: colors.primary }]}>{report?.adherence || 0}%</Text></View>
+  <View style={[s.sec, { backgroundColor: colors.card }]}><Text style={[s.h, { color: colors.textSecondary }]}>Avg Steps</Text><Text style={[s.v, { color: colors.primary }]}>{report?.avgSteps || 0}</Text></View>
+  <View style={[s.sec, { backgroundColor: colors.card }]}><Text style={[s.h, { color: colors.textSecondary }]}>Avg Sleep</Text><Text style={[s.v, { color: colors.primary }]}>{report?.avgSleep || 0}h</Text></View>
   </ScrollView>
-);
-const s = StyleSheet.create({c:{flex:1,padding:16},t:{fontSize:22,fontWeight:'700',marginBottom:4},d:{fontSize:14,color:'#94A3B8',marginBottom:16},sec:{backgroundColor:'#FFF',borderRadius:12,padding:16,marginBottom:12,elevation:2},h:{fontSize:14,color:'#475569'},v:{fontSize:24,fontWeight:'700',color:'#0F766E',marginTop:4}});
+  );
+};
+const s = StyleSheet.create({c:{flex:1,padding:16},t:{fontSize:22,fontWeight:'700',marginBottom:4},d:{fontSize:14,marginBottom:16},sec:{borderRadius:12,padding:16,marginBottom:12,elevation:2},h:{fontSize:14},v:{fontSize:24,fontWeight:'700',marginTop:4}});
 export default WeeklyReport;

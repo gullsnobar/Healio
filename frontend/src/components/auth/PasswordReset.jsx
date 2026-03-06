@@ -9,11 +9,10 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-
-const PRIMARY = '#0F766E';
-const PRIMARY_DARK = '#0D6560';
+import { useAppTheme } from '../../styles/theme';
 
 const PasswordReset = ({ onSubmit, loading: externalLoading }) => {
+  const { colors } = useAppTheme();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [securePassword, setSecurePassword] = useState(true);
@@ -41,17 +40,17 @@ const PasswordReset = ({ onSubmit, loading: externalLoading }) => {
   return (
     <View style={s.container}>
       {/* Heading */}
-      <Text style={s.title}>Create new password</Text>
-      <Text style={s.subtitle}>
+      <Text style={[s.title, { color: colors.text }]}>Create new password</Text>
+      <Text style={[s.subtitle, { color: colors.textSecondary }]}>
         Your new password must be unique from those previously used.
       </Text>
 
       {/* New Password */}
-      <View style={[s.inputWrap, focusedField === 'pw' && s.inputFocused]}>
+      <View style={[s.inputWrap, { backgroundColor: colors.borderLight, borderColor: colors.borderLight }, focusedField === 'pw' && { borderColor: colors.primary, backgroundColor: colors.card }]}>
         <TextInput
-          style={s.input}
+          style={[s.input, { color: colors.text }]}
           placeholder="New Password"
-          placeholderTextColor="#94A3B8"
+          placeholderTextColor={colors.textTertiary}
           secureTextEntry={securePassword}
           autoCapitalize="none"
           value={password}
@@ -60,16 +59,16 @@ const PasswordReset = ({ onSubmit, loading: externalLoading }) => {
           onBlur={() => setFocusedField(null)}
         />
         <TouchableOpacity onPress={() => setSecurePassword(!securePassword)} style={s.eyeBtn}>
-          <Ionicons name={securePassword ? 'eye-off-outline' : 'eye-outline'} size={20} color="#94A3B8" />
+          <Ionicons name={securePassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textTertiary} />
         </TouchableOpacity>
       </View>
 
       {/* Confirm Password */}
-      <View style={[s.inputWrap, focusedField === 'cpw' && s.inputFocused]}>
+      <View style={[s.inputWrap, { backgroundColor: colors.borderLight, borderColor: colors.borderLight }, focusedField === 'cpw' && { borderColor: colors.primary, backgroundColor: colors.card }]}>
         <TextInput
-          style={s.input}
+          style={[s.input, { color: colors.text }]}
           placeholder="Confirm Password"
-          placeholderTextColor="#94A3B8"
+          placeholderTextColor={colors.textTertiary}
           secureTextEntry={secureConfirm}
           autoCapitalize="none"
           value={confirmPassword}
@@ -78,7 +77,7 @@ const PasswordReset = ({ onSubmit, loading: externalLoading }) => {
           onBlur={() => setFocusedField(null)}
         />
         <TouchableOpacity onPress={() => setSecureConfirm(!secureConfirm)} style={s.eyeBtn}>
-          <Ionicons name={secureConfirm ? 'eye-off-outline' : 'eye-outline'} size={20} color="#94A3B8" />
+          <Ionicons name={secureConfirm ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textTertiary} />
         </TouchableOpacity>
       </View>
 
@@ -91,7 +90,7 @@ const PasswordReset = ({ onSubmit, loading: externalLoading }) => {
 
       {/* Reset Button */}
       <TouchableOpacity onPress={handleSubmit} disabled={disabled} activeOpacity={0.85}>
-        <LinearGradient colors={disabled ? ['#94A3B8', '#94A3B8'] : [PRIMARY, PRIMARY_DARK]} style={s.primaryBtn}>
+        <LinearGradient colors={disabled ? ['#94A3B8', '#94A3B8'] : [colors.primary, colors.primaryDark]} style={[s.primaryBtn, { shadowColor: colors.primary }]}>
           <Text style={s.primaryBtnText}>{loading ? 'Resetting...' : 'Reset Password'}</Text>
         </LinearGradient>
       </TouchableOpacity>
@@ -104,36 +103,27 @@ const s = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#1E293B',
     lineHeight: 38,
     letterSpacing: -0.3,
     marginBottom: 12,
   },
   subtitle: {
     fontSize: 15,
-    color: '#64748B',
     lineHeight: 22,
     marginBottom: 32,
   },
   inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F1F5F9',
     borderRadius: 12,
     paddingHorizontal: 16,
     marginBottom: 16,
     borderWidth: 1.5,
-    borderColor: '#F1F5F9',
     height: 56,
-  },
-  inputFocused: {
-    borderColor: PRIMARY,
-    backgroundColor: '#FFF',
   },
   input: {
     flex: 1,
     fontSize: 15,
-    color: '#1E293B',
     letterSpacing: 0.2,
     height: '100%',
     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
@@ -158,7 +148,6 @@ const s = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: PRIMARY,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 10,

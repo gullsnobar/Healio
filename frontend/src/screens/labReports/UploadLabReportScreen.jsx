@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import { ScrollView, StyleSheet, Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
+import { useAppTheme } from '../../styles/ThemeContext';
 import UploadLabReport from '../../components/labReports/UploadLabReport';
 import { uploadLabReport } from '../../redux/slices/labReportSlice';
 
@@ -10,7 +11,8 @@ const UploadLabReportScreen = ({ navigation }) => {
     const result = await dispatch(uploadLabReport(data));
     if (!result.error) { Alert.alert('Success', 'Report uploaded'); navigation.goBack(); }
   };
-  return <ScrollView style={s.c}><UploadLabReport onUpload={handleUpload} /></ScrollView>;
+  const { colors } = useAppTheme();
+  return <ScrollView style={[s.c, { backgroundColor: colors.background }]}><UploadLabReport onUpload={handleUpload} /></ScrollView>;
 };
-const s = StyleSheet.create({ c: { flex: 1, backgroundColor: '#F5F7FA' } });
+const s = StyleSheet.create({ c: { flex: 1 } });
 export default UploadLabReportScreen;

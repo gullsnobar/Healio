@@ -11,6 +11,15 @@ try {
   dns.setServers(['8.8.8.8', '8.8.4.4']);
 }
 
+const admin = require('firebase-admin');
+const serviceAccount = require('./config/healio-e75ef-firebase-adminsdk-fbsvc-2b167d9c17.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+console.log('Firebase configured successfully!');
+
 const app = require('./src/app');
 const connectDB = require('./src/database/connection');
 const { startAllJobs } = require('./src/jobs/jobScheduler');

@@ -1,6 +1,6 @@
 ﻿import { signInWithPopup, signInWithCredential, signOut, GoogleAuthProvider } from 'firebase/auth';
 import { Platform } from 'react-native';
-import { auth, googleProvider } from '../../../firebase';
+import { getFirebaseAuth, googleProvider } from '../../../firebase';
 
 export const firebaseAuth = {
   /**
@@ -11,6 +11,13 @@ export const firebaseAuth = {
    *   for a Firebase credential.
    */
   signInWithGoogle: async (nativeIdToken) => {
+    const auth = getFirebaseAuth();
+    if (!auth) {
+      throw new Error(
+        'Firebase Auth is not configured. Please enable Authentication in the Firebase Console.',
+      );
+    }
+
     let user;
 
     if (Platform.OS === 'web') {
@@ -40,7 +47,11 @@ export const firebaseAuth = {
     };
   },
   signOut: async () => {
-    await signOut(auth);
+    const auth = getFirebaseAuth();
+    if (auth) await signOut(auth);
   },
-  getCurrentUser: () => auth.currentUser,
+  getCurrentUser: () => {
+    const auth = getFirebaseAuth();
+    return auth ? auth.currentUser : null;
+  },
 };

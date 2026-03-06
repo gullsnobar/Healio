@@ -7,7 +7,7 @@ import { addReminder } from '../../redux/slices/reminderSlice';
 import { useAppTheme } from '../../styles/ThemeContext';
 
 const TYPES = [
-  { key: 'medication', label: 'Medication', icon: 'medical-outline', color: '#0F766E' },
+  { key: 'medication', label: 'Medication', icon: 'medical-outline', color: '#14B8A6' },
   { key: 'appointment', label: 'Appointment', icon: 'calendar-outline', color: '#6366F1' },
   { key: 'lab', label: 'Lab Report', icon: 'flask-outline', color: '#F59E0B' },
 ];
@@ -30,7 +30,7 @@ const AddReminderScreen = ({ navigation, route }) => {
   if (!selectedType) {
     return (
       <View style={[s.container, { backgroundColor: isDark ? '#0F172A' : '#F8FAFC' }]}>
-        <StatusBar barStyle="light-content" backgroundColor="#0F766E" />
+        <StatusBar barStyle="light-content" backgroundColor={colors.primaryDark} />
         <Text style={[s.heading, { color: isDark ? '#E2E8F0' : '#1F2937' }]}>What type of reminder?</Text>
         <View style={s.typeGrid}>
           {TYPES.map((t) => (

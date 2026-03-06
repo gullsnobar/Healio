@@ -15,11 +15,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { logout } from '../../redux/slices/authSlice';
-
-const PRIMARY = '#0F766E';
-const PRIMARY_DARK = '#0D6560';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const ProfileScreen = ({ navigation }) => {
+  const { colors, isDark } = useAppTheme();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
 
@@ -61,12 +60,13 @@ const ProfileScreen = ({ navigation }) => {
 
   const renderField = (key, label, placeholder, extra = {}) => (
     <View key={key} style={{ marginBottom: 14 }}>
-      <Text style={s.fieldLabel}>{label}</Text>
-      <View style={[s.inputWrap, focusedField === key && s.inputFocused]}>
+      <Text style={[s.fieldLabel, { color: colors.textSecondary }]}>{label}</Text>
+      <View style={[s.inputWrap, { backgroundColor: colors.cardAlt, borderColor: colors.cardAlt },
+        focusedField === key && { borderColor: colors.primary, backgroundColor: colors.card }]}>
         <TextInput
-          style={s.input}
+          style={[s.input, { color: colors.text }]}
           placeholder={placeholder}
-          placeholderTextColor="#94A3B8"
+          placeholderTextColor={colors.textTertiary}
           value={form[key]}
           onChangeText={(v) => update(key, v)}
           autoCapitalize={extra.autoCapitalize ?? 'none'}
@@ -80,28 +80,28 @@ const ProfileScreen = ({ navigation }) => {
   );
 
   return (
-    <ScrollView style={s.c} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+    <ScrollView style={[s.c, { backgroundColor: colors.background }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
 
       {/* Top bar */}
       <View style={s.topBar}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#475569" />
+        <TouchableOpacity onPress={() => navigation.goBack()} style={[s.backBtn, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <Ionicons name="chevron-back" size={24} color={colors.textSecondary} />
         </TouchableOpacity>
-        <Text style={s.topTitle}>Profile</Text>
+        <Text style={[s.topTitle, { color: colors.text }]}>Profile</Text>
         <View style={{ width: 44 }} />
       </View>
 
       {/* Avatar */}
       <View style={s.avatarSection}>
-        <View style={s.avatarCircle}>
+        <View style={[s.avatarCircle, { backgroundColor: colors.primary }]}>
           {user?.profilePicture ? (
             <Image source={{ uri: user.profilePicture }} style={s.avatarImg} />
           ) : (
             <Text style={s.avatarText}>{initials}</Text>
           )}
         </View>
-        <Text style={s.userName}>{user?.name || user?.fullName || 'User'}</Text>
+        <Text style={[s.userName, { color: colors.text }]}>{user?.name || user?.fullName || 'User'}</Text>
       </View>
 
       {/* Form fields */}
@@ -116,23 +116,25 @@ const ProfileScreen = ({ navigation }) => {
       {/* Save button */}
       <View style={s.formSection}>
         <TouchableOpacity onPress={handleSave} activeOpacity={0.85}>
-          <LinearGradient colors={[PRIMARY, PRIMARY_DARK]} style={s.saveBtn}>
+          <LinearGradient colors={colors.primaryGrad} style={s.saveBtn}>
             <Text style={s.saveBtnText}>Save</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
 
+      {/* Dark mode toggle */}
+
       {/* Sign out */}
       <TouchableOpacity onPress={handleLogout} style={s.signOutBtn} activeOpacity={0.7}>
-        <Ionicons name="log-out-outline" size={20} color="#EF4444" />
-        <Text style={s.signOutText}>Sign out</Text>
+        <Ionicons name="log-out-outline" size={20} color={colors.error} />
+        <Text style={[s.signOutText, { color: colors.error }]}>Sign out</Text>
       </TouchableOpacity>
     </ScrollView>
   );
 };
 
 const s = StyleSheet.create({
-  c: { flex: 1, backgroundColor: '#F8FAFC' },
+  c: { flex: 1 },
   content: { paddingBottom: 40 },
 
   /* Top bar */
@@ -148,13 +150,11 @@ const s = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: '#FFF',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
   },
-  topTitle: { fontSize: 18, fontWeight: '700', color: '#1E293B' },
+  topTitle: { fontSize: 18, fontWeight: '700' },
 
   /* Avatar */
   avatarSection: {
@@ -165,11 +165,10 @@ const s = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: PRIMARY,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 14,
-    shadowColor: PRIMARY,
+    shadowColor: '#14B8A6',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.25,
     shadowRadius: 12,
@@ -177,32 +176,27 @@ const s = StyleSheet.create({
   },
   avatarImg: { width: 100, height: 100, borderRadius: 50 },
   avatarText: { fontSize: 40, fontWeight: '800', color: '#FFF' },
-  userName: { fontSize: 20, fontWeight: '800', color: '#1E293B', letterSpacing: -0.3 },
+  userName: { fontSize: 20, fontWeight: '800', letterSpacing: -0.3 },
 
   /* Form */
   formSection: { paddingHorizontal: 24 },
   fieldLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#64748B',
     marginBottom: 6,
     marginLeft: 4,
   },
   inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F1F5F9',
     borderRadius: 12,
     paddingHorizontal: 16,
     borderWidth: 1.5,
-    borderColor: '#F1F5F9',
     height: 56,
   },
-  inputFocused: { borderColor: PRIMARY, backgroundColor: '#FFF' },
   input: {
     flex: 1,
     fontSize: 15,
-    color: '#1E293B',
     letterSpacing: 0.2,
     height: '100%',
     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
@@ -214,7 +208,7 @@ const s = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: PRIMARY,
+    shadowColor: '#14B8A6',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
@@ -232,7 +226,7 @@ const s = StyleSheet.create({
     paddingVertical: 20,
     marginTop: 16,
   },
-  signOutText: { fontSize: 15, fontWeight: '700', color: '#EF4444' },
+  signOutText: { fontSize: 15, fontWeight: '700' },
 });
 
 export default ProfileScreen;

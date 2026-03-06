@@ -8,12 +8,12 @@ import {
   Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAppTheme } from '../../styles/theme';
 
-const PRIMARY = '#0F766E';
-const PRIMARY_DARK = '#0D6560';
 const OTP_LENGTH = 6;
 
 const OTPVerification = ({ onVerify, onResend, email }) => {
+  const { colors } = useAppTheme();
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''));
   const [timer, setTimer] = useState(60);
   const [loading, setLoading] = useState(false);
@@ -81,15 +81,15 @@ const OTPVerification = ({ onVerify, onResend, email }) => {
   return (
     <View style={s.container}>
       {/* Heading */}
-      <Text style={s.title}>OTP Verification</Text>
-      <Text style={s.subtitle}>
+      <Text style={[s.title, { color: colors.text }]}>OTP Verification</Text>
+      <Text style={[s.subtitle, { color: colors.textSecondary }]}>
         Enter the verification code we just sent on your email address.
       </Text>
 
       {/* Error */}
       {!!error && (
-        <View style={s.errorBanner}>
-          <Text style={s.errorText}>{error}</Text>
+        <View style={[s.errorBanner, { backgroundColor: '#FEF2F2', borderColor: '#FECACA' }]}>
+          <Text style={[s.errorText, { color: colors.error }]}>{error}</Text>
         </View>
       )}
 
@@ -101,8 +101,9 @@ const OTPVerification = ({ onVerify, onResend, email }) => {
             ref={(ref) => (inputs.current[i] = ref)}
             style={[
               s.otpBox,
-              focusedIndex === i && s.otpBoxFocused,
-              digit ? s.otpBoxFilled : null,
+              { backgroundColor: colors.borderLight, borderColor: colors.borderLight, color: colors.text },
+              focusedIndex === i && { borderColor: colors.primary, backgroundColor: colors.card },
+              digit ? { borderColor: colors.primary, backgroundColor: colors.primaryLight } : null,
               error ? s.otpBoxError : null,
             ]}
             keyboardType="number-pad"
@@ -120,19 +121,19 @@ const OTPVerification = ({ onVerify, onResend, email }) => {
 
       {/* Verify Button */}
       <TouchableOpacity onPress={handleVerify} disabled={disabled} activeOpacity={0.85} style={{ marginBottom: 32 }}>
-        <LinearGradient colors={disabled ? ['#94A3B8', '#94A3B8'] : [PRIMARY, PRIMARY_DARK]} style={s.primaryBtn}>
+        <LinearGradient colors={disabled ? ['#94A3B8', '#94A3B8'] : [colors.primary, colors.primaryDark]} style={[s.primaryBtn, { shadowColor: colors.primary }]}>
           <Text style={s.primaryBtnText}>{loading ? 'Verifying...' : 'Verify'}</Text>
         </LinearGradient>
       </TouchableOpacity>
 
       {/* Resend */}
       <View style={s.resendRow}>
-        <Text style={s.resendLabel}>Didn't received code? </Text>
+        <Text style={[s.resendLabel, { color: colors.textSecondary }]}>Didn't received code? </Text>
         {timer > 0 ? (
-          <Text style={s.timerText}>Resend in {timer}s</Text>
+          <Text style={[s.timerText, { color: colors.textTertiary }]}>Resend in {timer}s</Text>
         ) : (
           <TouchableOpacity onPress={handleResend}>
-            <Text style={s.resendAction}>Resend</Text>
+            <Text style={[s.resendAction, { color: colors.primary }]}>Resend</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -145,14 +146,12 @@ const s = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#1E293B',
     lineHeight: 38,
     letterSpacing: -0.3,
     marginBottom: 12,
   },
   subtitle: {
     fontSize: 15,
-    color: '#64748B',
     lineHeight: 22,
     marginBottom: 32,
   },
@@ -181,21 +180,10 @@ const s = StyleSheet.create({
     height: 56,
     borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: '#F1F5F9',
-    backgroundColor: '#F1F5F9',
     textAlign: 'center',
     fontSize: 22,
     fontWeight: '800',
-    color: '#1E293B',
     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
-  },
-  otpBoxFocused: {
-    borderColor: PRIMARY,
-    backgroundColor: '#FFF',
-  },
-  otpBoxFilled: {
-    borderColor: PRIMARY,
-    backgroundColor: '#ECFDF5',
   },
   otpBoxError: {
     borderColor: '#EF4444',
@@ -206,7 +194,6 @@ const s = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: PRIMARY,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
@@ -223,9 +210,9 @@ const s = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  resendLabel: { fontSize: 14, color: '#64748B' },
-  timerText: { fontSize: 14, color: '#94A3B8', fontWeight: '600' },
-  resendAction: { fontSize: 14, color: PRIMARY, fontWeight: '700' },
+  resendLabel: { fontSize: 14 },
+  timerText: { fontSize: 14, fontWeight: '600' },
+  resendAction: { fontSize: 14, fontWeight: '700' },
 });
 
 export default OTPVerification;

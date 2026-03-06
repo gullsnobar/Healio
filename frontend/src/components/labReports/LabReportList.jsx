@@ -2,8 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import LabReportCard from './LabReportCard';
-
-const PRIMARY_COLOR = '#0F766E';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const FILTER_TABS = [
   { key: 'all', label: 'All' },
@@ -13,11 +12,11 @@ const FILTER_TABS = [
   { key: 'other', label: 'Other' },
 ];
 
-const EmptyState = () => (
+const EmptyState = ({ colors }) => (
   <View style={styles.emptyContainer}>
-    <Ionicons name="document-text-outline" size={64} color="#ccc" />
-    <Text style={styles.emptyTitle}>No Lab Reports</Text>
-    <Text style={styles.emptySubtitle}>
+    <Ionicons name="document-text-outline" size={64} color={colors.textTertiary} />
+    <Text style={[styles.emptyTitle, { color: colors.text }]}>No Lab Reports</Text>
+    <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
       No reports match the selected filter.
     </Text>
   </View>
@@ -25,6 +24,7 @@ const EmptyState = () => (
 
 const LabReportList = ({ reports = [], onItemPress, loading = false }) => {
   const [activeFilter, setActiveFilter] = useState('all');
+  const { colors } = useAppTheme();
 
   const filteredReports = useMemo(() => {
     if (activeFilter === 'all') return reports;
@@ -34,8 +34,8 @@ const LabReportList = ({ reports = [], onItemPress, loading = false }) => {
   if (loading && reports.length === 0) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={PRIMARY_COLOR} />
-        <Text style={styles.loadingText}>Loading reports...</Text>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Loading reports...</Text>
       </View>
     );
   }
@@ -43,7 +43,7 @@ const LabReportList = ({ reports = [], onItemPress, loading = false }) => {
   return (
     <View style={styles.container}>
       {/* Filter Tabs */}
-      <View style={styles.filterContainer}>
+      <View style={[styles.filterContainer, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <FlatList
           data={FILTER_TABS}
           horizontal
@@ -54,11 +54,11 @@ const LabReportList = ({ reports = [], onItemPress, loading = false }) => {
             const isActive = item.key === activeFilter;
             return (
               <TouchableOpacity
-                style={[styles.filterTab, isActive && styles.filterTabActive]}
+                style={[styles.filterTab, { backgroundColor: colors.cardAlt }, isActive && { backgroundColor: colors.primary }]}
                 onPress={() => setActiveFilter(item.key)}
                 activeOpacity={0.7}
               >
-                <Text style={[styles.filterText, isActive && styles.filterTextActive]}>
+                <Text style={[styles.filterText, { color: colors.textSecondary }, isActive && styles.filterTextActive]}>
                   {item.label}
                 </Text>
               </TouchableOpacity>
@@ -74,7 +74,7 @@ const LabReportList = ({ reports = [], onItemPress, loading = false }) => {
         renderItem={({ item }) => (
           <LabReportCard report={item} onPress={onItemPress} />
         )}
-        ListEmptyComponent={<EmptyState />}
+        ListEmptyComponent={<EmptyState colors={colors} />}
         contentContainerStyle={filteredReports.length === 0 ? styles.emptyList : styles.list}
         showsVerticalScrollIndicator={false}
       />
@@ -87,9 +87,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   filterContainer: {
-    backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
   },
   filterList: {
     paddingHorizontal: 12,
@@ -100,15 +98,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: '#f0f0f0',
-  },
-  filterTabActive: {
-    backgroundColor: PRIMARY_COLOR,
   },
   filterText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#666',
   },
   filterTextActive: {
     color: '#fff',
@@ -128,7 +121,6 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 12,
     fontSize: 15,
-    color: '#888',
   },
   emptyContainer: {
     flex: 1,
@@ -140,12 +132,10 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#333',
     marginTop: 16,
   },
   emptySubtitle: {
     fontSize: 14,
-    color: '#888',
     textAlign: 'center',
     marginTop: 8,
     lineHeight: 20,

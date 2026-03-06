@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import { ScrollView, StyleSheet, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useAppTheme } from '../../styles/ThemeContext';
 import EditMedicationForm from '../../components/medication/EditMedicationForm';
 import { updateMedication, deleteMedication } from '../../redux/slices/medicationSlice';
 
@@ -19,7 +20,8 @@ const EditMedicationScreen = ({ route, navigation }) => {
     if (!result.error) navigation.navigate('Medications');
   };
 
-  return <ScrollView style={s.c}><EditMedicationForm initialData={medication} onSubmit={handleSubmit} onDelete={handleDelete} /></ScrollView>;
+  const { colors } = useAppTheme();
+  return <ScrollView style={[s.c, { backgroundColor: colors.background }]}><EditMedicationForm initialData={medication} onSubmit={handleSubmit} onDelete={handleDelete} /></ScrollView>;
 };
-const s = StyleSheet.create({ c: { flex: 1, backgroundColor: '#F5F7FA' } });
+const s = StyleSheet.create({ c: { flex: 1 } });
 export default EditMedicationScreen;

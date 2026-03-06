@@ -160,7 +160,7 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
       {/* Medication-specific */}
       {reminderType === 'medication' && (
         <View style={[s.section, { backgroundColor: bg }]}>
-          <Text style={[s.sectionTitle, { color: '#0F766E' }]}>
+          <Text style={[s.sectionTitle, { color: colors.primary }]}>
             <Ionicons name="medical-outline" size={16} /> Medication Details
           </Text>
           <InputField label="Medication Name *" value={medicationName} onChangeText={setMedicationName} placeholder="e.g. Metformin" />
@@ -205,7 +205,7 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
 
       {/* Submit */}
       <TouchableOpacity style={[s.submitBtn, { opacity: loading ? 0.6 : 1 }]} onPress={handleSubmit} disabled={loading} activeOpacity={0.85}>
-        <LinearGradient colors={['#0F766E', '#0D6560']} style={s.submitGrad}>
+        <LinearGradient colors={[colors.primary, colors.primaryDark]} style={s.submitGrad}>
           {loading ? <ActivityIndicator color="#FFF" /> : (
             <>
               <Ionicons name="checkmark-circle-outline" size={20} color="#FFF" />

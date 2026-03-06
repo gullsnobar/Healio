@@ -2,10 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import { Card, Button } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
-
-const PRIMARY_COLOR = '#0F766E';
+import { useAppTheme } from '../../styles/theme';
 
 const AppointmentReminder = ({ appointment, onDismiss }) => {
+  const { colors } = useAppTheme();
   const { doctorName, location, date, time, purpose } = appointment || {};
 
   const openDirections = () => {
@@ -17,47 +17,47 @@ const AppointmentReminder = ({ appointment, onDismiss }) => {
   };
 
   return (
-    <Card style={styles.card}>
+    <Card style={[styles.card, { backgroundColor: colors.card, borderLeftColor: colors.primary }]}>
       <Card.Content>
         <View style={styles.header}>
-          <View style={styles.iconContainer}>
+          <View style={[styles.iconContainer, { backgroundColor: colors.primary }]}>
             <Ionicons name="notifications" size={24} color="#fff" />
           </View>
           <View style={styles.headerText}>
-            <Text style={styles.reminderTitle}>Appointment Reminder</Text>
-            <Text style={styles.reminderSubtitle}>You have an upcoming appointment</Text>
+            <Text style={[styles.reminderTitle, { color: colors.text }]}>Appointment Reminder</Text>
+            <Text style={[styles.reminderSubtitle, { color: colors.textSecondary }]}>You have an upcoming appointment</Text>
           </View>
         </View>
 
-        <View style={styles.divider} />
+        <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
         <View style={styles.details}>
           <View style={styles.detailRow}>
-            <Ionicons name="person-outline" size={18} color={PRIMARY_COLOR} />
-            <Text style={styles.detailText}>{doctorName}</Text>
+            <Ionicons name="person-outline" size={18} color={colors.primary} />
+            <Text style={[styles.detailText, { color: colors.text }]}>{doctorName}</Text>
           </View>
 
           <View style={styles.detailRow}>
-            <Ionicons name="calendar-outline" size={18} color={PRIMARY_COLOR} />
-            <Text style={styles.detailText}>{date}</Text>
+            <Ionicons name="calendar-outline" size={18} color={colors.primary} />
+            <Text style={[styles.detailText, { color: colors.text }]}>{date}</Text>
           </View>
 
           <View style={styles.detailRow}>
-            <Ionicons name="time-outline" size={18} color={PRIMARY_COLOR} />
-            <Text style={styles.detailText}>{time}</Text>
+            <Ionicons name="time-outline" size={18} color={colors.primary} />
+            <Text style={[styles.detailText, { color: colors.text }]}>{time}</Text>
           </View>
 
           {location ? (
             <View style={styles.detailRow}>
-              <Ionicons name="location-outline" size={18} color={PRIMARY_COLOR} />
-              <Text style={styles.detailText}>{location}</Text>
+              <Ionicons name="location-outline" size={18} color={colors.primary} />
+              <Text style={[styles.detailText, { color: colors.text }]}>{location}</Text>
             </View>
           ) : null}
 
           {purpose ? (
             <View style={styles.detailRow}>
-              <Ionicons name="document-text-outline" size={18} color={PRIMARY_COLOR} />
-              <Text style={styles.detailText}>{purpose}</Text>
+              <Ionicons name="document-text-outline" size={18} color={colors.primary} />
+              <Text style={[styles.detailText, { color: colors.text }]}>{purpose}</Text>
             </View>
           ) : null}
         </View>
@@ -67,7 +67,7 @@ const AppointmentReminder = ({ appointment, onDismiss }) => {
             mode="contained"
             onPress={openDirections}
             style={styles.directionsButton}
-            buttonColor={PRIMARY_COLOR}
+            buttonColor={colors.primary}
             icon="directions"
             contentStyle={styles.buttonContent}
           >
@@ -77,8 +77,8 @@ const AppointmentReminder = ({ appointment, onDismiss }) => {
           <Button
             mode="outlined"
             onPress={() => onDismiss?.(appointment)}
-            style={styles.dismissButton}
-            textColor="#888"
+            style={[styles.dismissButton, { borderColor: colors.border }]}
+            textColor={colors.textSecondary}
             contentStyle={styles.buttonContent}
           >
             Dismiss
@@ -95,9 +95,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     borderRadius: 14,
     elevation: 3,
-    backgroundColor: '#fff',
     borderLeftWidth: 4,
-    borderLeftColor: PRIMARY_COLOR,
   },
   header: {
     flexDirection: 'row',
@@ -107,7 +105,6 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: PRIMARY_COLOR,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -118,16 +115,13 @@ const styles = StyleSheet.create({
   reminderTitle: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#1a1a1a',
   },
   reminderSubtitle: {
     fontSize: 13,
-    color: '#888',
     marginTop: 2,
   },
   divider: {
     height: 1,
-    backgroundColor: '#eee',
     marginVertical: 14,
   },
   details: {
@@ -139,7 +133,6 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 14,
-    color: '#444',
     marginLeft: 10,
     flex: 1,
   },
@@ -152,7 +145,6 @@ const styles = StyleSheet.create({
   },
   dismissButton: {
     borderRadius: 8,
-    borderColor: '#ddd',
   },
   buttonContent: {
     height: 44,

@@ -3,10 +3,12 @@ import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, StatusBar
 import { Ionicons } from '@expo/vector-icons';
 import PasswordReset from '../../components/auth/PasswordReset';
 import { authAPI } from '../../services/api/authAPI';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const ResetPasswordScreen = ({ route, navigation }) => {
   const { email } = route.params || {};
   const [loading, setLoading] = useState(false);
+  const { colors, isDark } = useAppTheme();
 
   const handleSubmit = async ({ password }) => {
     setLoading(true);
@@ -21,16 +23,16 @@ const ResetPasswordScreen = ({ route, navigation }) => {
   };
 
   return (
-    <KeyboardAvoidingView style={s.c} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+    <KeyboardAvoidingView style={[s.c, { backgroundColor: colors.background }]} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
       <ScrollView
         contentContainerStyle={s.scroll}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         {/* Back button */}
-        <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#475569" />
+        <TouchableOpacity onPress={() => navigation.goBack()} style={[s.backBtn, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <Ionicons name="chevron-back" size={24} color={colors.textSecondary} />
         </TouchableOpacity>
 
         <PasswordReset onSubmit={handleSubmit} loading={loading} />
@@ -42,7 +44,6 @@ const ResetPasswordScreen = ({ route, navigation }) => {
 const s = StyleSheet.create({
   c: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
   },
   scroll: {
     flexGrow: 1,
@@ -54,11 +55,9 @@ const s = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: '#FFF',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
     marginBottom: 24,
   },
 });

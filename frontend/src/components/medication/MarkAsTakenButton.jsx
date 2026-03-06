@@ -7,10 +7,10 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-const PRIMARY = '#0F766E';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const MarkAsTakenButton = ({ medicationId, onMarkTaken, isTaken = false }) => {
+  const { colors } = useAppTheme();
   const [loading, setLoading] = useState(false);
   const [taken, setTaken] = useState(isTaken);
 
@@ -40,19 +40,19 @@ const MarkAsTakenButton = ({ medicationId, onMarkTaken, isTaken = false }) => {
 
   return (
     <TouchableOpacity
-      style={[styles.button, taken && styles.buttonTaken]}
+      style={[styles.button, { backgroundColor: colors.primary }, taken && styles.buttonTaken]}
       onPress={handlePress}
       activeOpacity={taken ? 1 : 0.7}
       disabled={loading}
     >
       {loading ? (
-        <ActivityIndicator size="small" color={taken ? '#27ae60' : '#fff'} />
+        <ActivityIndicator size="small" color={taken ? colors.success : '#fff'} />
       ) : (
         <>
           <Ionicons
             name={taken ? 'checkmark-circle' : 'checkmark-circle-outline'}
             size={20}
-            color={taken ? '#27ae60' : '#fff'}
+            color={taken ? colors.success : '#fff'}
           />
           <Text style={[styles.text, taken && styles.textTaken]}>
             {taken ? 'Taken' : 'Mark as Taken'}
@@ -68,7 +68,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: PRIMARY,
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 16,
@@ -76,9 +75,9 @@ const styles = StyleSheet.create({
     minHeight: 42,
   },
   buttonTaken: {
-    backgroundColor: '#e8f5e9',
+    backgroundColor: '#D1FAE5',
     borderWidth: 1,
-    borderColor: '#27ae60',
+    borderColor: '#10B981',
   },
   text: {
     color: '#fff',
@@ -86,7 +85,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   textTaken: {
-    color: '#27ae60',
+    color: '#10B981',
   },
 });
 

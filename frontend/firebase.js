@@ -20,19 +20,34 @@ const firebaseConfig = {
   measurementId: "G-4186MCDMN9",
 };
 
-// Initialize Firebase
+// Initialize Firebase app (this is safe and doesn't make network calls)
 const app = initializeApp(firebaseConfig);
 
-// On web, getAuth() uses browser persistence (indexedDB/localStorage).
-// On native (Android/iOS), we must use AsyncStorage for persistence.
-const auth =
-  Platform.OS === "web"
-    ? getAuth(app)
-    : initializeAuth(app, {
-        persistence: getReactNativePersistence(AsyncStorage),
-      });
+// Auth is initialized lazily to avoid startup crashes when Firebase Auth
+// is not yet configured in the Firebase Console.
+let _auth = null;
+let _authInitialized = false;
+
+const getFirebaseAuth = () => {
+  if (!_authInitialized) {
+    try {
+      _auth =
+        Platform.OS === "web"
+          ? getAuth(app)
+          : initializeAuth(app, {
+              persistence: getReactNativePersistence(AsyncStorage),
+            });
+    } catch (e) {
+      console.warn("Firebase Auth init failed:", e.message);
+      _auth = null;
+    }
+    _authInitialized = true;
+  }
+  return _auth;
+};
 
 const googleProvider = new GoogleAuthProvider();
 
-export { auth, googleProvider };
+// Export a getter so auth is only initialized when actually used
+export { getFirebaseAuth, googleProvider };
 export default app;

@@ -2,16 +2,16 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card, Badge } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
-
-const PRIMARY_COLOR = '#0F766E';
-
-const STATUS_CONFIG = {
-  upcoming: { label: 'Upcoming', color: PRIMARY_COLOR, icon: 'time-outline' },
-  completed: { label: 'Completed', color: '#4CAF50', icon: 'checkmark-circle-outline' },
-  cancelled: { label: 'Cancelled', color: '#F44336', icon: 'close-circle-outline' },
-};
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const AppointmentCard = ({ appointment, onPress }) => {
+  const { colors } = useAppTheme();
+
+  const STATUS_CONFIG = {
+    upcoming: { label: 'Upcoming', color: colors.primary, icon: 'time-outline' },
+    completed: { label: 'Completed', color: colors.success, icon: 'checkmark-circle-outline' },
+    cancelled: { label: 'Cancelled', color: colors.error, icon: 'close-circle-outline' },
+  };
   const {
     doctorName,
     location,
@@ -29,7 +29,7 @@ const AppointmentCard = ({ appointment, onPress }) => {
         <Card.Content style={styles.content}>
           <View style={styles.header}>
             <View style={styles.doctorInfo}>
-              <Ionicons name="person-circle-outline" size={40} color={PRIMARY_COLOR} />
+              <Ionicons name="person-circle-outline" size={40} color={colors.primary} />
               <View style={styles.doctorText}>
                 <Text style={styles.doctorName} numberOfLines={1}>
                   {doctorName}
@@ -85,7 +85,6 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     borderRadius: 12,
     elevation: 2,
-    backgroundColor: '#fff',
   },
   content: {
     paddingVertical: 14,
@@ -108,7 +107,6 @@ const styles = StyleSheet.create({
   doctorName: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1a1a1a',
   },
   locationRow: {
     flexDirection: 'row',
@@ -117,7 +115,6 @@ const styles = StyleSheet.create({
   },
   locationText: {
     fontSize: 13,
-    color: '#888',
     marginLeft: 3,
   },
   statusBadge: {
@@ -134,7 +131,6 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: '#eee',
     marginVertical: 12,
   },
   details: {
@@ -147,7 +143,6 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 14,
-    color: '#444',
     marginLeft: 6,
   },
   purposeRow: {
@@ -157,7 +152,6 @@ const styles = StyleSheet.create({
   },
   purposeText: {
     fontSize: 13,
-    color: '#666',
     marginLeft: 6,
     flex: 1,
   },

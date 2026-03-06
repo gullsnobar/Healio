@@ -7,8 +7,10 @@ import RegisterForm from '../../components/auth/RegisterForm';
 import Alert from '../../components/common/Alert';
 import Loading from '../../components/common/Loading';
 import { registerUser, googleSignIn, clearError } from '../../redux/slices/authSlice';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const RegisterScreen = ({ navigation }) => {
+  const { colors, isDark } = useAppTheme();
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
 
@@ -31,21 +33,21 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   return (
-    <KeyboardAvoidingView style={s.c} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+    <KeyboardAvoidingView style={[s.c, { backgroundColor: colors.background }]} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
       <ScrollView
         contentContainerStyle={s.scroll}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         {/* Back button */}
-        <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#475569" />
+        <TouchableOpacity onPress={() => navigation.goBack()} style={[s.backBtn, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <Ionicons name="chevron-back" size={24} color={colors.textSecondary} />
         </TouchableOpacity>
 
         {/* Heading */}
         <View style={s.header}>
-          <Text style={s.title}>Hello! Register to{'\n'}get started</Text>
+          <Text style={[s.title, { color: colors.text }]}>Hello! Register to{'\n'}get started</Text>
         </View>
 
         {error && <View style={s.alertWrap}><Alert variant="error" message={error} /></View>}
@@ -65,7 +67,6 @@ const RegisterScreen = ({ navigation }) => {
 const s = StyleSheet.create({
   c: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
   },
   scroll: {
     flexGrow: 1,
@@ -77,11 +78,9 @@ const s = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: '#FFF',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
     marginBottom: 24,
   },
   header: {
@@ -90,7 +89,6 @@ const s = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#1E293B',
     lineHeight: 38,
     letterSpacing: -0.3,
   },

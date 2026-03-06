@@ -1,5 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useAppTheme } from '../styles/theme';
 
 import TabNavigator from './TabNavigator';
 
@@ -49,10 +50,11 @@ import ProfileScreen from '../screens/main/ProfileScreen';
 const Stack = createNativeStackNavigator();
 
 const MainNavigator = () => {
+  const { colors } = useAppTheme();
   return (
     <Stack.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: '#0F766E' },
+        headerStyle: { backgroundColor: colors.primary },
         headerTintColor: '#FFFFFF',
         headerTitleStyle: { fontWeight: '700', fontSize: 17 },
         animation: 'slide_from_right',

@@ -2,14 +2,13 @@ import React from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AppointmentCard from './AppointmentCard';
+import { useAppTheme } from '../../styles/ThemeContext';
 
-const PRIMARY_COLOR = '#0F766E';
-
-const EmptyState = () => (
+const EmptyState = ({ colors }) => (
   <View style={styles.emptyContainer}>
-    <Ionicons name="calendar-outline" size={64} color="#ccc" />
-    <Text style={styles.emptyTitle}>No Appointments</Text>
-    <Text style={styles.emptySubtitle}>
+    <Ionicons name="calendar-outline" size={64} color={colors.textTertiary} />
+    <Text style={[styles.emptyTitle, { color: colors.text }]}>No Appointments</Text>
+    <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
       You don't have any appointments scheduled yet.
     </Text>
   </View>
@@ -17,6 +16,7 @@ const EmptyState = () => (
 
 const AppointmentList = ({ appointments = [], onItemPress, loading = false, onRefresh }) => {
   const [refreshing, setRefreshing] = React.useState(false);
+  const { colors } = useAppTheme();
 
   const handleRefresh = async () => {
     if (!onRefresh) return;
@@ -31,8 +31,8 @@ const AppointmentList = ({ appointments = [], onItemPress, loading = false, onRe
   if (loading && appointments.length === 0) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={PRIMARY_COLOR} />
-        <Text style={styles.loadingText}>Loading appointments...</Text>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Loading appointments...</Text>
       </View>
     );
   }
@@ -44,7 +44,7 @@ const AppointmentList = ({ appointments = [], onItemPress, loading = false, onRe
       renderItem={({ item }) => (
         <AppointmentCard appointment={item} onPress={onItemPress} />
       )}
-      ListEmptyComponent={<EmptyState />}
+      ListEmptyComponent={<EmptyState colors={colors} />}
       contentContainerStyle={appointments.length === 0 ? styles.emptyList : styles.list}
       showsVerticalScrollIndicator={false}
       refreshControl={
@@ -52,8 +52,8 @@ const AppointmentList = ({ appointments = [], onItemPress, loading = false, onRe
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            colors={[PRIMARY_COLOR]}
-            tintColor={PRIMARY_COLOR}
+            colors={[colors.primary]}
+            tintColor={colors.primary}
           />
         ) : undefined
       }
@@ -76,7 +76,6 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 12,
     fontSize: 15,
-    color: '#888',
   },
   emptyContainer: {
     flex: 1,
@@ -88,12 +87,10 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#333',
     marginTop: 16,
   },
   emptySubtitle: {
     fontSize: 14,
-    color: '#888',
     textAlign: 'center',
     marginTop: 8,
     lineHeight: 20,

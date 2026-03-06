@@ -1,9 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import colors from '../../styles/colors';
-
-const PRIMARY = colors.primary;
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const Header = ({
   title,
@@ -12,26 +10,27 @@ const Header = ({
   onRightPress,
   style,
 }) => {
+  const { colors } = useAppTheme();
   return (
-    <View style={[styles.container, style]}>
+    <View style={[styles.container, { backgroundColor: colors.card, borderBottomColor: colors.border }, style]}>
       <View style={styles.left}>
         {onBackPress ? (
           <TouchableOpacity onPress={onBackPress} style={styles.iconBtn}>
-            <Ionicons name="arrow-back" size={24} color={PRIMARY} />
+            <Ionicons name="arrow-back" size={24} color={colors.primary} />
           </TouchableOpacity>
         ) : (
           <View style={styles.iconPlaceholder} />
         )}
       </View>
 
-      <Text style={styles.title} numberOfLines={1}>
+      <Text style={[styles.title, { color: colors.text }]} numberOfLines={1}>
         {title}
       </Text>
 
       <View style={styles.right}>
         {rightIcon && onRightPress ? (
           <TouchableOpacity onPress={onRightPress} style={styles.iconBtn}>
-            <Ionicons name={rightIcon} size={24} color={PRIMARY} />
+            <Ionicons name={rightIcon} size={24} color={colors.primary} />
           </TouchableOpacity>
         ) : (
           <View style={styles.iconPlaceholder} />
@@ -48,9 +47,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     height: 56,
     paddingHorizontal: 12,
-    backgroundColor: '#FFFFFF',
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#E0E0E0',
   },
   left: {
     width: 40,
@@ -65,7 +62,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 18,
     fontWeight: '700',
-    color: '#333',
   },
   iconBtn: {
     padding: 4,

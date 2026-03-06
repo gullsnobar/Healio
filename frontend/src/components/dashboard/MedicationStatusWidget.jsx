@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const STATS = [
   { key: 'taken',   label: 'Taken',   icon: 'checkmark-circle', color: '#10B981', bg: '#D1FAE5' },
@@ -8,14 +9,16 @@ const STATS = [
   { key: 'pending', label: 'Pending', icon: 'time',             color: '#F59E0B', bg: '#FEF3C7' },
 ];
 
-const MedicationStatusWidget = ({ data = { taken: 0, missed: 0, pending: 0 }, onPress }) => (
-  <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.85}>
-    <View style={styles.headerRow}>
-      <View style={styles.iconBadge}>
-        <Ionicons name='medkit' size={18} color='#0F766E' />
-      </View>
-      <Text style={styles.title}>Today's Medications</Text>
-      <Ionicons name='chevron-forward' size={18} color='#94A3B8' />
+const MedicationStatusWidget = ({ data = { taken: 0, missed: 0, pending: 0 }, onPress }) => {
+  const { colors } = useAppTheme();
+  return (
+    <TouchableOpacity style={[styles.container, { backgroundColor: colors.card }]} onPress={onPress} activeOpacity={0.85}>
+      <View style={styles.headerRow}>
+        <View style={[styles.iconBadge, { backgroundColor: colors.primaryLight }]}>
+          <Ionicons name='medkit' size={18} color={colors.primary} />
+        </View>
+        <Text style={[styles.title, { color: colors.text }]}>Today's Medications</Text>
+        <Ionicons name='chevron-forward' size={18} color={colors.textTertiary} />
     </View>
     <View style={styles.row}>
       {STATS.map(({ key, label, icon, color, bg }) => (
@@ -27,16 +30,17 @@ const MedicationStatusWidget = ({ data = { taken: 0, missed: 0, pending: 0 }, on
       ))}
     </View>
   </TouchableOpacity>
-);
+  );
+};
 
 const styles = StyleSheet.create({
-  container: { backgroundColor: '#fff', borderRadius: 20, padding: 16, marginBottom: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 4 },
+  container: { borderRadius: 20, padding: 16, marginBottom: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 4 },
   headerRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 14 },
-  iconBadge: { width: 32, height: 32, borderRadius: 10, backgroundColor: '#DBEAFE', alignItems: 'center', justifyContent: 'center', marginRight: 10 },
-  title: { flex: 1, fontSize: 15, fontWeight: '700', color: '#1E293B' },
+  iconBadge: { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginRight: 10 },
+  title: { flex: 1, fontSize: 15, fontWeight: '700' },
   row: { flexDirection: 'row', gap: 10 },
   stat: { flex: 1, alignItems: 'center', paddingVertical: 14, borderRadius: 14 },
   num: { fontSize: 22, fontWeight: '800', marginTop: 4 },
-  statLabel: { fontSize: 11, color: '#64748B', marginTop: 3, fontWeight: '500' },
+  statLabel: { fontSize: 11, marginTop: 3, fontWeight: '500' },
 });
 export default MedicationStatusWidget;

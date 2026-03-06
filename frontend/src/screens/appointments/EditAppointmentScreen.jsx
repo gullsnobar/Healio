@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import { ScrollView, StyleSheet, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useAppTheme } from '../../styles/ThemeContext';
 import EditAppointmentForm from '../../components/appointments/EditAppointmentForm';
 import { updateAppointment, deleteAppointment } from '../../redux/slices/appointmentSlice';
 
@@ -13,7 +14,8 @@ const EditAppointmentScreen = ({ route, navigation }) => {
     navigation.goBack();
   };
   const handleDelete = async () => { await dispatch(deleteAppointment(id)); navigation.goBack(); };
-  return <ScrollView style={s.c}><EditAppointmentForm initialData={appointment} onSubmit={handleSubmit} onDelete={handleDelete} /></ScrollView>;
+  const { colors } = useAppTheme();
+  return <ScrollView style={[s.c, { backgroundColor: colors.background }]}><EditAppointmentForm initialData={appointment} onSubmit={handleSubmit} onDelete={handleDelete} /></ScrollView>;
 };
-const s = StyleSheet.create({ c: { flex: 1, backgroundColor: '#F5F7FA' } });
+const s = StyleSheet.create({ c: { flex: 1 } });
 export default EditAppointmentScreen;

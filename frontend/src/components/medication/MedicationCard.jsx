@@ -1,16 +1,16 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-const PRIMARY = '#0F766E';
-
-const STATUS_CONFIG = {
-  taken: { label: 'Taken', bg: '#D1FAE5', color: '#10B981', icon: 'checkmark-circle' },
-  missed: { label: 'Missed', bg: '#FEE2E2', color: '#EF4444', icon: 'close-circle' },
-  pending: { label: 'Pending', bg: '#FEF3C7', color: '#F59E0B', icon: 'time' },
-};
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const MedicationCard = ({ medication, onPress, onMarkTaken }) => {
+  const { colors } = useAppTheme();
+
+  const STATUS_CONFIG = {
+    taken: { label: 'Taken', bg: colors.medTakenBg, color: colors.medTaken, icon: 'checkmark-circle' },
+    missed: { label: 'Missed', bg: colors.medMissedBg, color: colors.medMissed, icon: 'close-circle' },
+    pending: { label: 'Pending', bg: colors.medUpcomingBg, color: colors.medUpcoming, icon: 'time' },
+  };
   const {
     name,
     dosage,
@@ -24,14 +24,14 @@ const MedicationCard = ({ medication, onPress, onMarkTaken }) => {
 
   return (
     <TouchableOpacity
-      style={styles.card}
+      style={[styles.card, { backgroundColor: colors.card, shadowColor: colors.shadow }]}
       onPress={() => onPress?.(medication)}
       activeOpacity={0.7}
     >
       <View style={styles.header}>
         <View style={styles.titleRow}>
-          <Ionicons name="medkit" size={22} color={PRIMARY} />
-          <Text style={styles.name} numberOfLines={1}>{name}</Text>
+          <Ionicons name="medkit" size={22} color={colors.primary} />
+          <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>{name}</Text>
         </View>
         <View style={[styles.badge, { backgroundColor: statusCfg.bg }]}>
           <Ionicons name={statusCfg.icon} size={14} color={statusCfg.color} />
@@ -41,30 +41,30 @@ const MedicationCard = ({ medication, onPress, onMarkTaken }) => {
 
       <View style={styles.body}>
         <View style={styles.infoRow}>
-          <Ionicons name="flask-outline" size={16} color="#888" />
-          <Text style={styles.infoText}>{dosage}</Text>
+          <Ionicons name="flask-outline" size={16} color={colors.textTertiary} />
+          <Text style={[styles.infoText, { color: colors.textSecondary }]}>{dosage}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Ionicons name="repeat-outline" size={16} color="#888" />
-          <Text style={styles.infoText}>{frequency}</Text>
+          <Ionicons name="repeat-outline" size={16} color={colors.textTertiary} />
+          <Text style={[styles.infoText, { color: colors.textSecondary }]}>{frequency}</Text>
         </View>
         {timing && (
           <View style={styles.infoRow}>
-            <Ionicons name="time-outline" size={16} color="#888" />
-            <Text style={styles.infoText}>{timing}</Text>
+            <Ionicons name="time-outline" size={16} color={colors.textTertiary} />
+            <Text style={[styles.infoText, { color: colors.textSecondary }]}>{timing}</Text>
           </View>
         )}
         {doctorName && (
           <View style={styles.infoRow}>
-            <Ionicons name="person-outline" size={16} color="#888" />
-            <Text style={styles.infoText}>Dr. {doctorName}</Text>
+            <Ionicons name="person-outline" size={16} color={colors.textTertiary} />
+            <Text style={[styles.infoText, { color: colors.textSecondary }]}>Dr. {doctorName}</Text>
           </View>
         )}
       </View>
 
       {status === 'pending' && onMarkTaken && (
         <TouchableOpacity
-          style={styles.takeBtn}
+          style={[styles.takeBtn, { backgroundColor: colors.primary }]}
           onPress={() => onMarkTaken?.(medication)}
           activeOpacity={0.7}
         >
@@ -78,11 +78,9 @@ const MedicationCard = ({ medication, onPress, onMarkTaken }) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
@@ -103,7 +101,6 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#1a1a1a',
     flex: 1,
   },
   badge: {
@@ -128,13 +125,11 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 14,
-    color: '#555',
   },
   takeBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: PRIMARY,
     borderRadius: 10,
     paddingVertical: 10,
     marginTop: 14,

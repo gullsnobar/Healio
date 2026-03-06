@@ -10,7 +10,7 @@ import { deleteReminder, completeReminder, snoozeReminder } from '../../redux/sl
 import { useAppTheme } from '../../styles/ThemeContext';
 
 const TYPE_META = {
-  medication: { color: '#0F766E', icon: 'medical-outline', label: 'Medication' },
+  medication: { color: '#14B8A6', icon: 'medical-outline', label: 'Medication' },
   appointment: { color: '#6366F1', icon: 'calendar-outline', label: 'Appointment' },
   lab: { color: '#F59E0B', icon: 'flask-outline', label: 'Lab Report' },
 };
@@ -79,7 +79,7 @@ const ReminderDetailsScreen = ({ navigation, route }) => {
 
   return (
     <View style={[s.container, { backgroundColor: isDark ? '#0F172A' : '#F8FAFC' }]}>
-      <StatusBar barStyle="light-content" backgroundColor="#0F766E" />
+      <StatusBar barStyle="light-content" backgroundColor={colors.primaryDark} />
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 120 }}>
         {/* Header card */}
         <View style={[s.headerCard, { backgroundColor: bg }]}>

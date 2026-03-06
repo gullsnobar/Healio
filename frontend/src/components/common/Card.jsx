@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const Card = ({
   children,
@@ -9,6 +10,7 @@ const Card = ({
   style,
   contentStyle,
 }) => {
+  const { colors } = useAppTheme();
   const Wrapper = onPress ? TouchableOpacity : View;
 
   return (
@@ -17,13 +19,13 @@ const Card = ({
       activeOpacity={onPress ? 0.8 : 1}
       style={[
         styles.card,
-        { elevation, shadowOpacity: elevation * 0.06 },
+        { elevation, shadowOpacity: elevation * 0.06, backgroundColor: colors.card },
         style,
       ]}
     >
       {!!title && (
-        <View style={styles.header}>
-          <Text style={styles.title}>{title}</Text>
+        <View style={[styles.header, { borderBottomColor: colors.border }]}>
+          <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
         </View>
       )}
       <View style={[styles.content, contentStyle]}>{children}</View>
@@ -33,7 +35,6 @@ const Card = ({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 16,
     marginVertical: 8,
@@ -44,13 +45,11 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#E0E0E0',
     paddingBottom: 10,
   },
   title: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#333',
   },
   content: {},
 });

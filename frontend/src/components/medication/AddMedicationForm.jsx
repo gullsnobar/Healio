@@ -13,15 +13,14 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-
-const PRIMARY = '#0F766E';
-const PRIMARY_DARK = '#0D6560';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const MED_TYPES = ['Capsule', 'Tablet', 'Drops', 'Syrup', 'Injection', 'Other'];
 const DOSAGE_UNITS = ['mg', 'ml', 'tablets', 'capsules', 'drops', 'units'];
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 const AddMedicationForm = ({ onSubmit, initialData }) => {
+  const { colors } = useAppTheme();
   const [form, setForm] = useState({
     name: initialData?.name || '',
     type: initialData?.type || 'Capsule',
@@ -89,7 +88,7 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
   const DropdownModal = ({ visible, onClose, items, onSelect, selected }) => (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableOpacity style={s.modalOverlay} activeOpacity={1} onPress={onClose}>
-        <View style={s.modalCard}>
+        <View style={[s.modalCard, { backgroundColor: colors.card }]}>
           {items.map((item) => (
             <TouchableOpacity
               key={item}
@@ -97,7 +96,7 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
               onPress={() => { onSelect(item); onClose(); }}
             >
               <Text style={[s.modalItemText, selected === item && s.modalItemTextActive]}>{item}</Text>
-              {selected === item && <Ionicons name="checkmark" size={18} color={PRIMARY} />}
+              {selected === item && <Ionicons name="checkmark" size={18} color={colors.primary} />}
             </TouchableOpacity>
           ))}
         </View>
@@ -108,14 +107,14 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
   return (
     <ScrollView contentContainerStyle={s.container} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
       {/* Section: Medication Info */}
-      <Text style={s.sectionLabel}>Medication Info</Text>
+      <Text style={[s.sectionLabel, { color: colors.textTertiary }]}>Medication Info</Text>
 
       {/* Name */}
-      <View style={[s.inputWrap, focusedField === 'name' && s.inputFocused]}>
+      <View style={[s.inputWrap, { backgroundColor: colors.cardAlt, borderColor: focusedField === 'name' ? colors.primary : colors.cardAlt }]}>
         <TextInput
-          style={s.input}
+          style={[s.input, { color: colors.text }]}
           placeholder="Medicine Name *"
-          placeholderTextColor="#94A3B8"
+          placeholderTextColor={colors.textTertiary}
           value={form.name}
           onChangeText={(v) => update('name', v)}
           onFocus={() => setFocusedField('name')}
@@ -124,9 +123,9 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
       </View>
 
       {/* Type dropdown */}
-      <TouchableOpacity style={s.dropdownWrap} onPress={() => setShowTypeMenu(true)} activeOpacity={0.8}>
-        <Text style={form.type ? s.dropdownValue : s.dropdownPlaceholder}>{form.type || 'Type *'}</Text>
-        <Ionicons name="chevron-down" size={18} color="#94A3B8" />
+      <TouchableOpacity style={[s.dropdownWrap, { backgroundColor: colors.cardAlt, borderColor: colors.cardAlt }]} onPress={() => setShowTypeMenu(true)} activeOpacity={0.8}>
+        <Text style={form.type ? [s.dropdownValue, { color: colors.text }] : [s.dropdownPlaceholder, { color: colors.textTertiary }]}>{form.type || 'Type *'}</Text>
+        <Ionicons name="chevron-down" size={18} color={colors.textTertiary} />
       </TouchableOpacity>
       <DropdownModal
         visible={showTypeMenu}
@@ -138,11 +137,11 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
 
       {/* Dose + Unit */}
       <View style={s.rowGap}>
-        <View style={[s.inputWrap, { flex: 1 }, focusedField === 'dosage' && s.inputFocused]}>
+        <View style={[s.inputWrap, { flex: 1, backgroundColor: colors.cardAlt, borderColor: focusedField === 'dosage' ? colors.primary : colors.cardAlt }]}>
           <TextInput
-            style={s.input}
+            style={[s.input, { color: colors.text }]}
             placeholder="Dose *"
-            placeholderTextColor="#94A3B8"
+            placeholderTextColor={colors.textTertiary}
             keyboardType="numeric"
             value={form.dosage}
             onChangeText={(v) => update('dosage', v)}
@@ -150,9 +149,9 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
             onBlur={() => setFocusedField(null)}
           />
         </View>
-        <TouchableOpacity style={[s.dropdownWrap, { flex: 0.6 }]} onPress={() => setShowUnitMenu(true)}>
-          <Text style={s.dropdownValue}>{form.dosageUnit}</Text>
-          <Ionicons name="chevron-down" size={16} color="#94A3B8" />
+        <TouchableOpacity style={[s.dropdownWrap, { flex: 0.6, backgroundColor: colors.cardAlt, borderColor: colors.cardAlt }]} onPress={() => setShowUnitMenu(true)}>
+          <Text style={[s.dropdownValue, { color: colors.text }]}>{form.dosageUnit}</Text>
+          <Ionicons name="chevron-down" size={16} color={colors.textTertiary} />
         </TouchableOpacity>
         <DropdownModal
           visible={showUnitMenu}
@@ -164,11 +163,11 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
       </View>
 
       {/* Amount */}
-      <View style={[s.inputWrap, focusedField === 'amount' && s.inputFocused]}>
+      <View style={[s.inputWrap, { backgroundColor: colors.cardAlt, borderColor: focusedField === 'amount' ? colors.primary : colors.cardAlt }]}>
         <TextInput
-          style={s.input}
+          style={[s.input, { color: colors.text }]}
           placeholder="Amount (e.g. 1 pill)"
-          placeholderTextColor="#94A3B8"
+          placeholderTextColor={colors.textTertiary}
           value={form.amount}
           onChangeText={(v) => update('amount', v)}
           onFocus={() => setFocusedField('amount')}
@@ -177,15 +176,15 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
       </View>
 
       {/* Section: Reminders */}
-      <Text style={[s.sectionLabel, { marginTop: 8 }]}>Reminders</Text>
+      <Text style={[s.sectionLabel, { marginTop: 8, color: colors.textTertiary }]}>Reminders</Text>
 
       {/* Start Date */}
-      <View style={[s.inputWrap, focusedField === 'startDate' && s.inputFocused]}>
-        <Ionicons name="calendar-outline" size={18} color="#94A3B8" style={{ marginRight: 8 }} />
+      <View style={[s.inputWrap, { backgroundColor: colors.cardAlt, borderColor: focusedField === 'startDate' ? colors.primary : colors.cardAlt }]}>
+        <Ionicons name="calendar-outline" size={18} color={colors.textTertiary} style={{ marginRight: 8 }} />
         <TextInput
-          style={s.input}
+          style={[s.input, { color: colors.text }]}
           placeholder="Start Date (YYYY-MM-DD)"
-          placeholderTextColor="#94A3B8"
+          placeholderTextColor={colors.textTertiary}
           value={form.startDate}
           onChangeText={(v) => update('startDate', v)}
           onFocus={() => setFocusedField('startDate')}
@@ -198,10 +197,10 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
         {DAYS.map((day, i) => (
           <TouchableOpacity
             key={day}
-            style={[s.dayChip, form.selectedDays.includes(i) && s.dayChipActive]}
+            style={[s.dayChip, form.selectedDays.includes(i) && { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}
             onPress={() => toggleDay(i)}
           >
-            <Text style={[s.dayChipText, form.selectedDays.includes(i) && s.dayChipTextActive]}>{day}</Text>
+            <Text style={[s.dayChipText, { color: colors.textSecondary }, form.selectedDays.includes(i) && { color: colors.primary }]}>{day}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -209,12 +208,12 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
       {/* Times */}
       {form.times.map((time, i) => (
         <View key={i} style={s.timeRow}>
-          <View style={[s.inputWrap, { flex: 1, marginBottom: 0 }, focusedField === `time${i}` && s.inputFocused]}>
-            <Ionicons name="time-outline" size={18} color="#94A3B8" style={{ marginRight: 8 }} />
+          <View style={[s.inputWrap, { flex: 1, marginBottom: 0, backgroundColor: colors.cardAlt, borderColor: focusedField === `time${i}` ? colors.primary : colors.cardAlt }]}>
+            <Ionicons name="time-outline" size={18} color={colors.textTertiary} style={{ marginRight: 8 }} />
             <TextInput
-              style={s.input}
+              style={[s.input, { color: colors.text }]}
               placeholder="HH:MM"
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor={colors.textTertiary}
               value={time}
               onChangeText={(v) => updateTime(i, v)}
               onFocus={() => setFocusedField(`time${i}`)}
@@ -229,32 +228,32 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
         </View>
       ))}
       <TouchableOpacity onPress={addTime} style={s.addTimeBtn}>
-        <Ionicons name="add-circle-outline" size={20} color={PRIMARY} />
-        <Text style={s.addTimeText}>Add Time</Text>
+        <Ionicons name="add-circle-outline" size={20} color={colors.primary} />
+        <Text style={[s.addTimeText, { color: colors.primary }]}>Add Time</Text>
       </TouchableOpacity>
 
       {/* Alarm toggle */}
-      <View style={s.alarmRow}>
+      <View style={[s.alarmRow, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <View>
-          <Text style={s.alarmTitle}>Turn on Alarm</Text>
-          <Text style={s.alarmSub}>Get notified at scheduled times</Text>
+          <Text style={[s.alarmTitle, { color: colors.text }]}>Turn on Alarm</Text>
+          <Text style={[s.alarmSub, { color: colors.textTertiary }]}>Get notified at scheduled times</Text>
         </View>
         <Switch
           value={form.alarmEnabled}
           onValueChange={(v) => update('alarmEnabled', v)}
-          trackColor={{ false: '#E2E8F0', true: '#99F6E4' }}
-          thumbColor={form.alarmEnabled ? PRIMARY : '#94A3B8'}
+          trackColor={{ false: colors.border, true: '#99F6E4' }}
+          thumbColor={form.alarmEnabled ? colors.primary : colors.textTertiary}
         />
       </View>
 
       {/* Section: Additional (collapsed by default – always visible) */}
-      <Text style={[s.sectionLabel, { marginTop: 8 }]}>Additional</Text>
+      <Text style={[s.sectionLabel, { marginTop: 8, color: colors.textTertiary }]}>Additional</Text>
 
-      <View style={[s.inputWrap, focusedField === 'doctor' && s.inputFocused]}>
+      <View style={[s.inputWrap, { backgroundColor: colors.cardAlt, borderColor: focusedField === 'doctor' ? colors.primary : colors.cardAlt }]}>
         <TextInput
-          style={s.input}
+          style={[s.input, { color: colors.text }]}
           placeholder="Doctor Name"
-          placeholderTextColor="#94A3B8"
+          placeholderTextColor={colors.textTertiary}
           value={form.doctorName}
           onChangeText={(v) => update('doctorName', v)}
           onFocus={() => setFocusedField('doctor')}
@@ -262,11 +261,11 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
         />
       </View>
 
-      <View style={[s.inputWrap, { minHeight: 80, alignItems: 'flex-start' }, focusedField === 'notes' && s.inputFocused]}>
+      <View style={[s.inputWrap, { minHeight: 80, alignItems: 'flex-start', backgroundColor: colors.cardAlt, borderColor: focusedField === 'notes' ? colors.primary : colors.cardAlt }]}>
         <TextInput
-          style={[s.input, { textAlignVertical: 'top', paddingTop: 14 }]}
+          style={[s.input, { textAlignVertical: 'top', paddingTop: 14, color: colors.text }]}
           placeholder="Notes"
-          placeholderTextColor="#94A3B8"
+          placeholderTextColor={colors.textTertiary}
           multiline
           numberOfLines={3}
           value={form.notes}
@@ -278,7 +277,7 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
 
       {/* Save button */}
       <TouchableOpacity onPress={handleSubmit} disabled={disabled} activeOpacity={0.85} style={{ marginTop: 16 }}>
-        <LinearGradient colors={disabled ? ['#94A3B8', '#94A3B8'] : [PRIMARY, PRIMARY_DARK]} style={s.saveBtn}>
+        <LinearGradient colors={disabled ? [colors.textTertiary, colors.textTertiary] : colors.primaryGrad} style={s.saveBtn}>
           <Text style={s.saveBtnText}>{loading ? 'Saving...' : (initialData ? 'Update Medicine' : 'Save')}</Text>
         </LinearGradient>
       </TouchableOpacity>
@@ -291,7 +290,6 @@ const s = StyleSheet.create({
   sectionLabel: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#94A3B8',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     marginBottom: 14,
@@ -299,19 +297,15 @@ const s = StyleSheet.create({
   inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F1F5F9',
     borderRadius: 12,
     paddingHorizontal: 16,
     marginBottom: 14,
     borderWidth: 1.5,
-    borderColor: '#F1F5F9',
     height: 56,
   },
-  inputFocused: { borderColor: PRIMARY, backgroundColor: '#FFF' },
   input: {
     flex: 1,
     fontSize: 15,
-    color: '#1E293B',
     letterSpacing: 0.2,
     height: '100%',
     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
@@ -320,16 +314,14 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#F1F5F9',
     borderRadius: 12,
     paddingHorizontal: 16,
     height: 56,
     marginBottom: 14,
     borderWidth: 1.5,
-    borderColor: '#F1F5F9',
   },
-  dropdownValue: { fontSize: 15, color: '#1E293B', fontWeight: '500' },
-  dropdownPlaceholder: { fontSize: 15, color: '#94A3B8' },
+  dropdownValue: { fontSize: 15, fontWeight: '500' },
+  dropdownPlaceholder: { fontSize: 15 },
   rowGap: { flexDirection: 'row', gap: 10 },
   dayRow: {
     flexDirection: 'row',
@@ -341,13 +333,10 @@ const s = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderRadius: 10,
-    backgroundColor: '#F1F5F9',
     borderWidth: 1.5,
-    borderColor: '#F1F5F9',
+    borderColor: 'transparent',
   },
-  dayChipActive: { backgroundColor: '#CCFBF1', borderColor: PRIMARY },
-  dayChipText: { fontSize: 13, fontWeight: '600', color: '#64748B' },
-  dayChipTextActive: { color: PRIMARY },
+  dayChipText: { fontSize: 13, fontWeight: '600' },
   timeRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -361,26 +350,24 @@ const s = StyleSheet.create({
     gap: 6,
     marginBottom: 16,
   },
-  addTimeText: { fontSize: 14, color: PRIMARY, fontWeight: '600' },
+  addTimeText: { fontSize: 14, fontWeight: '600' },
   alarmRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#FFF',
     borderRadius: 14,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
   },
-  alarmTitle: { fontSize: 15, fontWeight: '700', color: '#1E293B' },
-  alarmSub: { fontSize: 12, color: '#94A3B8', marginTop: 2 },
+  alarmTitle: { fontSize: 15, fontWeight: '700' },
+  alarmSub: { fontSize: 12, marginTop: 2 },
   saveBtn: {
     height: 56,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: PRIMARY,
+    shadowColor: '#14B8A6',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
@@ -396,10 +383,10 @@ const s = StyleSheet.create({
     padding: 40,
   },
   modalCard: {
-    backgroundColor: '#FFF',
     borderRadius: 16,
     paddingVertical: 8,
     maxHeight: 400,
+    backgroundColor: '#FFF',
   },
   modalItem: {
     flexDirection: 'row',
@@ -408,9 +395,9 @@ const s = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 20,
   },
-  modalItemActive: { backgroundColor: '#F0FDF9' },
-  modalItemText: { fontSize: 16, color: '#1E293B' },
-  modalItemTextActive: { color: PRIMARY, fontWeight: '700' },
+  modalItemActive: { backgroundColor: 'rgba(20,184,166,0.08)' },
+  modalItemText: { fontSize: 16 },
+  modalItemTextActive: { color: '#14B8A6', fontWeight: '700' },
 });
 
 export default AddMedicationForm;

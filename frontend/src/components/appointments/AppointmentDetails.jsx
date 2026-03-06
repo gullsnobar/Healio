@@ -2,34 +2,35 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Alert } from 'react-native';
 import { Card, Button, Divider } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import { useAppTheme } from '../../styles/ThemeContext';
 
-const PRIMARY_COLOR = '#0F766E';
-
-const STATUS_CONFIG = {
-  upcoming: { label: 'Upcoming', color: PRIMARY_COLOR, icon: 'time-outline' },
-  completed: { label: 'Completed', color: '#4CAF50', icon: 'checkmark-circle-outline' },
-  cancelled: { label: 'Cancelled', color: '#F44336', icon: 'close-circle-outline' },
-};
-
-const DetailRow = ({ icon, label, value, onPress, linkColor }) => (
+const DetailRow = ({ icon, label, value, onPress, linkColor, colors }) => (
   <TouchableOpacity
     style={styles.detailRow}
     onPress={onPress}
     disabled={!onPress}
     activeOpacity={onPress ? 0.6 : 1}
   >
-    <Ionicons name={icon} size={20} color={PRIMARY_COLOR} style={styles.detailIcon} />
+    <Ionicons name={icon} size={20} color={colors.primary} style={styles.detailIcon} />
     <View style={styles.detailContent}>
-      <Text style={styles.detailLabel}>{label}</Text>
-      <Text style={[styles.detailValue, linkColor && { color: linkColor, textDecorationLine: 'underline' }]}>
+      <Text style={[styles.detailLabel, { color: colors.textTertiary }]}>{label}</Text>
+      <Text style={[styles.detailValue, { color: colors.text }, linkColor && { color: linkColor, textDecorationLine: 'underline' }]}>
         {value}
       </Text>
     </View>
-    {onPress && <Ionicons name="open-outline" size={16} color="#aaa" />}
+    {onPress && <Ionicons name="open-outline" size={16} color={colors.textTertiary} />}
   </TouchableOpacity>
 );
 
 const AppointmentDetails = ({ appointment, onEdit, onDelete, onCancel }) => {
+  const { colors } = useAppTheme();
+
+  const STATUS_CONFIG = {
+    upcoming: { label: 'Upcoming', color: colors.primary, icon: 'time-outline' },
+    completed: { label: 'Completed', color: colors.success, icon: 'checkmark-circle-outline' },
+    cancelled: { label: 'Cancelled', color: colors.error, icon: 'close-circle-outline' },
+  };
+
   const {
     doctorName,
     specialty,
@@ -78,7 +79,7 @@ const AppointmentDetails = ({ appointment, onEdit, onDelete, onCancel }) => {
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]} showsVerticalScrollIndicator={false}>
       {/* Status Banner */}
       <View style={[styles.statusBanner, { backgroundColor: statusInfo.color + '15' }]}>
         <Ionicons name={statusInfo.icon} size={20} color={statusInfo.color} />
@@ -86,60 +87,61 @@ const AppointmentDetails = ({ appointment, onEdit, onDelete, onCancel }) => {
       </View>
 
       {/* Doctor Card */}
-      <Card style={styles.card}>
+      <Card style={[styles.card, { backgroundColor: colors.card }]}>
         <Card.Content>
           <View style={styles.doctorHeader}>
-            <View style={styles.avatarCircle}>
+            <View style={[styles.avatarCircle, { backgroundColor: colors.primary }]}>
               <Ionicons name="person" size={32} color="#fff" />
             </View>
             <View style={styles.doctorInfo}>
-              <Text style={styles.doctorName}>{doctorName}</Text>
-              {specialty ? <Text style={styles.specialty}>{specialty}</Text> : null}
+              <Text style={[styles.doctorName, { color: colors.text }]}>{doctorName}</Text>
+              {specialty ? <Text style={[styles.specialty, { color: colors.textSecondary }]}>{specialty}</Text> : null}
             </View>
           </View>
         </Card.Content>
       </Card>
 
       {/* Details Card */}
-      <Card style={styles.card}>
+      <Card style={[styles.card, { backgroundColor: colors.card }]}>
         <Card.Content>
-          <Text style={styles.sectionTitle}>Appointment Details</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Appointment Details</Text>
 
-          <DetailRow icon="calendar-outline" label="Date" value={date} />
+          <DetailRow icon="calendar-outline" label="Date" value={date} colors={colors} />
           <Divider style={styles.divider} />
-          <DetailRow icon="time-outline" label="Time" value={time} />
+          <DetailRow icon="time-outline" label="Time" value={time} colors={colors} />
           <Divider style={styles.divider} />
           <DetailRow
             icon="location-outline"
             label="Location"
             value={location}
             onPress={openMaps}
-            linkColor={PRIMARY_COLOR}
+            linkColor={colors.primary}
+            colors={colors}
           />
           <Divider style={styles.divider} />
-          <DetailRow icon="document-text-outline" label="Purpose" value={purpose} />
+          <DetailRow icon="document-text-outline" label="Purpose" value={purpose} colors={colors} />
 
           {notes ? (
             <>
               <Divider style={styles.divider} />
-              <DetailRow icon="create-outline" label="Notes" value={notes} />
+              <DetailRow icon="create-outline" label="Notes" value={notes} colors={colors} />
             </>
           ) : null}
         </Card.Content>
       </Card>
 
       {/* Reminder Status */}
-      <Card style={styles.card}>
+      <Card style={[styles.card, { backgroundColor: colors.card }]}>
         <Card.Content>
           <View style={styles.reminderRow}>
             <Ionicons
               name={enableReminder ? 'notifications' : 'notifications-off-outline'}
               size={22}
-              color={enableReminder ? PRIMARY_COLOR : '#aaa'}
+              color={enableReminder ? colors.primary : colors.textTertiary}
             />
             <View style={styles.reminderInfo}>
-              <Text style={styles.reminderLabel}>Reminder</Text>
-              <Text style={styles.reminderStatus}>
+              <Text style={[styles.reminderLabel, { color: colors.text }]}>Reminder</Text>
+              <Text style={[styles.reminderStatus, { color: colors.textSecondary }]}>
                 {enableReminder ? 'Enabled - You will be notified' : 'Disabled'}
               </Text>
             </View>
@@ -154,7 +156,7 @@ const AppointmentDetails = ({ appointment, onEdit, onDelete, onCancel }) => {
             mode="contained"
             onPress={() => onEdit?.(appointment)}
             style={styles.editButton}
-            buttonColor={PRIMARY_COLOR}
+            buttonColor={colors.primary}
             icon="pencil"
             contentStyle={styles.buttonContent}
           >
@@ -194,7 +196,6 @@ const AppointmentDetails = ({ appointment, onEdit, onDelete, onCancel }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
   },
   statusBanner: {
     flexDirection: 'row',
@@ -215,7 +216,6 @@ const styles = StyleSheet.create({
     marginTop: 12,
     borderRadius: 12,
     elevation: 1,
-    backgroundColor: '#fff',
   },
   doctorHeader: {
     flexDirection: 'row',
@@ -225,7 +225,6 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: PRIMARY_COLOR,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -236,17 +235,14 @@ const styles = StyleSheet.create({
   doctorName: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1a1a1a',
   },
   specialty: {
     fontSize: 14,
-    color: '#888',
     marginTop: 2,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#333',
     marginBottom: 14,
   },
   detailRow: {
@@ -262,12 +258,10 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     fontSize: 12,
-    color: '#999',
     marginBottom: 2,
   },
   detailValue: {
     fontSize: 15,
-    color: '#333',
     fontWeight: '500',
   },
   divider: {
@@ -283,11 +277,9 @@ const styles = StyleSheet.create({
   reminderLabel: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#333',
   },
   reminderStatus: {
     fontSize: 13,
-    color: '#888',
     marginTop: 2,
   },
   actions: {

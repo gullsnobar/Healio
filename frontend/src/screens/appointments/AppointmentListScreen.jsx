@@ -2,24 +2,26 @@
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
+import { useAppTheme } from '../../styles/ThemeContext';
 import AppointmentList from '../../components/appointments/AppointmentList';
 import { fetchAppointments } from '../../redux/slices/appointmentSlice';
 
 const AppointmentListScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const { appointments, loading } = useSelector((state) => state.appointment);
+  const { colors } = useAppTheme();
   useEffect(() => { dispatch(fetchAppointments()); }, []);
 
   return (
-    <View style={s.c}>
+    <View style={[s.c, { backgroundColor: colors.background }]}>
       <AppointmentList appointments={appointments} loading={loading}
         onItemPress={(apt) => navigation.navigate('AppointmentDetails', { id: apt._id })}
         onRefresh={() => dispatch(fetchAppointments())} />
-      <TouchableOpacity style={s.fab} onPress={() => navigation.navigate('AddAppointment')}>
+      <TouchableOpacity style={[s.fab, { backgroundColor: colors.primary }]} onPress={() => navigation.navigate('AddAppointment')}>
         <Ionicons name="add" size={28} color="#FFF" />
       </TouchableOpacity>
     </View>
   );
 };
-const s = StyleSheet.create({c:{flex:1,backgroundColor:'#F8FAFC'},fab:{position:'absolute',right:20,bottom:20,width:56,height:56,borderRadius:28,backgroundColor:'#0F766E',alignItems:'center',justifyContent:'center',elevation:4}});
+const s = StyleSheet.create({c:{flex:1},fab:{position:'absolute',right:20,bottom:20,width:56,height:56,borderRadius:28,alignItems:'center',justifyContent:'center',elevation:4}});
 export default AppointmentListScreen;

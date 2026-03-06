@@ -14,14 +14,13 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { authAPI } from '../../services/api/authAPI';
-
-const PRIMARY = '#0F766E';
-const PRIMARY_DARK = '#0D6560';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const ForgotPasswordScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState(false);
+  const { colors, isDark } = useAppTheme();
 
   const handleSubmit = async () => {
     if (!email.trim()) return Alert.alert('Error', 'Please enter your email');
@@ -41,30 +40,30 @@ const ForgotPasswordScreen = ({ navigation }) => {
   const disabled = loading || !email.trim();
 
   return (
-    <KeyboardAvoidingView style={s.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+    <KeyboardAvoidingView style={[s.container, { backgroundColor: colors.background }]} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
       <ScrollView
         contentContainerStyle={s.scroll}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         {/* Back button */}
-        <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#475569" />
+        <TouchableOpacity onPress={() => navigation.goBack()} style={[s.backBtn, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <Ionicons name="chevron-back" size={24} color={colors.textSecondary} />
         </TouchableOpacity>
 
         {/* Heading */}
-        <Text style={s.title}>Forgot Password?</Text>
-        <Text style={s.subtitle}>
+        <Text style={[s.title, { color: colors.text }]}>Forgot Password?</Text>
+        <Text style={[s.subtitle, { color: colors.textSecondary }]}>
           Don't worry! It occurs. Please enter the email address linked with your account.
         </Text>
 
         {/* Email input */}
-        <View style={[s.inputWrap, focused && s.inputFocused]}>
+        <View style={[s.inputWrap, { backgroundColor: colors.cardAlt, borderColor: focused ? colors.primary : colors.cardAlt }]}>
           <TextInput
-            style={s.input}
+            style={[s.input, { color: colors.text }]}
             placeholder="Enter your email"
-            placeholderTextColor="#94A3B8"
+            placeholderTextColor={colors.textTertiary}
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -77,16 +76,16 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
         {/* Send Code button */}
         <TouchableOpacity onPress={handleSubmit} disabled={disabled} activeOpacity={0.85} style={{ marginBottom: 32 }}>
-          <LinearGradient colors={disabled ? ['#94A3B8', '#94A3B8'] : [PRIMARY, PRIMARY_DARK]} style={s.primaryBtn}>
+          <LinearGradient colors={disabled ? [colors.textTertiary, colors.textTertiary] : colors.primaryGrad} style={s.primaryBtn}>
             <Text style={s.primaryBtnText}>{loading ? 'Sending...' : 'Send Code'}</Text>
           </LinearGradient>
         </TouchableOpacity>
 
         {/* Back to login */}
         <View style={s.linkRow}>
-          <Text style={s.linkLabel}>Remember Password? </Text>
+          <Text style={[s.linkLabel, { color: colors.textSecondary }]}>Remember Password? </Text>
           <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-            <Text style={s.linkAction}>Login</Text>
+            <Text style={[s.linkAction, { color: colors.primary }]}>Login</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -97,7 +96,6 @@ const ForgotPasswordScreen = ({ navigation }) => {
 const s = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
   },
   scroll: {
     flexGrow: 1,
@@ -109,46 +107,35 @@ const s = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: '#FFF',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
     marginBottom: 24,
   },
   title: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#1E293B',
     lineHeight: 38,
     letterSpacing: -0.3,
     marginBottom: 12,
   },
   subtitle: {
     fontSize: 15,
-    color: '#64748B',
     lineHeight: 22,
     marginBottom: 32,
   },
   inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F1F5F9',
     borderRadius: 12,
     paddingHorizontal: 16,
     marginBottom: 32,
     borderWidth: 1.5,
-    borderColor: '#F1F5F9',
     height: 56,
-  },
-  inputFocused: {
-    borderColor: PRIMARY,
-    backgroundColor: '#FFF',
   },
   input: {
     flex: 1,
     fontSize: 15,
-    color: '#1E293B',
     letterSpacing: 0.2,
     height: '100%',
     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
@@ -158,7 +145,7 @@ const s = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: PRIMARY,
+    shadowColor: '#14B8A6',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
@@ -171,8 +158,8 @@ const s = StyleSheet.create({
     letterSpacing: 0.5,
   },
   linkRow: { flexDirection: 'row', justifyContent: 'center' },
-  linkLabel: { fontSize: 14, color: '#64748B' },
-  linkAction: { fontSize: 14, color: PRIMARY, fontWeight: '700' },
+  linkLabel: { fontSize: 14 },
+  linkAction: { fontSize: 14, fontWeight: '700' },
 });
 
 export default ForgotPasswordScreen;

@@ -1,25 +1,27 @@
 import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import colors from '../../styles/colors';
+import { useAppTheme } from '../../styles/ThemeContext';
 
-const PRIMARY = colors.primary;
+const Loading = ({ message, size = 'large', style, overlay = false }) => {
+  const { colors: themeColors } = useAppTheme();
+  const color = themeColors.primary;
 
-const Loading = ({ message, color = PRIMARY, size = 'large', style, overlay = false }) => {
   if (overlay) {
     return (
       <View style={[styles.overlay, style]}>
-        <View style={styles.overlayCard}>
+        <View style={[styles.overlayCard, { backgroundColor: themeColors.card }]}>
           <ActivityIndicator size={size} color={color} />
-          {!!message && <Text style={styles.overlayMessage}>{message}</Text>}
+          {!!message && <Text style={[styles.overlayMessage, { color: themeColors.textSecondary }]}>{message}</Text>}
         </View>
       </View>
     );
   }
 
   return (
-    <View style={[styles.container, style]}>
+    <View style={[styles.container, { backgroundColor: themeColors.background }, style]}>
       <ActivityIndicator size={size} color={color} />
-      {!!message && <Text style={styles.message}>{message}</Text>}
+      {!!message && <Text style={[styles.message, { color: themeColors.textSecondary }]}>{message}</Text>}
     </View>
   );
 };
@@ -29,13 +31,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
     paddingVertical: 24,
   },
   message: {
     marginTop: 14,
     fontSize: 15,
-    color: '#6B7280',
     textAlign: 'center',
     fontWeight: '500',
   },
@@ -47,7 +47,6 @@ const styles = StyleSheet.create({
     zIndex: 999,
   },
   overlayCard: {
-    backgroundColor: '#fff',
     borderRadius: 16,
     paddingVertical: 28,
     paddingHorizontal: 36,
@@ -61,7 +60,6 @@ const styles = StyleSheet.create({
   overlayMessage: {
     marginTop: 14,
     fontSize: 15,
-    color: '#6B7280',
     textAlign: 'center',
     fontWeight: '500',
   },

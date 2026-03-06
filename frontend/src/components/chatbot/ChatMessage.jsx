@@ -1,13 +1,41 @@
 ﻿import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useAppTheme } from '../../styles/ThemeContext';
+
 const ChatMessage = ({ message }) => {
+  const { colors } = useAppTheme();
   const isUser = message.role === 'user';
   return (
-    <View style={[s.bubble, isUser ? s.user : s.bot]}>
-      <Text style={[s.text, isUser && s.userText]}>{message.content}</Text>
-      <Text style={s.time}>{message.timestamp || ''}</Text>
+    <View style={[s.row, isUser && s.rowUser]}>
+      {!isUser && (
+        <View style={[s.avatarBot, { backgroundColor: colors.aiBot }]}>
+          <Ionicons name="medical" size={18} color={colors.aiBotIcon} />
+        </View>
+      )}
+      <View style={[s.bubble, isUser ? [s.user, { backgroundColor: colors.primary }] : [s.bot, { backgroundColor: colors.card }]]}>
+        <Text style={[s.text, { color: colors.text }, isUser && s.userText]}>{message.content}</Text>
+        <Text style={[s.time, isUser && s.timeUser, !isUser && { color: colors.textTertiary }]}>{message.timestamp || ''}</Text>
+      </View>
+      {isUser && (
+        <View style={[s.avatarUser, { backgroundColor: colors.primary }]}>
+          <Ionicons name="person" size={16} color="#FFF" />
+        </View>
+      )}
     </View>
   );
 };
-const s = StyleSheet.create({bubble:{maxWidth:'80%',padding:12,borderRadius:16,marginBottom:8},user:{alignSelf:'flex-end',backgroundColor:'#0F766E',borderBottomRightRadius:4},bot:{alignSelf:'flex-start',backgroundColor:'#FFF',borderBottomLeftRadius:4,elevation:1},text:{fontSize:15,color:'#1F2937',lineHeight:22},userText:{color:'#FFF'},time:{fontSize:10,color:'#94A3B8',marginTop:4,alignSelf:'flex-end'}});
+const s = StyleSheet.create({
+  row: { flexDirection: 'row', alignItems: 'flex-end', marginBottom: 8 },
+  rowUser: { justifyContent: 'flex-end' },
+  avatarBot: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', marginRight: 8, marginBottom: 2 },
+  avatarUser: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginLeft: 8, marginBottom: 2 },
+  bubble: { maxWidth: '75%', padding: 12, borderRadius: 16 },
+  user: { borderBottomRightRadius: 4 },
+  bot: { borderBottomLeftRadius: 4, elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
+  text: { fontSize: 15, lineHeight: 22 },
+  userText: { color: '#FFF' },
+  time: { fontSize: 10, marginTop: 4, alignSelf: 'flex-end' },
+  timeUser: { color: 'rgba(255,255,255,0.7)' },
+});
 export default ChatMessage;

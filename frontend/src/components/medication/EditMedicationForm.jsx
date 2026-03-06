@@ -2,9 +2,11 @@ import React from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { Button } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import { useAppTheme } from '../../styles/ThemeContext';
 import AddMedicationForm from './AddMedicationForm';
 
 const EditMedicationForm = ({ initialData, onSubmit, onDelete }) => {
+  const { colors } = useAppTheme();
   const handleDelete = () => {
     Alert.alert(
       'Delete Medication',
@@ -29,7 +31,7 @@ const EditMedicationForm = ({ initialData, onSubmit, onDelete }) => {
           mode="outlined"
           onPress={handleDelete}
           style={styles.deleteBtn}
-          textColor="#e74c3c"
+          textColor={colors.error}
           icon={({ size, color }) => (
             <Ionicons name="trash-outline" size={size} color={color} />
           )}
@@ -51,7 +53,7 @@ const styles = StyleSheet.create({
   },
   deleteBtn: {
     borderRadius: 12,
-    borderColor: '#e74c3c',
+    borderColor: '#EF4444',
   },
 });
 

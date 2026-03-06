@@ -1,12 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const Footer = ({ text, style }) => {
+  const { colors } = useAppTheme();
   const year = new Date().getFullYear();
 
   return (
-    <View style={[styles.container, style]}>
-      <Text style={styles.text}>
+    <View style={[styles.container, { borderTopColor: colors.border }, style]}>
+      <Text style={[styles.text, { color: colors.textTertiary }]}>
         {text || `\u00A9 ${year} Healio. All rights reserved.`}
       </Text>
     </View>
@@ -19,11 +21,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#E0E0E0',
   },
   text: {
     fontSize: 13,
-    color: '#999',
   },
 });
 

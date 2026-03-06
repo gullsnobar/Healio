@@ -1,9 +1,13 @@
 ﻿import React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
+import { useAppTheme } from '../../styles/ThemeContext';
 import PrivacySettings from '../../components/profile/PrivacySettings';
 
-const PrivacySettingsScreen = () => (
-  <ScrollView style={s.c}><PrivacySettings settings={null} onUpdate={() => {}} /></ScrollView>
-);
-const s = StyleSheet.create({ c: { flex: 1, backgroundColor: '#F5F7FA', padding: 16 } });
+const PrivacySettingsScreen = () => {
+  const { colors } = useAppTheme();
+  return (
+    <ScrollView style={[s.c, { backgroundColor: colors.background }]}><PrivacySettings settings={null} onUpdate={() => {}} /></ScrollView>
+  );
+};
+const s = StyleSheet.create({ c: { flex: 1, padding: 16 } });
 export default PrivacySettingsScreen;

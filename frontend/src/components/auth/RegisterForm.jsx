@@ -10,11 +10,10 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-
-const PRIMARY = '#0F766E';
-const PRIMARY_DARK = '#0D6560';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const RegisterForm = ({ onSubmit, onLogin, onGoogleSignIn }) => {
+  const { colors } = useAppTheme();
   const [form, setForm] = useState({
     fullName: '',
     email: '',
@@ -67,16 +66,27 @@ const RegisterForm = ({ onSubmit, onLogin, onGoogleSignIn }) => {
   const canSubmit = form.fullName && form.email && form.phone && form.password && form.confirmPassword;
   const disabled = loading || !canSubmit;
 
+  const FIELD_ICONS = {
+    fullName: 'person-outline',
+    email: 'mail-outline',
+    phone: 'call-outline',
+    password: 'lock-closed-outline',
+    confirmPassword: 'shield-checkmark-outline',
+  };
+
   const renderInput = (key, placeholder, extra = {}) => {
     const isFocused = focusedField === key;
     const hasError = !!errors[key];
     return (
       <View key={key} style={{ marginBottom: hasError ? 4 : 16 }}>
-        <View style={[s.inputWrap, isFocused && s.inputFocused, hasError && s.inputError]}>
+        <View style={[s.inputWrap, { backgroundColor: colors.cardAlt, borderColor: colors.cardAlt },
+          isFocused && { borderColor: colors.primary, backgroundColor: colors.card },
+          hasError && { borderColor: colors.error }]}>
+          <Ionicons name={FIELD_ICONS[key] || 'ellipse-outline'} size={20} color={isFocused ? colors.primary : colors.textTertiary} style={s.inputIcon} />
           <TextInput
             style={s.input}
             placeholder={placeholder}
-            placeholderTextColor="#94A3B8"
+            placeholderTextColor={colors.textTertiary}
             value={form[key]}
             onChangeText={(v) => update(key, v)}
             autoCapitalize={extra.autoCapitalize ?? 'none'}
@@ -90,7 +100,7 @@ const RegisterForm = ({ onSubmit, onLogin, onGoogleSignIn }) => {
           />
           {extra.toggle && (
             <TouchableOpacity onPress={extra.toggle} style={s.eyeBtn}>
-              <Ionicons name={extra.secure ? 'eye-off-outline' : 'eye-outline'} size={20} color="#94A3B8" />
+              <Ionicons name={extra.secure ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textTertiary} />
             </TouchableOpacity>
           )}
         </View>
@@ -119,30 +129,31 @@ const RegisterForm = ({ onSubmit, onLogin, onGoogleSignIn }) => {
 
       {/* Register button */}
       <TouchableOpacity onPress={handleRegister} disabled={disabled} activeOpacity={0.85} style={{ marginTop: 8, marginBottom: 24 }}>
-        <LinearGradient colors={disabled ? ['#94A3B8', '#94A3B8'] : [PRIMARY, PRIMARY_DARK]} style={s.primaryBtn}>
+        <LinearGradient colors={disabled ? [colors.textTertiary, colors.textTertiary] : colors.primaryGrad} style={s.primaryBtn}>
+          <Ionicons name="person-add-outline" size={20} color="#FFF" style={{ marginRight: 8 }} />
           <Text style={s.primaryBtnText}>{loading ? 'Creating Account...' : 'Register'}</Text>
         </LinearGradient>
       </TouchableOpacity>
 
       {/* Divider */}
       <View style={s.dividerRow}>
-        <View style={s.dividerLine} />
-        <Text style={s.dividerText}>Or</Text>
-        <View style={s.dividerLine} />
+        <View style={[s.dividerLine, { backgroundColor: colors.border }]} />
+        <Text style={[s.dividerText, { color: colors.textTertiary }]}>Or</Text>
+        <View style={[s.dividerLine, { backgroundColor: colors.border }]} />
       </View>
 
       {/* Google sign-in */}
-      <TouchableOpacity style={s.googleBtn} activeOpacity={0.8} onPress={onGoogleSignIn}>
+      <TouchableOpacity style={[s.googleBtn, { borderColor: colors.border, backgroundColor: colors.card }]} activeOpacity={0.8} onPress={onGoogleSignIn}>
         <Ionicons name="logo-google" size={20} color="#DB4437" />
-        <Text style={s.googleText}>Continue with Google</Text>
+        <Text style={[s.googleText, { color: colors.text }]}>Continue with Google</Text>
       </TouchableOpacity>
 
       {/* Login link */}
       {onLogin && (
         <View style={s.linkRow}>
-          <Text style={s.linkLabel}>Already have an account? </Text>
+          <Text style={[s.linkLabel, { color: colors.textSecondary }]}>Already have an account? </Text>
           <TouchableOpacity onPress={onLogin}>
-            <Text style={s.linkAction}>Login</Text>
+            <Text style={[s.linkAction, { color: colors.primary }]}>Login</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -155,24 +166,14 @@ const s = StyleSheet.create({
   inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F1F5F9',
     borderRadius: 12,
     paddingHorizontal: 16,
     borderWidth: 1.5,
-    borderColor: '#F1F5F9',
     height: 56,
-  },
-  inputFocused: {
-    borderColor: PRIMARY,
-    backgroundColor: '#FFF',
-  },
-  inputError: {
-    borderColor: '#EF4444',
   },
   input: {
     flex: 1,
     fontSize: 15,
-    color: '#1E293B',
     letterSpacing: 0.2,
     height: '100%',
     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
@@ -189,9 +190,10 @@ const s = StyleSheet.create({
   primaryBtn: {
     height: 56,
     borderRadius: 12,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: PRIMARY,
+    shadowColor: '#14B8A6',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
@@ -208,8 +210,8 @@ const s = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 24,
   },
-  dividerLine: { flex: 1, height: 1, backgroundColor: '#E2E8F0' },
-  dividerText: { marginHorizontal: 16, fontSize: 13, color: '#94A3B8', fontWeight: '500' },
+  dividerLine: { flex: 1, height: 1 },
+  dividerText: { marginHorizontal: 16, fontSize: 13, fontWeight: '500' },
   googleBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -217,19 +219,17 @@ const s = StyleSheet.create({
     height: 56,
     borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: '#E2E8F0',
-    backgroundColor: '#FFF',
     marginBottom: 32,
     gap: 10,
   },
   googleText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#1E293B',
   },
   linkRow: { flexDirection: 'row', justifyContent: 'center' },
-  linkLabel: { fontSize: 14, color: '#64748B' },
-  linkAction: { fontSize: 14, color: PRIMARY, fontWeight: '700' },
+  linkLabel: { fontSize: 14 },
+  linkAction: { fontSize: 14, fontWeight: '700' },
+  inputIcon: { marginRight: 10 },
 });
 
 export default RegisterForm;

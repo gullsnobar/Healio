@@ -11,8 +11,7 @@ import {
 import { TextInput, Switch, Menu, Button } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
-const PRIMARY_COLOR = '#0F766E';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const PURPOSE_OPTIONS = [
   'General Checkup',
@@ -25,6 +24,7 @@ const PURPOSE_OPTIONS = [
 ];
 
 const EditAppointmentForm = ({ initialData = {}, onSubmit, onDelete, onCancel }) => {
+  const { colors } = useAppTheme();
   const [doctorName, setDoctorName] = useState(initialData.doctorName || '');
   const [specialty, setSpecialty] = useState(initialData.specialty || '');
   const [location, setLocation] = useState(initialData.location || '');
@@ -120,18 +120,18 @@ const EditAppointmentForm = ({ initialData = {}, onSubmit, onDelete, onCancel })
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]} showsVerticalScrollIndicator={false}>
       <View style={styles.form}>
-        <Text style={styles.sectionTitle}>Doctor Information</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Doctor Information</Text>
 
         <TextInput
           label="Doctor Name *"
           value={doctorName}
           onChangeText={setDoctorName}
           mode="outlined"
-          style={styles.input}
-          outlineColor="#ddd"
-          activeOutlineColor={PRIMARY_COLOR}
+          style={[styles.input, { backgroundColor: colors.card }]}
+          outlineColor={colors.border}
+          activeOutlineColor={colors.primary}
           left={<TextInput.Icon icon="doctor" />}
         />
 
@@ -140,9 +140,9 @@ const EditAppointmentForm = ({ initialData = {}, onSubmit, onDelete, onCancel })
           value={specialty}
           onChangeText={setSpecialty}
           mode="outlined"
-          style={styles.input}
-          outlineColor="#ddd"
-          activeOutlineColor={PRIMARY_COLOR}
+          style={[styles.input, { backgroundColor: colors.card }]}
+          outlineColor={colors.border}
+          activeOutlineColor={colors.primary}
           left={<TextInput.Icon icon="medical-bag" />}
         />
 
@@ -151,18 +151,18 @@ const EditAppointmentForm = ({ initialData = {}, onSubmit, onDelete, onCancel })
           value={location}
           onChangeText={setLocation}
           mode="outlined"
-          style={styles.input}
-          outlineColor="#ddd"
-          activeOutlineColor={PRIMARY_COLOR}
+          style={[styles.input, { backgroundColor: colors.card }]}
+          outlineColor={colors.border}
+          activeOutlineColor={colors.primary}
           left={<TextInput.Icon icon="map-marker" />}
         />
 
-        <Text style={[styles.sectionTitle, { marginTop: 20 }]}>Date & Time</Text>
+        <Text style={[styles.sectionTitle, { marginTop: 20, color: colors.text }]}>Date & Time</Text>
 
-        <TouchableOpacity style={styles.pickerButton} onPress={() => setShowDatePicker(true)}>
-          <Ionicons name="calendar-outline" size={20} color={PRIMARY_COLOR} />
-          <Text style={styles.pickerText}>{formatDate(date)}</Text>
-          <Ionicons name="chevron-down" size={18} color="#888" />
+        <TouchableOpacity style={[styles.pickerButton, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={() => setShowDatePicker(true)}>
+          <Ionicons name="calendar-outline" size={20} color={colors.primary} />
+          <Text style={[styles.pickerText, { color: colors.text }]}>{formatDate(date)}</Text>
+          <Ionicons name="chevron-down" size={18} color={colors.textTertiary} />
         </TouchableOpacity>
 
         {showDatePicker && (
@@ -175,10 +175,10 @@ const EditAppointmentForm = ({ initialData = {}, onSubmit, onDelete, onCancel })
           />
         )}
 
-        <TouchableOpacity style={styles.pickerButton} onPress={() => setShowTimePicker(true)}>
-          <Ionicons name="time-outline" size={20} color={PRIMARY_COLOR} />
-          <Text style={styles.pickerText}>{formatTime(time)}</Text>
-          <Ionicons name="chevron-down" size={18} color="#888" />
+        <TouchableOpacity style={[styles.pickerButton, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={() => setShowTimePicker(true)}>
+          <Ionicons name="time-outline" size={20} color={colors.primary} />
+          <Text style={[styles.pickerText, { color: colors.text }]}>{formatTime(time)}</Text>
+          <Ionicons name="chevron-down" size={18} color={colors.textTertiary} />
         </TouchableOpacity>
 
         {showTimePicker && (
@@ -190,21 +190,21 @@ const EditAppointmentForm = ({ initialData = {}, onSubmit, onDelete, onCancel })
           />
         )}
 
-        <Text style={[styles.sectionTitle, { marginTop: 20 }]}>Details</Text>
+        <Text style={[styles.sectionTitle, { marginTop: 20, color: colors.text }]}>Details</Text>
 
         <Menu
           visible={showPurposeMenu}
           onDismiss={() => setShowPurposeMenu(false)}
           anchor={
             <TouchableOpacity
-              style={styles.pickerButton}
+              style={[styles.pickerButton, { backgroundColor: colors.card, borderColor: colors.border }]}
               onPress={() => setShowPurposeMenu(true)}
             >
-              <Ionicons name="document-text-outline" size={20} color={PRIMARY_COLOR} />
-              <Text style={[styles.pickerText, !purpose && { color: '#999' }]}>
+              <Ionicons name="document-text-outline" size={20} color={colors.primary} />
+              <Text style={[styles.pickerText, { color: purpose ? colors.text : colors.textTertiary }]}>
                 {purpose || 'Select Purpose *'}
               </Text>
-              <Ionicons name="chevron-down" size={18} color="#888" />
+              <Ionicons name="chevron-down" size={18} color={colors.textTertiary} />
             </TouchableOpacity>
           }
         >
@@ -226,9 +226,9 @@ const EditAppointmentForm = ({ initialData = {}, onSubmit, onDelete, onCancel })
             value={customPurpose}
             onChangeText={setCustomPurpose}
             mode="outlined"
-            style={styles.input}
-            outlineColor="#ddd"
-            activeOutlineColor={PRIMARY_COLOR}
+            style={[styles.input, { backgroundColor: colors.card }]}
+            outlineColor={colors.border}
+            activeOutlineColor={colors.primary}
           />
         )}
 
@@ -237,26 +237,26 @@ const EditAppointmentForm = ({ initialData = {}, onSubmit, onDelete, onCancel })
           value={notes}
           onChangeText={setNotes}
           mode="outlined"
-          style={styles.input}
-          outlineColor="#ddd"
-          activeOutlineColor={PRIMARY_COLOR}
+          style={[styles.input, { backgroundColor: colors.card }]}
+          outlineColor={colors.border}
+          activeOutlineColor={colors.primary}
           multiline
           numberOfLines={3}
           left={<TextInput.Icon icon="note-text" />}
         />
 
-        <View style={styles.reminderRow}>
+        <View style={[styles.reminderRow, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <View style={styles.reminderInfo}>
-            <Ionicons name="notifications-outline" size={22} color={PRIMARY_COLOR} />
+            <Ionicons name="notifications-outline" size={22} color={colors.primary} />
             <View style={styles.reminderTextContainer}>
-              <Text style={styles.reminderLabel}>Enable Reminder</Text>
-              <Text style={styles.reminderDesc}>Get notified before appointment</Text>
+              <Text style={[styles.reminderLabel, { color: colors.text }]}>Enable Reminder</Text>
+              <Text style={[styles.reminderDesc, { color: colors.textTertiary }]}>Get notified before appointment</Text>
             </View>
           </View>
           <Switch
             value={enableReminder}
             onValueChange={setEnableReminder}
-            color={PRIMARY_COLOR}
+            color={colors.primary}
           />
         </View>
 
@@ -266,7 +266,7 @@ const EditAppointmentForm = ({ initialData = {}, onSubmit, onDelete, onCancel })
           loading={submitting}
           disabled={submitting}
           style={styles.submitButton}
-          buttonColor={PRIMARY_COLOR}
+          buttonColor={colors.primary}
           contentStyle={styles.buttonContent}
           labelStyle={styles.buttonLabel}
         >
@@ -278,7 +278,7 @@ const EditAppointmentForm = ({ initialData = {}, onSubmit, onDelete, onCancel })
             mode="outlined"
             onPress={onCancel}
             style={[styles.actionButton, styles.cancelButton]}
-            textColor="#666"
+            textColor={colors.textSecondary}
             contentStyle={styles.buttonContent}
           >
             Cancel
@@ -301,7 +301,6 @@ const EditAppointmentForm = ({ initialData = {}, onSubmit, onDelete, onCancel })
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
   },
   form: {
     padding: 16,
@@ -310,19 +309,15 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#333',
     marginBottom: 12,
   },
   input: {
     marginBottom: 12,
-    backgroundColor: '#fff',
   },
   pickerButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#ddd',
     borderRadius: 6,
     padding: 14,
     marginBottom: 12,
@@ -330,20 +325,17 @@ const styles = StyleSheet.create({
   pickerText: {
     flex: 1,
     fontSize: 15,
-    color: '#333',
     marginLeft: 10,
   },
   reminderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#fff',
     borderRadius: 8,
     padding: 14,
     marginTop: 8,
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: '#eee',
   },
   reminderInfo: {
     flexDirection: 'row',
@@ -356,11 +348,9 @@ const styles = StyleSheet.create({
   reminderLabel: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#333',
   },
   reminderDesc: {
     fontSize: 12,
-    color: '#888',
     marginTop: 2,
   },
   submitButton: {
@@ -384,7 +374,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   cancelButton: {
-    borderColor: '#ccc',
   },
   deleteButton: {
     borderColor: '#F44336',

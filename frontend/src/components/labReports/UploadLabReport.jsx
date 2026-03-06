@@ -12,8 +12,7 @@ import { TextInput, Menu, Button, ProgressBar } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as DocumentPicker from 'expo-document-picker';
-
-const PRIMARY_COLOR = '#0F766E';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const REPORT_TYPES = [
   { key: 'blood', label: 'Blood Test' },
@@ -25,6 +24,7 @@ const REPORT_TYPES = [
 ];
 
 const UploadLabReport = ({ onUpload }) => {
+  const { colors } = useAppTheme();
   const [title, setTitle] = useState('');
   const [reportType, setReportType] = useState('');
   const [reportTypeLabel, setReportTypeLabel] = useState('');
@@ -126,18 +126,18 @@ const UploadLabReport = ({ onUpload }) => {
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]} showsVerticalScrollIndicator={false}>
       <View style={styles.form}>
-        <Text style={styles.sectionTitle}>Report Information</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Report Information</Text>
 
         <TextInput
           label="Report Title *"
           value={title}
           onChangeText={setTitle}
           mode="outlined"
-          style={styles.input}
-          outlineColor="#ddd"
-          activeOutlineColor={PRIMARY_COLOR}
+          style={[styles.input, { backgroundColor: colors.card }]}
+          outlineColor={colors.border}
+          activeOutlineColor={colors.primary}
           left={<TextInput.Icon icon="file-document-outline" />}
         />
 
@@ -146,14 +146,14 @@ const UploadLabReport = ({ onUpload }) => {
           onDismiss={() => setShowTypeMenu(false)}
           anchor={
             <TouchableOpacity
-              style={styles.pickerButton}
+              style={[styles.pickerButton, { backgroundColor: colors.card, borderColor: colors.border }]}
               onPress={() => setShowTypeMenu(true)}
             >
-              <Ionicons name="flask-outline" size={20} color={PRIMARY_COLOR} />
-              <Text style={[styles.pickerText, !reportType && { color: '#999' }]}>
+              <Ionicons name="flask-outline" size={20} color={colors.primary} />
+              <Text style={[styles.pickerText, { color: reportType ? colors.text : colors.textTertiary }]}>
                 {reportTypeLabel || 'Select Report Type *'}
               </Text>
-              <Ionicons name="chevron-down" size={18} color="#888" />
+              <Ionicons name="chevron-down" size={18} color={colors.textTertiary} />
             </TouchableOpacity>
           }
         >
@@ -170,10 +170,10 @@ const UploadLabReport = ({ onUpload }) => {
           ))}
         </Menu>
 
-        <TouchableOpacity style={styles.pickerButton} onPress={() => setShowDatePicker(true)}>
-          <Ionicons name="calendar-outline" size={20} color={PRIMARY_COLOR} />
-          <Text style={styles.pickerText}>{formatDate(date)}</Text>
-          <Ionicons name="chevron-down" size={18} color="#888" />
+        <TouchableOpacity style={[styles.pickerButton, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={() => setShowDatePicker(true)}>
+          <Ionicons name="calendar-outline" size={20} color={colors.primary} />
+          <Text style={[styles.pickerText, { color: colors.text }]}>{formatDate(date)}</Text>
+          <Ionicons name="chevron-down" size={18} color={colors.textTertiary} />
         </TouchableOpacity>
 
         {showDatePicker && (
@@ -185,47 +185,47 @@ const UploadLabReport = ({ onUpload }) => {
           />
         )}
 
-        <Text style={[styles.sectionTitle, { marginTop: 20 }]}>File Upload</Text>
+        <Text style={[styles.sectionTitle, { marginTop: 20, color: colors.text }]}>File Upload</Text>
 
         {!selectedFile ? (
-          <TouchableOpacity style={styles.filePickerArea} onPress={pickFile}>
-            <Ionicons name="cloud-upload-outline" size={40} color={PRIMARY_COLOR} />
-            <Text style={styles.filePickerTitle}>Tap to select a file</Text>
-            <Text style={styles.filePickerHint}>PDF or Image files accepted</Text>
+          <TouchableOpacity style={[styles.filePickerArea, { borderColor: colors.primary + '40', backgroundColor: colors.primary + '08' }]} onPress={pickFile}>
+            <Ionicons name="cloud-upload-outline" size={40} color={colors.primary} />
+            <Text style={[styles.filePickerTitle, { color: colors.text }]}>Tap to select a file</Text>
+            <Text style={[styles.filePickerHint, { color: colors.textTertiary }]}>PDF or Image files accepted</Text>
           </TouchableOpacity>
         ) : (
-          <View style={styles.selectedFileCard}>
+          <View style={[styles.selectedFileCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <Ionicons
               name={selectedFile.mimeType?.includes('pdf') ? 'document' : 'image'}
               size={28}
-              color={PRIMARY_COLOR}
+              color={colors.primary}
             />
             <View style={styles.fileInfo}>
-              <Text style={styles.fileName} numberOfLines={1}>
+              <Text style={[styles.fileName, { color: colors.text }]} numberOfLines={1}>
                 {selectedFile.name}
               </Text>
-              <Text style={styles.fileSize}>
+              <Text style={[styles.fileSize, { color: colors.textTertiary }]}>
                 {selectedFile.size
                   ? `${(selectedFile.size / 1024).toFixed(1)} KB`
                   : 'Unknown size'}
               </Text>
             </View>
             <TouchableOpacity onPress={removeFile} style={styles.removeFile}>
-              <Ionicons name="close-circle" size={22} color="#F44336" />
+              <Ionicons name="close-circle" size={22} color={colors.error} />
             </TouchableOpacity>
           </View>
         )}
 
-        <Text style={[styles.sectionTitle, { marginTop: 20 }]}>Additional Notes</Text>
+        <Text style={[styles.sectionTitle, { marginTop: 20, color: colors.text }]}>Additional Notes</Text>
 
         <TextInput
           label="Notes (optional)"
           value={notes}
           onChangeText={setNotes}
           mode="outlined"
-          style={styles.input}
-          outlineColor="#ddd"
-          activeOutlineColor={PRIMARY_COLOR}
+          style={[styles.input, { backgroundColor: colors.card }]}
+          outlineColor={colors.border}
+          activeOutlineColor={colors.primary}
           multiline
           numberOfLines={3}
           left={<TextInput.Icon icon="note-text-outline" />}
@@ -234,14 +234,14 @@ const UploadLabReport = ({ onUpload }) => {
         {uploading && (
           <View style={styles.progressContainer}>
             <View style={styles.progressHeader}>
-              <Text style={styles.progressText}>Uploading...</Text>
-              <Text style={styles.progressPercent}>
+              <Text style={[styles.progressText, { color: colors.textSecondary }]}>Uploading...</Text>
+              <Text style={[styles.progressPercent, { color: colors.primary }]}>
                 {Math.round(uploadProgress * 100)}%
               </Text>
             </View>
             <ProgressBar
               progress={uploadProgress}
-              color={PRIMARY_COLOR}
+              color={colors.primary}
               style={styles.progressBar}
             />
           </View>
@@ -253,7 +253,7 @@ const UploadLabReport = ({ onUpload }) => {
           loading={uploading}
           disabled={uploading}
           style={styles.uploadButton}
-          buttonColor={PRIMARY_COLOR}
+          buttonColor={colors.primary}
           icon="upload"
           contentStyle={styles.buttonContent}
           labelStyle={styles.buttonLabel}
@@ -268,7 +268,6 @@ const UploadLabReport = ({ onUpload }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
   },
   form: {
     padding: 16,
@@ -277,19 +276,15 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#333',
     marginBottom: 12,
   },
   input: {
     marginBottom: 12,
-    backgroundColor: '#fff',
   },
   pickerButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#ddd',
     borderRadius: 6,
     padding: 14,
     marginBottom: 12,
@@ -297,35 +292,28 @@ const styles = StyleSheet.create({
   pickerText: {
     flex: 1,
     fontSize: 15,
-    color: '#333',
     marginLeft: 10,
   },
   filePickerArea: {
     borderWidth: 2,
-    borderColor: PRIMARY_COLOR + '40',
     borderStyle: 'dashed',
     borderRadius: 12,
     padding: 32,
     alignItems: 'center',
-    backgroundColor: PRIMARY_COLOR + '08',
   },
   filePickerTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#333',
     marginTop: 10,
   },
   filePickerHint: {
     fontSize: 13,
-    color: '#999',
     marginTop: 4,
   },
   selectedFileCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#ddd',
     borderRadius: 10,
     padding: 14,
   },
@@ -336,11 +324,9 @@ const styles = StyleSheet.create({
   fileName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
   },
   fileSize: {
     fontSize: 12,
-    color: '#999',
     marginTop: 2,
   },
   removeFile: {
@@ -357,12 +343,10 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 13,
-    color: '#666',
   },
   progressPercent: {
     fontSize: 13,
     fontWeight: '600',
-    color: PRIMARY_COLOR,
   },
   progressBar: {
     height: 6,

@@ -16,7 +16,7 @@ const TYPE_TABS = [
 ];
 
 const TYPE_COLORS = {
-  medication: '#0F766E',
+  medication: '#14B8A6',
   appointment: '#6366F1',
   lab: '#F59E0B',
 };
@@ -93,7 +93,7 @@ const RemindersScreen = ({ navigation }) => {
 
   return (
     <View style={[s.container, { backgroundColor: isDark ? '#0F172A' : '#F8FAFC' }]}>
-      <StatusBar barStyle="light-content" backgroundColor="#0F766E" />
+      <StatusBar barStyle="light-content" backgroundColor={colors.primaryDark} />
 
       {/* Type Tabs */}
       <View style={[s.tabBar, { backgroundColor: isDark ? '#1E293B' : '#FFF' }]}>
@@ -140,7 +140,7 @@ const RemindersScreen = ({ navigation }) => {
         onPress={() => navigation.navigate('AddReminder')}
         activeOpacity={0.9}
       >
-        <LinearGradient colors={['#0F766E', '#0D6560']} style={s.fab}>
+        <LinearGradient colors={[colors.primary, colors.primaryDark]} style={s.fab}>
           <Ionicons name="add" size={30} color="#FFF" />
         </LinearGradient>
       </TouchableOpacity>
@@ -175,7 +175,7 @@ const s = StyleSheet.create({
   emptyHint: { fontSize: 13, marginTop: 6 },
   fabWrap: {
     position: 'absolute', right: 20, bottom: 24,
-    shadowColor: '#0F766E', shadowOffset: { width: 0, height: 4 },
+    shadowColor: '#14B8A6', shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4, shadowRadius: 12, elevation: 10,
   },
   fab: { width: 60, height: 60, borderRadius: 30, alignItems: 'center', justifyContent: 'center' },

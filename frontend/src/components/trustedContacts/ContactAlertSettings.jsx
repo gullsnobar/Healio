@@ -1,14 +1,16 @@
 ﻿import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
+import { useAppTheme } from '../../styles/theme';
 const ContactAlertSettings = ({ settings, onUpdate }) => {
+  const { colors } = useAppTheme();
   const [s2, setS] = useState(settings || { missedDose: true, appointment: true, emergency: true });
   const toggle = (k) => { const n = { ...s2, [k]: !s2[k] }; setS(n); onUpdate?.(n); };
   return (
-    <View style={s.c}><Text style={s.t}>Alert Settings</Text>
+    <View style={[s.c, { backgroundColor: colors.card }]}><Text style={[s.t, { color: colors.text }]}>Alert Settings</Text>
     {[['missedDose','Missed Dose Alerts'],['appointment','Appointment Alerts'],['emergency','Emergency Alerts']].map(([k,l])=>(
-      <View key={k} style={s.r}><Text style={s.l}>{l}</Text><Switch value={s2[k]} onValueChange={()=>toggle(k)} trackColor={{true:'#0F766E'}} /></View>
+      <View key={k} style={[s.r, { borderBottomColor: colors.borderLight }]}><Text style={[s.l, { color: colors.text }]}>{l}</Text><Switch value={s2[k]} onValueChange={()=>toggle(k)} trackColor={{true:colors.primary}} /></View>
     ))}</View>
   );
 };
-const s = StyleSheet.create({c:{backgroundColor:'#FFF',borderRadius:12,padding:16,elevation:2},t:{fontSize:16,fontWeight:'600',marginBottom:12},r:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',paddingVertical:12,borderBottomWidth:1,borderBottomColor:'#F0F0F0'},l:{fontSize:15,color:'#333'}});
+const s = StyleSheet.create({c:{borderRadius:12,padding:16,elevation:2},t:{fontSize:16,fontWeight:'600',marginBottom:12},r:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',paddingVertical:12,borderBottomWidth:1},l:{fontSize:15}});
 export default ContactAlertSettings;

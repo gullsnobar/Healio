@@ -9,8 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import colors from '../../styles/colors';
-
-const PRIMARY = colors.primary;
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const Modal = ({
   visible = false,
@@ -23,6 +22,7 @@ const Modal = ({
   showCancel = true,
   animationType = 'fade',
 }) => {
+  const { colors: themeColors } = useAppTheme();
   return (
     <RNModal
       visible={visible}
@@ -35,8 +35,8 @@ const Modal = ({
         style={styles.overlay}
       >
         <View style={styles.backdrop}>
-          <View style={styles.container}>
-            {!!title && <Text style={styles.title}>{title}</Text>}
+          <View style={[styles.container, { backgroundColor: themeColors.card }]}>
+            {!!title && <Text style={[styles.title, { color: themeColors.text }]}>{title}</Text>}
 
             <View style={styles.content}>{children}</View>
 
@@ -44,16 +44,16 @@ const Modal = ({
               {showCancel && onCancel && (
                 <TouchableOpacity
                   onPress={onCancel}
-                  style={[styles.btn, styles.cancelBtn]}
+                  style={[styles.btn, styles.cancelBtn, { backgroundColor: themeColors.cardAlt }]}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.cancelText}>{cancelText}</Text>
+                  <Text style={[styles.cancelText, { color: themeColors.textSecondary }]}>{cancelText}</Text>
                 </TouchableOpacity>
               )}
               {onConfirm && (
                 <TouchableOpacity
                   onPress={onConfirm}
-                  style={[styles.btn, styles.confirmBtn]}
+                  style={[styles.btn, styles.confirmBtn, { backgroundColor: themeColors.primary }]}
                   activeOpacity={0.7}
                 >
                   <Text style={styles.confirmText}>{confirmText}</Text>
@@ -80,7 +80,6 @@ const styles = StyleSheet.create({
   },
   container: {
     width: '100%',
-    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 20,
     maxHeight: '80%',
@@ -88,7 +87,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#333',
     marginBottom: 12,
     textAlign: 'center',
   },
@@ -108,15 +106,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cancelBtn: {
-    backgroundColor: '#F0F0F0',
   },
   confirmBtn: {
-    backgroundColor: PRIMARY,
   },
   cancelText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#666',
   },
   confirmText: {
     fontSize: 15,

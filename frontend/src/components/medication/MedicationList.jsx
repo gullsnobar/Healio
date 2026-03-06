@@ -9,16 +9,15 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import MedicationCard from './MedicationCard';
+import { useAppTheme } from '../../styles/ThemeContext';
 
-const PRIMARY = '#0F766E';
-
-const EmptyState = () => (
+const EmptyState = ({ colors }) => (
   <View style={styles.emptyContainer}>
-    <View style={styles.emptyIcon}>
-      <Ionicons name="medkit-outline" size={56} color="#ccc" />
+    <View style={[styles.emptyIcon, { backgroundColor: colors.cardAlt }]}>
+      <Ionicons name="medkit-outline" size={56} color={colors.textTertiary} />
     </View>
-    <Text style={styles.emptyTitle}>No Medications</Text>
-    <Text style={styles.emptySubtitle}>
+    <Text style={[styles.emptyTitle, { color: colors.text }]}>No Medications</Text>
+    <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
       You haven't added any medications yet.{'\n'}Tap the + button to get started.
     </Text>
   </View>
@@ -31,10 +30,12 @@ const MedicationList = ({
   loading = false,
   onRefresh,
 }) => {
+  const { colors } = useAppTheme();
+
   if (loading && medications.length === 0) {
     return (
       <View style={styles.loaderWrap}>
-        <ActivityIndicator size="large" color={PRIMARY} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -54,14 +55,14 @@ const MedicationList = ({
         styles.list,
         medications.length === 0 && styles.emptyList,
       ]}
-      ListEmptyComponent={<EmptyState />}
+      ListEmptyComponent={<EmptyState colors={colors} />}
       refreshControl={
         onRefresh ? (
           <RefreshControl
             refreshing={loading}
             onRefresh={onRefresh}
-            tintColor={PRIMARY}
-            colors={[PRIMARY]}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
           />
         ) : undefined
       }
@@ -93,7 +94,6 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#f5f5f5',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
@@ -101,12 +101,10 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1a1a1a',
     marginBottom: 8,
   },
   emptySubtitle: {
     fontSize: 14,
-    color: '#888',
     textAlign: 'center',
     lineHeight: 20,
   },

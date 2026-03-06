@@ -1,8 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Button as PaperButton } from 'react-native-paper';
-
-const PRIMARY = '#0F766E';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const Button = ({
   children,
@@ -15,6 +14,8 @@ const Button = ({
   icon,
   ...rest
 }) => {
+  const { colors } = useAppTheme();
+
   const mode =
     variant === 'outline'
       ? 'outlined'
@@ -24,13 +25,13 @@ const Button = ({
 
   const buttonColor =
     variant === 'primary'
-      ? PRIMARY
+      ? colors.primary
       : variant === 'outline'
       ? 'transparent'
       : 'transparent';
 
   const textColor =
-    variant === 'primary' ? '#FFFFFF' : PRIMARY;
+    variant === 'primary' ? '#FFFFFF' : colors.primary;
 
   return (
     <PaperButton
@@ -43,7 +44,7 @@ const Button = ({
       textColor={textColor}
       style={[
         styles.button,
-        variant === 'outline' && styles.outline,
+        variant === 'outline' && [styles.outline, { borderColor: colors.primary }],
         disabled && styles.disabled,
         style,
       ]}
@@ -62,7 +63,6 @@ const styles = StyleSheet.create({
     marginVertical: 6,
   },
   outline: {
-    borderColor: PRIMARY,
     borderWidth: 1,
   },
   disabled: {

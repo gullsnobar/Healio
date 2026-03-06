@@ -3,8 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { TextInput, HelperText } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../styles/colors';
-
-const PRIMARY = colors.primary;
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const Input = ({
   label,
@@ -19,13 +18,14 @@ const Input = ({
   inputStyle,
   ...rest
 }) => {
+  const { colors: themeColors } = useAppTheme();
   const [secureVisible, setSecureVisible] = useState(!secureTextEntry);
 
   const renderLeftIcon = leftIcon
     ? (props) => (
         <TextInput.Icon
           icon={() => (
-            <Ionicons name={leftIcon} size={20} color={PRIMARY} />
+            <Ionicons name={leftIcon} size={20} color={themeColors.primary} />
           )}
         />
       )
@@ -38,7 +38,7 @@ const Input = ({
             <Ionicons
               name={secureVisible ? 'eye-off-outline' : 'eye-outline'}
               size={20}
-              color={PRIMARY}
+              color={themeColors.primary}
             />
           )}
           onPress={() => setSecureVisible((prev) => !prev)}
@@ -48,7 +48,7 @@ const Input = ({
     ? (props) => (
         <TextInput.Icon
           icon={() => (
-            <Ionicons name={rightIcon} size={20} color={PRIMARY} />
+            <Ionicons name={rightIcon} size={20} color={themeColors.primary} />
           )}
         />
       )
@@ -65,9 +65,9 @@ const Input = ({
         secureTextEntry={secureTextEntry && !secureVisible}
         left={renderLeftIcon ? renderLeftIcon() : undefined}
         right={renderRightIcon ? renderRightIcon() : undefined}
-        outlineColor="#CCC"
-        activeOutlineColor={PRIMARY}
-        style={[styles.input, inputStyle]}
+        outlineColor={themeColors.border}
+        activeOutlineColor={themeColors.primary}
+        style={[styles.input, { backgroundColor: themeColors.card }, inputStyle]}
         {...rest}
       />
       {!!error && !!errorMessage && (
@@ -84,7 +84,6 @@ const styles = StyleSheet.create({
     marginVertical: 6,
   },
   input: {
-    backgroundColor: '#FFFFFF',
     fontSize: 15,
   },
   error: {

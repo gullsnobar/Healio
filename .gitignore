@@ -39,6 +39,9 @@ frontend/ios/
 *.jks
 *.keystore
 
+# Firebase service account key
+backend/config/healio-e75ef-firebase-adminsdk-fbsvc-2b167d9c17.json
+
 # Backend uploads
 backend/uploads/*
 !backend/uploads/.gitkeep

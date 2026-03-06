@@ -36,6 +36,9 @@
         "WAKE_LOCK"
       ]
     },
+    "updates": {
+      "enabled": false
+    },
     "plugins": [
       "expo-notifications",
       "expo-location",

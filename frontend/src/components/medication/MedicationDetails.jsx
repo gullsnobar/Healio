@@ -8,16 +8,16 @@ import {
 } from 'react-native';
 import { Button } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
-
-const PRIMARY = '#0F766E';
-
-const STATUS_COLORS = {
-  taken: '#27ae60',
-  missed: '#e74c3c',
-  pending: '#f39c12',
-};
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const MedicationDetails = ({ medication, logs = [], onEdit, onDelete }) => {
+  const { colors } = useAppTheme();
+
+  const STATUS_COLORS = {
+    taken: colors.success,
+    missed: colors.error,
+    pending: colors.warning,
+  };
   const {
     name,
     dosage,
@@ -36,27 +36,27 @@ const MedicationDetails = ({ medication, logs = [], onEdit, onDelete }) => {
   const adherence = Math.round((takenCount / totalCount) * 100);
 
   const InfoRow = ({ icon, label, value }) => (
-    <View style={styles.infoRow}>
-      <Ionicons name={icon} size={18} color="#888" />
-      <Text style={styles.infoLabel}>{label}</Text>
-      <Text style={styles.infoValue}>{value || '—'}</Text>
+    <View style={[styles.infoRow, { borderBottomColor: colors.borderLight }]}>
+      <Ionicons name={icon} size={18} color={colors.textTertiary} />
+      <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>{label}</Text>
+      <Text style={[styles.infoValue, { color: colors.text }]}>{value || '—'}</Text>
     </View>
   );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
-        <View style={styles.iconWrap}>
-          <Ionicons name="medkit" size={32} color={PRIMARY} />
+        <View style={[styles.iconWrap, { backgroundColor: colors.primaryLight }]}>
+          <Ionicons name="medkit" size={32} color={colors.primary} />
         </View>
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.dosageText}>
+        <Text style={[styles.name, { color: colors.text }]}>{name}</Text>
+        <Text style={[styles.dosageText, { color: colors.textSecondary }]}>
           {dosage} {dosageUnit}
         </Text>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Medication Info</Text>
+      <View style={[styles.card, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
+        <Text style={[styles.cardTitle, { color: colors.text }]}>Medication Info</Text>
         <InfoRow icon="repeat-outline" label="Frequency" value={frequency} />
         <InfoRow
           icon="time-outline"
@@ -68,21 +68,21 @@ const MedicationDetails = ({ medication, logs = [], onEdit, onDelete }) => {
         <InfoRow icon="person-outline" label="Doctor" value={doctorName ? `Dr. ${doctorName}` : null} />
         {notes ? (
           <View style={styles.notesWrap}>
-            <Text style={styles.notesLabel}>Notes</Text>
-            <Text style={styles.notesText}>{notes}</Text>
+            <Text style={[styles.notesLabel, { color: colors.textTertiary }]}>Notes</Text>
+            <Text style={[styles.notesText, { color: colors.textSecondary }]}>{notes}</Text>
           </View>
         ) : null}
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Adherence</Text>
+      <View style={[styles.card, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
+        <Text style={[styles.cardTitle, { color: colors.text }]}>Adherence</Text>
         <View style={styles.adherenceRow}>
-          <Text style={styles.adherencePercent}>{adherence}%</Text>
-          <Text style={styles.adherenceSub}>
+          <Text style={[styles.adherencePercent, { color: colors.text }]}>{adherence}%</Text>
+          <Text style={[styles.adherenceSub, { color: colors.textSecondary }]}>
             {takenCount} of {totalCount} doses taken
           </Text>
         </View>
-        <View style={styles.progressTrack}>
+        <View style={[styles.progressTrack, { backgroundColor: colors.borderLight }]}>
           <View
             style={[
               styles.progressBar,
@@ -97,10 +97,10 @@ const MedicationDetails = ({ medication, logs = [], onEdit, onDelete }) => {
       </View>
 
       {logs.length > 0 && (
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Recent Log</Text>
+        <View style={[styles.card, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
+          <Text style={[styles.cardTitle, { color: colors.text }]}>Recent Log</Text>
           {logs.slice(0, 10).map((log, i) => (
-            <View key={log.id ?? i} style={styles.logRow}>
+            <View key={log.id ?? i} style={[styles.logRow, { borderBottomColor: colors.borderLight }]}>
               <Ionicons
                 name={
                   log.status === 'taken'
@@ -113,8 +113,8 @@ const MedicationDetails = ({ medication, logs = [], onEdit, onDelete }) => {
                 color={STATUS_COLORS[log.status] || '#888'}
               />
               <View style={styles.logInfo}>
-                <Text style={styles.logDate}>{log.date || log.timestamp}</Text>
-                <Text style={styles.logTime}>{log.time || ''}</Text>
+                <Text style={[styles.logDate, { color: colors.text }]}>{log.date || log.timestamp}</Text>
+                <Text style={[styles.logTime, { color: colors.textTertiary }]}>{log.time || ''}</Text>
               </View>
               <Text
                 style={[styles.logStatus, { color: STATUS_COLORS[log.status] || '#888' }]}
@@ -131,7 +131,7 @@ const MedicationDetails = ({ medication, logs = [], onEdit, onDelete }) => {
           mode="contained"
           onPress={() => onEdit?.(medication)}
           style={styles.editBtn}
-          buttonColor={PRIMARY}
+          buttonColor={colors.primary}
           textColor="#fff"
           icon={({ size, color }) => <Ionicons name="create-outline" size={size} color={color} />}
         >
@@ -141,7 +141,7 @@ const MedicationDetails = ({ medication, logs = [], onEdit, onDelete }) => {
           mode="outlined"
           onPress={() => onDelete?.(medication)}
           style={styles.deleteBtn}
-          textColor="#e74c3c"
+          textColor={colors.error}
           icon={({ size, color }) => <Ionicons name="trash-outline" size={size} color={color} />}
         >
           Delete
@@ -164,7 +164,6 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: '#EBF2FB',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
@@ -172,19 +171,15 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1a1a1a',
   },
   dosageText: {
     fontSize: 16,
-    color: '#888',
     marginTop: 4,
   },
   card: {
-    backgroundColor: '#fff',
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 6,
@@ -193,7 +188,6 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1a1a1a',
     marginBottom: 12,
   },
   infoRow: {
@@ -201,18 +195,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
     gap: 10,
   },
   infoLabel: {
     fontSize: 14,
-    color: '#888',
     width: 90,
   },
   infoValue: {
     flex: 1,
     fontSize: 14,
-    color: '#1a1a1a',
     fontWeight: '500',
   },
   notesWrap: {
@@ -220,12 +211,10 @@ const styles = StyleSheet.create({
   },
   notesLabel: {
     fontSize: 13,
-    color: '#888',
     marginBottom: 4,
   },
   notesText: {
     fontSize: 14,
-    color: '#333',
     lineHeight: 20,
   },
   adherenceRow: {
@@ -237,16 +226,13 @@ const styles = StyleSheet.create({
   adherencePercent: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#1a1a1a',
   },
   adherenceSub: {
     fontSize: 13,
-    color: '#888',
   },
   progressTrack: {
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#eee',
     overflow: 'hidden',
   },
   progressBar: {
@@ -258,7 +244,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#f5f5f5',
     gap: 10,
   },
   logInfo: {
@@ -266,12 +251,10 @@ const styles = StyleSheet.create({
   },
   logDate: {
     fontSize: 13,
-    color: '#1a1a1a',
     fontWeight: '500',
   },
   logTime: {
     fontSize: 12,
-    color: '#888',
   },
   logStatus: {
     fontSize: 12,
@@ -290,7 +273,7 @@ const styles = StyleSheet.create({
   deleteBtn: {
     flex: 1,
     borderRadius: 12,
-    borderColor: '#e74c3c',
+    borderColor: '#EF4444',
   },
 });
 

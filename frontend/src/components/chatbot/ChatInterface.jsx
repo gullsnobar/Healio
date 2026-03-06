@@ -1,13 +1,15 @@
 ﻿import React, { useState, useRef } from 'react';
 import { View, FlatList, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { useAppTheme } from '../../styles/ThemeContext';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import ChatSuggestions from './ChatSuggestions';
 
 const ChatInterface = ({ messages = [], onSend, suggestions = [], loading = false }) => {
+  const { colors } = useAppTheme();
   const listRef = useRef(null);
   return (
-    <KeyboardAvoidingView style={s.c} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+    <KeyboardAvoidingView style={[s.c, { backgroundColor: colors.background }]} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <FlatList ref={listRef} data={messages} keyExtractor={(item) => item._id || String(Math.random())}
         renderItem={({ item }) => <ChatMessage message={item} />}
         onContentSizeChange={() => listRef.current?.scrollToEnd()} contentContainerStyle={s.list} />
@@ -16,5 +18,5 @@ const ChatInterface = ({ messages = [], onSend, suggestions = [], loading = fals
     </KeyboardAvoidingView>
   );
 };
-const s = StyleSheet.create({c:{flex:1,backgroundColor:'#F5F7FA'},list:{padding:16,paddingBottom:8}});
+const s = StyleSheet.create({c:{flex:1},list:{padding:16,paddingBottom:8}});
 export default ChatInterface;

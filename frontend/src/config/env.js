@@ -1,9 +1,13 @@
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
+
+// Android emulator uses 10.0.2.2 to reach the host machine's localhost
+const DEV_HOST = Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
 
 const ENV = {
   development: {
-    apiUrl: 'http://localhost:5000/api',
-    aiEngineUrl: 'http://localhost:8000',
+    apiUrl: `http://${DEV_HOST}:5000/api`,
+    aiEngineUrl: `http://${DEV_HOST}:8000`,
     enableDebug: true,
   },
   staging: {

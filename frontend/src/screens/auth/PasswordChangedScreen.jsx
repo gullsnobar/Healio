@@ -9,11 +9,10 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-
-const PRIMARY = '#0F766E';
-const PRIMARY_DARK = '#0D6560';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const PasswordChangedScreen = ({ navigation }) => {
+  const { colors, isDark } = useAppTheme();
   const scale = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(0)).current;
 
@@ -34,8 +33,8 @@ const PasswordChangedScreen = ({ navigation }) => {
   }, []);
 
   return (
-    <View style={s.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+    <View style={[s.container, { backgroundColor: colors.background }]}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
 
       <View style={s.content}>
         {/* Checkmark circle */}
@@ -44,8 +43,8 @@ const PasswordChangedScreen = ({ navigation }) => {
         </Animated.View>
 
         <Animated.View style={{ opacity, alignItems: 'center' }}>
-          <Text style={s.title}>Password Changed!</Text>
-          <Text style={s.subtitle}>
+          <Text style={[s.title, { color: colors.text }]}>Password Changed!</Text>
+          <Text style={[s.subtitle, { color: colors.textSecondary }]}>
             Your password has been changed successfully.
           </Text>
         </Animated.View>
@@ -57,7 +56,7 @@ const PasswordChangedScreen = ({ navigation }) => {
           onPress={() => navigation.reset({ index: 0, routes: [{ name: 'Login' }] })}
           activeOpacity={0.85}
         >
-          <LinearGradient colors={[PRIMARY, PRIMARY_DARK]} style={s.primaryBtn}>
+          <LinearGradient colors={colors.primaryGrad} style={s.primaryBtn}>
             <Text style={s.primaryBtnText}>Back to Login</Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -69,7 +68,6 @@ const PasswordChangedScreen = ({ navigation }) => {
 const s = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
     paddingHorizontal: 24,
   },
   content: {
@@ -94,13 +92,11 @@ const s = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#1E293B',
     marginBottom: 12,
     letterSpacing: -0.3,
   },
   subtitle: {
     fontSize: 15,
-    color: '#64748B',
     textAlign: 'center',
     lineHeight: 22,
     paddingHorizontal: 20,
@@ -113,7 +109,7 @@ const s = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: PRIMARY,
+    shadowColor: '#14B8A6',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 10,

@@ -13,11 +13,12 @@ import {
 import { ActivityIndicator } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
+import { useAppTheme } from '../../styles/ThemeContext';
 
-const PRIMARY_COLOR = '#0F766E';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const LabReportViewer = ({ report }) => {
+  const { colors, isDark } = useAppTheme();
   const { title, fileUrl, fileType, date } = report || {};
   const [loading, setLoading] = useState(true);
   const [scale, setScale] = useState(1);
@@ -48,16 +49,16 @@ const LabReportViewer = ({ report }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: isDark ? '#0F172A' : '#1a1a1a' }]}>
       {/* Header Bar */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: isDark ? '#1E293B' : '#222' }]}>
         <View style={styles.headerInfo}>
           <Text style={styles.headerTitle} numberOfLines={1}>
             {title || 'Lab Report'}
           </Text>
           {date ? <Text style={styles.headerDate}>{date}</Text> : null}
         </View>
-        <TouchableOpacity style={styles.downloadButton} onPress={handleDownload}>
+        <TouchableOpacity style={[styles.downloadButton, { backgroundColor: colors.primary }]} onPress={handleDownload}>
           <Ionicons name="download-outline" size={22} color="#fff" />
         </TouchableOpacity>
       </View>
@@ -66,7 +67,7 @@ const LabReportViewer = ({ report }) => {
       <View style={styles.viewerContainer}>
         {loading && (
           <View style={styles.loadingOverlay}>
-            <ActivityIndicator size="large" color={PRIMARY_COLOR} />
+            <ActivityIndicator size="large" color={colors.primary} />
             <Text style={styles.loadingText}>Loading report...</Text>
           </View>
         )}
@@ -116,15 +117,15 @@ const LabReportViewer = ({ report }) => {
 
       {/* Zoom Controls (for images) */}
       {!isPdf && (
-        <View style={styles.zoomControls}>
-          <TouchableOpacity style={styles.zoomButton} onPress={handleZoomOut}>
-            <Ionicons name="remove" size={22} color="#333" />
+        <View style={[styles.zoomControls, { backgroundColor: isDark ? '#1E293B' : '#222' }]}>
+          <TouchableOpacity style={[styles.zoomButton, { backgroundColor: colors.cardAlt }]} onPress={handleZoomOut}>
+            <Ionicons name="remove" size={22} color={colors.text} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.zoomButton} onPress={handleResetZoom}>
-            <Text style={styles.zoomText}>{Math.round(scale * 100)}%</Text>
+          <TouchableOpacity style={[styles.zoomButton, { backgroundColor: colors.cardAlt }]} onPress={handleResetZoom}>
+            <Text style={[styles.zoomText, { color: colors.text }]}>{Math.round(scale * 100)}%</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.zoomButton} onPress={handleZoomIn}>
-            <Ionicons name="add" size={22} color="#333" />
+          <TouchableOpacity style={[styles.zoomButton, { backgroundColor: colors.cardAlt }]} onPress={handleZoomIn}>
+            <Ionicons name="add" size={22} color={colors.text} />
           </TouchableOpacity>
         </View>
       )}
@@ -135,13 +136,11 @@ const LabReportViewer = ({ report }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a1a',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#222',
     paddingHorizontal: 16,
     paddingVertical: 12,
     paddingTop: 48,
@@ -164,7 +163,6 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 21,
-    backgroundColor: PRIMARY_COLOR,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -175,7 +173,6 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#1a1a1a',
     zIndex: 10,
   },
   loadingText: {
@@ -202,7 +199,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#222',
     paddingVertical: 10,
     paddingBottom: 30,
     gap: 16,
@@ -211,14 +207,12 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#f0f0f0',
     justifyContent: 'center',
     alignItems: 'center',
   },
   zoomText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#333',
   },
 });
 
