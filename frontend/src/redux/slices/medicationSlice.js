@@ -2,15 +2,15 @@
 import { medicationAPI } from '../../services/api/medicationAPI';
 
 export const fetchMedications = createAsyncThunk('medication/fetchAll', async (_, { rejectWithValue }) => {
-  try { const res = await medicationAPI.getAll(); return res.data; }
+  try { const res = await medicationAPI.getAll(); return res.data?.data?.medications ?? []; }
   catch (err) { return rejectWithValue(err.response?.data?.message); }
 });
 export const addMedication = createAsyncThunk('medication/add', async (data, { rejectWithValue }) => {
-  try { const res = await medicationAPI.create(data); return res.data; }
+  try { const res = await medicationAPI.create(data); return res.data?.data ?? res.data; }
   catch (err) { return rejectWithValue(err.response?.data?.message); }
 });
 export const updateMedication = createAsyncThunk('medication/update', async ({ id, data }, { rejectWithValue }) => {
-  try { const res = await medicationAPI.update(id, data); return res.data; }
+  try { const res = await medicationAPI.update(id, data); return res.data?.data ?? res.data; }
   catch (err) { return rejectWithValue(err.response?.data?.message); }
 });
 export const deleteMedication = createAsyncThunk('medication/delete', async (id, { rejectWithValue }) => {

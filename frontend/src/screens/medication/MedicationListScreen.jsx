@@ -1,8 +1,9 @@
-﻿import React, { useEffect } from 'react';
+﻿import React, { useCallback } from 'react';
 import { View, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector, useDispatch } from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
 import { useAppTheme } from '../../styles/ThemeContext';
 import MedicationList from '../../components/medication/MedicationList';
 import { fetchMedications } from '../../redux/slices/medicationSlice';
@@ -11,7 +12,9 @@ const MedicationListScreen = ({ navigation }) => {
   const { colors, isDark } = useAppTheme();
   const dispatch = useDispatch();
   const { medications, loading } = useSelector((state) => state.medication);
-  useEffect(() => { dispatch(fetchMedications()); }, []);
+
+  // Re-fetch every time this screen comes into focus (e.g. after adding a med)
+  useFocusEffect(useCallback(() => { dispatch(fetchMedications()); }, [dispatch]));
 
   return (
     <View style={[ms.c, { backgroundColor: colors.background }]}>

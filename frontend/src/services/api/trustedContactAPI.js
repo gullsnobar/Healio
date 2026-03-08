@@ -1,6 +1,4 @@
-﻿import axios from 'axios';
-import apiConfig from '../../config/apiConfig';
-const api = axios.create(apiConfig);
+﻿import api from './axiosInstance';
 
 export const trustedContactAPI = {
   getAll: () => api.get('/trusted-contacts'),

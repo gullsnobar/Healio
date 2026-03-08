@@ -14,10 +14,31 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAppTheme } from '../../styles/ThemeContext';
+import DatePickerField from '../common/DatePickerField';
 
 const MED_TYPES = ['Capsule', 'Tablet', 'Drops', 'Syrup', 'Injection', 'Other'];
 const DOSAGE_UNITS = ['mg', 'ml', 'tablets', 'capsules', 'drops', 'units'];
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+/* Dropdown picker modal – defined outside to avoid stale closure issues */
+const DropdownModal = ({ visible, onClose, items, onSelect, selected, cardBg, textColor, primaryColor }) => (
+  <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <TouchableOpacity style={s.modalOverlay} activeOpacity={1} onPress={onClose}>
+      <View style={[s.modalCard, { backgroundColor: cardBg }]}>
+        {items.map((item) => (
+          <TouchableOpacity
+            key={item}
+            style={[s.modalItem, selected === item && { backgroundColor: 'rgba(20,184,166,0.12)' }]}
+            onPress={() => { onSelect(item); onClose(); }}
+          >
+            <Text style={[s.modalItemText, { color: selected === item ? primaryColor : textColor }, selected === item && { fontWeight: '700' }]}>{item}</Text>
+            {selected === item && <Ionicons name="checkmark" size={18} color={primaryColor} />}
+          </TouchableOpacity>
+        ))}
+      </View>
+    </TouchableOpacity>
+  </Modal>
+);
 
 const AddMedicationForm = ({ onSubmit, initialData }) => {
   const { colors } = useAppTheme();
@@ -84,26 +105,6 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
 
   const disabled = loading || !form.name.trim() || !form.dosage.trim();
 
-  /* Dropdown picker modal */
-  const DropdownModal = ({ visible, onClose, items, onSelect, selected }) => (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <TouchableOpacity style={s.modalOverlay} activeOpacity={1} onPress={onClose}>
-        <View style={[s.modalCard, { backgroundColor: colors.card }]}>
-          {items.map((item) => (
-            <TouchableOpacity
-              key={item}
-              style={[s.modalItem, selected === item && s.modalItemActive]}
-              onPress={() => { onSelect(item); onClose(); }}
-            >
-              <Text style={[s.modalItemText, selected === item && s.modalItemTextActive]}>{item}</Text>
-              {selected === item && <Ionicons name="checkmark" size={18} color={colors.primary} />}
-            </TouchableOpacity>
-          ))}
-        </View>
-      </TouchableOpacity>
-    </Modal>
-  );
-
   return (
     <ScrollView contentContainerStyle={s.container} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
       {/* Section: Medication Info */}
@@ -133,6 +134,9 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
         items={MED_TYPES}
         onSelect={(v) => update('type', v)}
         selected={form.type}
+        cardBg={colors.card}
+        textColor={colors.text}
+        primaryColor={colors.primary}
       />
 
       {/* Dose + Unit */}
@@ -159,6 +163,9 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
           items={DOSAGE_UNITS}
           onSelect={(v) => update('dosageUnit', v)}
           selected={form.dosageUnit}
+          cardBg={colors.card}
+          textColor={colors.text}
+          primaryColor={colors.primary}
         />
       </View>
 
@@ -179,18 +186,11 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
       <Text style={[s.sectionLabel, { marginTop: 8, color: colors.textTertiary }]}>Reminders</Text>
 
       {/* Start Date */}
-      <View style={[s.inputWrap, { backgroundColor: colors.cardAlt, borderColor: focusedField === 'startDate' ? colors.primary : colors.cardAlt }]}>
-        <Ionicons name="calendar-outline" size={18} color={colors.textTertiary} style={{ marginRight: 8 }} />
-        <TextInput
-          style={[s.input, { color: colors.text }]}
-          placeholder="Start Date (YYYY-MM-DD)"
-          placeholderTextColor={colors.textTertiary}
-          value={form.startDate}
-          onChangeText={(v) => update('startDate', v)}
-          onFocus={() => setFocusedField('startDate')}
-          onBlur={() => setFocusedField(null)}
-        />
-      </View>
+      <DatePickerField
+        value={form.startDate}
+        onChange={(v) => update('startDate', v)}
+        placeholder="Start Date"
+      />
 
       {/* Day chips */}
       <View style={s.dayRow}>
@@ -386,7 +386,6 @@ const s = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 8,
     maxHeight: 400,
-    backgroundColor: '#FFF',
   },
   modalItem: {
     flexDirection: 'row',
@@ -397,7 +396,6 @@ const s = StyleSheet.create({
   },
   modalItemActive: { backgroundColor: 'rgba(20,184,166,0.08)' },
   modalItemText: { fontSize: 16 },
-  modalItemTextActive: { color: '#14B8A6', fontWeight: '700' },
 });
 
 export default AddMedicationForm;
