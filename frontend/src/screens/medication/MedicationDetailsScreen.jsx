@@ -11,7 +11,7 @@ const MedicationDetailsScreen = ({ route, navigation }) => {
   const { colors } = useAppTheme();
   return (
     <ScrollView style={[s.c, { backgroundColor: colors.background }]}>
-      <MedicationDetails medication={medication} logs={medication?.logs || []}
+      <MedicationDetails medication={medication} logs={medication?.adherenceHistory || []}
         onEdit={() => navigation.navigate('EditMedication', { id })}
         onDelete={() => navigation.goBack()} />
     </ScrollView>

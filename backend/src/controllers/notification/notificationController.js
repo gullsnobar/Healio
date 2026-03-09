@@ -1,5 +1,6 @@
 ﻿const Notification = require('../../models/Notification');
 const User = require('../../models/User');
+const logger = require('../../utils/logger');
 
 exports.getNotifications = async (req, res, next) => {
   try {
@@ -38,5 +39,15 @@ exports.updatePreferences = async (req, res, next) => {
   try {
     const user = await User.findByIdAndUpdate(req.userId, { notificationPreferences: req.body }, { new: true });
     res.json({ success: true, data: user.notificationPreferences });
+  } catch (error) { next(error); }
+};
+
+exports.registerDevice = async (req, res, next) => {
+  try {
+    const { token } = req.body;
+    if (!token) return res.status(400).json({ success: false, message: 'Device token is required' });
+    await User.findByIdAndUpdate(req.userId, { fcmToken: token });
+    logger.info('FCM token registered for user ' + req.userId);
+    res.json({ success: true, message: 'Device registered' });
   } catch (error) { next(error); }
 };

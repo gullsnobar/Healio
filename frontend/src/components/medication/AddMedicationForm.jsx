@@ -49,13 +49,13 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
     dosageUnit: initialData?.dosageUnit || 'mg',
     amount: initialData?.amount || '',
     frequency: initialData?.frequency || 'Daily',
-    times: initialData?.times || ['08:00'],
+    times: initialData?.times ? initialData.times.map(t => typeof t === 'string' ? t : t.time) : ['08:00'],
     startDate: initialData?.startDate || '',
     endDate: initialData?.endDate || '',
     selectedDays: initialData?.selectedDays || [0, 2, 4], // Mon, Wed, Fri
     alarmEnabled: initialData?.alarmEnabled ?? true,
-    doctorName: initialData?.doctorName || '',
-    notes: initialData?.notes || '',
+    doctorName: initialData?.prescribedBy || initialData?.doctorName || '',
+    notes: initialData?.instructions || initialData?.notes || '',
   });
 
   const [showTypeMenu, setShowTypeMenu] = useState(false);

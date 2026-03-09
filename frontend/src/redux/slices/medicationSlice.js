@@ -17,6 +17,10 @@ export const deleteMedication = createAsyncThunk('medication/delete', async (id,
   try { await medicationAPI.delete(id); return id; }
   catch (err) { return rejectWithValue(err.response?.data?.message); }
 });
+export const markAsTaken = createAsyncThunk('medication/markAsTaken', async (id, { rejectWithValue }) => {
+  try { const res = await medicationAPI.markAsTaken(id); return { id, data: res.data?.data }; }
+  catch (err) { return rejectWithValue(err.response?.data?.message); }
+});
 
 const medicationSlice = createSlice({
   name: 'medication',
@@ -29,7 +33,11 @@ const medicationSlice = createSlice({
       .addCase(fetchMedications.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
       .addCase(addMedication.fulfilled, (state, action) => { state.medications.push(action.payload); })
       .addCase(updateMedication.fulfilled, (state, action) => { const i = state.medications.findIndex(m => m._id === action.payload._id); if (i !== -1) state.medications[i] = action.payload; })
-      .addCase(deleteMedication.fulfilled, (state, action) => { state.medications = state.medications.filter(m => m._id !== action.payload); });
+      .addCase(deleteMedication.fulfilled, (state, action) => { state.medications = state.medications.filter(m => m._id !== action.payload); })
+      .addCase(markAsTaken.fulfilled, (state, action) => {
+        const med = action.payload.data?.medication;
+        if (med) { const i = state.medications.findIndex(m => m._id === med._id); if (i !== -1) state.medications[i] = med; }
+      });
   },
 });
 

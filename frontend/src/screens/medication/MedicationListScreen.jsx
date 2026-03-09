@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { useAppTheme } from '../../styles/ThemeContext';
 import MedicationList from '../../components/medication/MedicationList';
-import { fetchMedications } from '../../redux/slices/medicationSlice';
+import { fetchMedications, markAsTaken } from '../../redux/slices/medicationSlice';
 
 const MedicationListScreen = ({ navigation }) => {
   const { colors, isDark } = useAppTheme();
@@ -23,7 +23,7 @@ const MedicationListScreen = ({ navigation }) => {
         medications={medications}
         loading={loading}
         onItemPress={(med) => navigation.navigate('MedicationDetails', { id: med._id })}
-        onMarkTaken={(med) => dispatch({ type: 'medication/markAsTaken', payload: med._id })}
+        onMarkTaken={(med) => dispatch(markAsTaken(med._id))}
         onRefresh={() => dispatch(fetchMedications())}
       />
 

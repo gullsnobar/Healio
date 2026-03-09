@@ -26,8 +26,8 @@ const MedicationDetails = ({ medication, logs = [], onEdit, onDelete }) => {
     times,
     startDate,
     endDate,
-    doctorName,
-    notes,
+    prescribedBy,
+    instructions,
     status,
   } = medication || {};
 
@@ -61,15 +61,15 @@ const MedicationDetails = ({ medication, logs = [], onEdit, onDelete }) => {
         <InfoRow
           icon="time-outline"
           label="Times"
-          value={Array.isArray(times) ? times.join(', ') : times}
+          value={Array.isArray(times) ? times.map(t => typeof t === 'string' ? t : t.time).join(', ') : times}
         />
         <InfoRow icon="calendar-outline" label="Start Date" value={startDate} />
         <InfoRow icon="calendar-outline" label="End Date" value={endDate || 'Ongoing'} />
-        <InfoRow icon="person-outline" label="Doctor" value={doctorName ? `Dr. ${doctorName}` : null} />
-        {notes ? (
+        <InfoRow icon="person-outline" label="Doctor" value={prescribedBy ? `Dr. ${prescribedBy}` : null} />
+        {instructions ? (
           <View style={styles.notesWrap}>
             <Text style={[styles.notesLabel, { color: colors.textTertiary }]}>Notes</Text>
-            <Text style={[styles.notesText, { color: colors.textSecondary }]}>{notes}</Text>
+            <Text style={[styles.notesText, { color: colors.textSecondary }]}>{instructions}</Text>
           </View>
         ) : null}
       </View>

@@ -15,12 +15,14 @@ const MedicationCard = ({ medication, onPress, onMarkTaken }) => {
     name,
     dosage,
     frequency,
-    timing,
-    doctorName,
+    times,
+    prescribedBy,
     status = 'pending',
   } = medication || {};
 
   const statusCfg = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
+  // Derive display timing from times array
+  const timing = Array.isArray(times) ? times.map(t => typeof t === 'string' ? t : t.time).join(', ') : null;
 
   return (
     <TouchableOpacity
@@ -54,10 +56,10 @@ const MedicationCard = ({ medication, onPress, onMarkTaken }) => {
             <Text style={[styles.infoText, { color: colors.textSecondary }]}>{timing}</Text>
           </View>
         )}
-        {doctorName && (
+        {prescribedBy && (
           <View style={styles.infoRow}>
             <Ionicons name="person-outline" size={16} color={colors.textTertiary} />
-            <Text style={[styles.infoText, { color: colors.textSecondary }]}>Dr. {doctorName}</Text>
+            <Text style={[styles.infoText, { color: colors.textSecondary }]}>Dr. {prescribedBy}</Text>
           </View>
         )}
       </View>

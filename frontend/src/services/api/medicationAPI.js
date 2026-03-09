@@ -7,5 +7,7 @@ export const medicationAPI = {
   update: (id, data) => api.put('/medications/' + id, data),
   delete: (id) => api.delete('/medications/' + id),
   markAsTaken: (id) => api.post('/medications/' + id + '/take'),
-  getLogs: (id) => api.get('/medications/' + id + '/logs'),
+  recordAdherence: (id, data) => api.post('/medications/' + id + '/adherence', data),
+  getAdherenceHistory: (id, params) => api.get('/medications/' + id + '/adherence/history', { params }),
+  getAdherenceStats: () => api.get('/medications/stats/adherence'),
 };

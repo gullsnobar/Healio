@@ -6,7 +6,7 @@ const iconMap = { medication: 'medkit', appointment: 'calendar', fitness: 'fitne
 const NotificationItem = ({ notification, onPress, onDismiss }) => {
   const { colors } = useAppTheme();
   return (
-  <TouchableOpacity style={[s.c, { backgroundColor: colors.card }, !notification.read && { borderLeftWidth: 3, borderLeftColor: colors.primary }]} onPress={() => onPress?.(notification)}>
+  <TouchableOpacity style={[s.c, { backgroundColor: colors.card }, !notification.isRead && { borderLeftWidth: 3, borderLeftColor: colors.primary }]} onPress={() => onPress?.(notification)}>
     <Ionicons name={(iconMap[notification.type] || 'notifications') + '-outline'} size={24} color={colors.primary} />
     <View style={s.info}><Text style={[s.t, { color: colors.text }]}>{notification.title}</Text><Text style={[s.b, { color: colors.textSecondary }]}>{notification.body}</Text><Text style={[s.time, { color: colors.textTertiary }]}>{notification.createdAt}</Text></View>
     <TouchableOpacity onPress={() => onDismiss?.(notification._id)}><Ionicons name="close" size={18} color={colors.textSecondary} /></TouchableOpacity>
