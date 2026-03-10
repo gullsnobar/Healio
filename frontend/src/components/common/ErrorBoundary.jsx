@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, useColorScheme } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Button from './Button';
-import colors from '../../styles/colors';
+import { light, dark } from '../../styles/colors';
 
-const PRIMARY = colors.primary;
+// Functional wrapper so the class component can receive theme colors
+function ErrorBoundaryWrapper(props) {
+  const scheme = useColorScheme();
+  const colors = scheme === 'dark' ? dark : light;
+  return <ErrorBoundary {...props} themeColors={colors} />;
+}
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -32,11 +37,12 @@ class ErrorBoundary extends Component {
         return this.props.fallback;
       }
 
+      const c = this.props.themeColors || light;
       return (
-        <View style={styles.container}>
-          <Ionicons name="bug-outline" size={64} color={PRIMARY} />
-          <Text style={styles.title}>Something went wrong</Text>
-          <Text style={styles.message}>
+        <View style={[styles.container, { backgroundColor: c.background }]}>
+          <Ionicons name="bug-outline" size={64} color={c.primary} />
+          <Text style={[styles.title, { color: c.text }]}>Something went wrong</Text>
+          <Text style={[styles.message, { color: c.textSecondary }]}>
             {this.state.error?.message || 'An unexpected error occurred.'}
           </Text>
           <Button variant="primary" onPress={this.handleRetry} style={styles.button}>
@@ -56,18 +62,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 32,
-    backgroundColor: '#FFFFFF',
   },
   title: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#333',
     marginTop: 20,
     marginBottom: 8,
   },
   message: {
     fontSize: 14,
-    color: '#888',
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 24,
@@ -78,4 +81,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ErrorBoundary;
+export default ErrorBoundaryWrapper;

@@ -8,7 +8,8 @@ const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const WeeklyProgressChart = ({ data = {} }) => {
   const { colors } = useAppTheme();
   const labels = data.labels || DAYS;
-  const values = data.values || [0, 0, 0, 0, 0, 0, 0];
+  // Support both data.values (legacy) and data.steps (new dashboard format)
+  const values = data.values || data.steps || [0, 0, 0, 0, 0, 0, 0];
   const max = Math.max(...values, 1);
 
   return (

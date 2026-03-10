@@ -8,15 +8,15 @@ const UpcomingReminders = ({ reminders = [] }) => {
 
   const TYPE_CONFIG = {
     medication: { icon: 'medkit',       color: colors.primary, bg: colors.primaryLight },
-    appointment: { icon: 'calendar',    color: '#6366F1', bg: '#E0E7FF' },
-    fitness:     { icon: 'fitness',     color: colors.success, bg: '#D1FAE5' },
+    appointment: { icon: 'calendar',    color: colors.fitnessSleep, bg: colors.fitnessSleepBg },
+    fitness:     { icon: 'fitness',     color: colors.success, bg: colors.successLight },
   };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.card }]}>
     <View style={styles.headerRow}>
-      <View style={styles.iconBadge}>
-        <Ionicons name='notifications' size={18} color='#F59E0B' />
+      <View style={[styles.iconBadge, { backgroundColor: colors.warningLight }]}>
+        <Ionicons name='notifications' size={18} color={colors.warning} />
       </View>
       <Text style={[styles.title, { color: colors.text }]}>Upcoming Reminders</Text>
     </View>
@@ -48,7 +48,7 @@ const UpcomingReminders = ({ reminders = [] }) => {
 const styles = StyleSheet.create({
   container: { borderRadius: 20, padding: 16, marginBottom: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 4 },
   headerRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 14 },
-  iconBadge: { width: 32, height: 32, borderRadius: 10, backgroundColor: '#FEF3C7', alignItems: 'center', justifyContent: 'center', marginRight: 10 },
+  iconBadge: { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginRight: 10 },
   title: { fontSize: 15, fontWeight: '700' },
   emptyWrap: { alignItems: 'center', paddingVertical: 24, gap: 8 },
   empty: { fontSize: 13, textAlign: 'center' },

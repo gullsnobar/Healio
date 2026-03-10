@@ -13,6 +13,8 @@ const trustedContactRoutes = require('./trustedContactRoutes');
 const notificationRoutes = require('./notificationRoutes');
 const reminderRoutes = require('./reminderRoutes');
 const adminRoutes = require('./adminRoutes');
+const healthInsightRoutes = require('./healthInsightRoutes');
+const aiRoutes = require('./aiRoutes');
 
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
@@ -28,5 +30,7 @@ router.use('/trusted-contacts', trustedContactRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/reminders', reminderRoutes);
 router.use('/admin', adminRoutes);
+router.use('/health-insights', healthInsightRoutes);
+router.use('/ai', aiRoutes);
 
 module.exports = router;

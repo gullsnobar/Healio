@@ -7,7 +7,7 @@ const SettingsScreen = ({ navigation }) => {
   const { colors } = useAppTheme();
   return (
     <ScrollView style={[s.c, { backgroundColor: colors.background }]}>
-      {[['alarm-outline','Reminders','Reminders'],['notifications-outline','Notification Settings','NotificationSettings'],['lock-closed-outline','Privacy Settings','PrivacySettings'],['people-outline','Trusted Contacts','TrustedContacts'],['information-circle-outline','About HEALIO','About']].map(([icon,label,route])=>(
+      {[['alarm-outline','Reminders','Reminders'],['notifications-outline','Notification Settings','NotificationSettings'],['color-palette-outline','Appearance','Appearance'],['lock-closed-outline','Privacy Settings','PrivacySettings'],['people-outline','Trusted Contacts','TrustedContacts'],['information-circle-outline','About HEALIO','About']].map(([icon,label,route])=>(
         <TouchableOpacity key={route} style={[s.item, { backgroundColor: colors.card }]} onPress={() => navigation.navigate(route)}>
           <Ionicons name={icon} size={22} color={colors.primary} />
           <Text style={[s.label, { color: colors.text }]}>{label}</Text>

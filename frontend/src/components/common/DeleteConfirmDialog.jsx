@@ -25,8 +25,8 @@ const DeleteConfirmDialog = ({
     <View style={s.overlay}>
       <View style={[s.card, { backgroundColor: colors.card }]}>
         {/* Warning icon */}
-        <View style={s.iconCircle}>
-          <Ionicons name="trash-outline" size={28} color="#EF4444" />
+        <View style={[s.iconCircle, { backgroundColor: colors.errorLight }]}>
+          <Ionicons name="trash-outline" size={28} color={colors.error} />
         </View>
 
         <Text style={[s.title, { color: colors.text }]}>{title}</Text>
@@ -41,7 +41,7 @@ const DeleteConfirmDialog = ({
             <Text style={[s.cancelText, { color: colors.textSecondary }]}>{cancelLabel}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={s.deleteBtn} onPress={onConfirm} activeOpacity={0.85}>
+          <TouchableOpacity style={[s.deleteBtn, { backgroundColor: colors.error }]} onPress={onConfirm} activeOpacity={0.85}>
             <Ionicons name="trash" size={16} color="#FFF" />
             <Text style={s.deleteText}>{confirmLabel}</Text>
           </TouchableOpacity>
@@ -76,7 +76,6 @@ const s = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#FEE2E2',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
@@ -123,12 +122,7 @@ const s = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 15,
     borderRadius: 14,
-    backgroundColor: '#EF4444',
     gap: 6,
-    shadowColor: '#EF4444',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
     elevation: 4,
   },
   deleteText: {

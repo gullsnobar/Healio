@@ -235,7 +235,7 @@ const dark = {
   // Text
   text:           palette.darkText,
   textSecondary:  palette.slateMid,
-  textTertiary:   palette.slate,
+  textTertiary:   '#A8B5C4',            // bumped from #94A3B8 for WCAG AA on dark cards
   textInverse:    palette.deepInk,
 
   // Border

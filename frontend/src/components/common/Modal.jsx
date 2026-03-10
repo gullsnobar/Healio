@@ -8,7 +8,6 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import colors from '../../styles/colors';
 import { useAppTheme } from '../../styles/ThemeContext';
 
 const Modal = ({

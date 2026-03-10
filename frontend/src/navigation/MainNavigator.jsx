@@ -24,6 +24,18 @@ import SleepScreen from '../screens/fitness/SleepScreen';
 import WaterIntakeScreen from '../screens/fitness/WaterIntakeScreen';
 import DietLogScreen from '../screens/fitness/DietLogScreen';
 import ManualEntryScreen from '../screens/fitness/ManualEntryScreen';
+import ExerciseLogScreen from '../screens/fitness/ExerciseLogScreen';
+import MealHistoryScreen from '../screens/fitness/MealHistoryScreen';
+import WeeklyChartsScreen from '../screens/fitness/WeeklyChartsScreen';
+
+// Health Insights
+import HealthInsightsScreen from '../screens/healthInsights/HealthInsightsScreen';
+
+// AI Insights
+import AIInsightsScreen from '../screens/ai/AIInsightsScreen';
+
+// Notifications
+import NotificationsScreen from '../screens/notifications/NotificationsScreen';
 
 // Reports
 import WeeklyReportScreen from '../screens/reports/WeeklyReportScreen';
@@ -37,6 +49,7 @@ import AddContactScreen from '../screens/trustedContacts/AddContactScreen';
 import SettingsScreen from '../screens/settings/SettingsScreen';
 import NotificationSettingsScreen from '../screens/settings/NotificationSettingsScreen';
 import PrivacySettingsScreen from '../screens/settings/PrivacySettingsScreen';
+import AppearanceScreen from '../screens/settings/AppearanceScreen';
 import AboutScreen from '../screens/settings/AboutScreen';
 
 // Reminders
@@ -67,7 +80,7 @@ const MainNavigator = () => {
       />
 
       {/* Medication Stack */}
-      <Stack.Screen name="AddMedication" component={AddMedicationScreen} options={{ title: 'Add Medication' }} />
+      <Stack.Screen name="AddMedication" component={AddMedicationScreen} options={{ headerShown: false }} />
       <Stack.Screen name="EditMedication" component={EditMedicationScreen} options={{ title: 'Edit Medication' }} />
       <Stack.Screen name="MedicationDetails" component={MedicationDetailsScreen} options={{ title: 'Medication Details' }} />
 
@@ -86,6 +99,16 @@ const MainNavigator = () => {
       <Stack.Screen name="WaterIntake" component={WaterIntakeScreen} options={{ title: 'Water Intake' }} />
       <Stack.Screen name="DietLog" component={DietLogScreen} options={{ title: 'Diet Log' }} />
       <Stack.Screen name="ManualEntry" component={ManualEntryScreen} options={{ title: 'Manual Entry' }} />
+      <Stack.Screen name="ExerciseLog" component={ExerciseLogScreen} options={{ title: 'Log Exercise' }} />
+      <Stack.Screen name="MealHistory" component={MealHistoryScreen} options={{ title: 'Meal History' }} />
+      <Stack.Screen name="WeeklyCharts" component={WeeklyChartsScreen} options={{ title: 'Weekly Charts' }} />
+
+      {/* Health Insights */}
+      <Stack.Screen name="HealthInsights" component={HealthInsightsScreen} options={{ title: 'Health Insights' }} />
+      <Stack.Screen name="AIInsights" component={AIInsightsScreen} options={{ headerShown: false, title: 'AI Health Insights' }} />
+
+      {/* Notifications */}
+      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
 
       {/* Reports */}
       <Stack.Screen name="WeeklyReport" component={WeeklyReportScreen} options={{ title: 'Weekly Report' }} />
@@ -99,6 +122,7 @@ const MainNavigator = () => {
       <Stack.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
       <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} options={{ title: 'Notifications' }} />
       <Stack.Screen name="PrivacySettings" component={PrivacySettingsScreen} options={{ title: 'Privacy' }} />
+      <Stack.Screen name="Appearance" component={AppearanceScreen} options={{ title: 'Appearance' }} />
       <Stack.Screen name="About" component={AboutScreen} options={{ title: 'About HEALIO' }} />
 
       {/* Reminders */}
@@ -107,7 +131,7 @@ const MainNavigator = () => {
       <Stack.Screen name="ReminderDetails" component={ReminderDetailsScreen} options={{ title: 'Reminder Details' }} />
 
       {/* Profile */}
-      <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
+      <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 };

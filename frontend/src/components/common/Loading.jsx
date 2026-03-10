@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import colors from '../../styles/colors';
 import { useAppTheme } from '../../styles/ThemeContext';
 
 const Loading = ({ message, size = 'large', style, overlay = false }) => {
@@ -41,7 +40,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(255,255,255,0.85)',
+    backgroundColor: 'rgba(0,0,0,0.4)',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 999,

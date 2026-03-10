@@ -10,17 +10,19 @@ import ReportsScreen from '../screens/reports/ReportsScreen';
 import RecommendationsScreen from '../screens/recommendations/RecommendationsScreen';
 import AboutScreen from '../screens/settings/AboutScreen';
 
-import colors from '../styles/colors';
+import { useAppTheme } from '../styles/ThemeContext';
 
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
+  const { colors } = useAppTheme();
   return (
     <Drawer.Navigator
       screenOptions={{
         drawerActiveTintColor: colors.primary,
         drawerInactiveTintColor: colors.darkGrey,
-        drawerStyle: { width: 280 },
+        drawerActiveBackgroundColor: colors.primaryLight,
+        drawerStyle: { width: 280, backgroundColor: colors.card },
         headerShown: false,
       }}
     >

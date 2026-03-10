@@ -11,6 +11,8 @@ import trustedContactSlice from './slices/trustedContactSlice';
 import reportSlice from './slices/reportSlice';
 import notificationSlice from './slices/notificationSlice';
 import reminderSlice from './slices/reminderSlice';
+import healthInsightSlice from './slices/healthInsightSlice';
+import aiInsightsSlice from './slices/aiInsightsSlice';
 import { apiMiddleware } from './middleware/apiMiddleware';
 
 const store = configureStore({
@@ -27,6 +29,8 @@ const store = configureStore({
     report: reportSlice,
     notification: notificationSlice,
     reminder: reminderSlice,
+    healthInsight: healthInsightSlice,
+    aiInsights: aiInsightsSlice,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }).concat(apiMiddleware),
 });

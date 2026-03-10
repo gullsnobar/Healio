@@ -9,6 +9,9 @@ const refillChecker = require('./refillChecker');
 const dataCleanup = require('./dataCleanup');
 const recommendationUpdater = require('./recommendationUpdater');
 const healthScoreUpdater = require('./healthScoreUpdater');
+const healthInsightGenerator = require('./healthInsightGenerator');
+const dailyHealthSummary = require('./dailyHealthSummary');
+const recurringReminderSpawner = require('./recurringReminderSpawner');
 const logger = require('../utils/logger');
 
 exports.startAllJobs = () => {
@@ -22,5 +25,9 @@ exports.startAllJobs = () => {
   cron.schedule('0 3 * * 0', () => { dataCleanup.run(); logger.info('Data cleanup ran'); });
   cron.schedule('0 8 * * *', () => { recommendationUpdater.run(); logger.info('Recommendation updater ran'); });
   cron.schedule('0 0 * * *', () => { healthScoreUpdater.run(); logger.info('Health score updater ran'); });
+  // New jobs: AI health insights weekly, daily summary at 9 PM, recurring reminders at midnight
+  cron.schedule('0 9 * * 1', () => { healthInsightGenerator.run(); logger.info('Weekly health insight generation ran'); });
+  cron.schedule('0 21 * * *', () => { dailyHealthSummary.run(); logger.info('Daily health summary sent'); });
+  cron.schedule('0 0 * * *', () => { recurringReminderSpawner.run(); logger.info('Recurring reminder spawner ran'); });
   logger.info('All cron jobs scheduled');
 };

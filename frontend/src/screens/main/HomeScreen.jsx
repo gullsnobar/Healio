@@ -8,6 +8,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle } from 'react-native-svg';
 import { useAppTheme } from '../../styles/ThemeContext';
+import ThemeToggle from '../../components/common/ThemeToggle';
 import DashboardOverview from '../../components/dashboard/DashboardOverview';
 import { fetchDashboardData } from '../../redux/slices/userSlice';
 
@@ -99,6 +100,7 @@ const HomeScreen = ({ navigation }) => {
           <Text style={[st.brand, { color: colors.text }]}>HEALIO</Text>
         </View>
         <View style={st.headerRight}>
+          <ThemeToggle variant="icon" size={20} />
           <TouchableOpacity style={[st.iconBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
             onPress={() => navigation.navigate('Notifications')}>
             <Ionicons name="notifications-outline" size={22} color={colors.textSecondary} />

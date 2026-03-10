@@ -23,6 +23,9 @@ const TABS = [
 const TabNavigator = () => {
   const { colors, isDark } = useAppTheme();
 
+  const tabBarHeight = Platform.select({ ios: 88, android: 64, default: 68 });
+  const tabBarPaddingBottom = Platform.select({ ios: 28, android: 8, default: 10 });
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -30,25 +33,27 @@ const TabNavigator = () => {
         headerTintColor: '#fff',
         headerTitleStyle: { fontWeight: '700', fontSize: 17 },
         tabBarStyle: {
-          height: Platform.OS === 'ios' ? 84 : 62,
-          paddingBottom: Platform.OS === 'ios' ? 24 : 10,
-          paddingTop: 8,
+          height: tabBarHeight,
+          paddingBottom: tabBarPaddingBottom,
+          paddingTop: 6,
           backgroundColor: colors.card,
           borderTopWidth: 1,
           borderTopColor: colors.border,
           ...Platform.select({
             ios: { shadowColor: colors.shadow, shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.06, shadowRadius: 8 },
             android: { elevation: 8 },
+            default: { shadowColor: colors.shadow, shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.06, shadowRadius: 8 },
           }),
         },
         tabBarActiveTintColor: colors.tabActive,
         tabBarInactiveTintColor: colors.tabInactive,
-        tabBarLabelStyle: { fontSize: 10, fontWeight: '600', marginTop: -2 },
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '600', marginTop: 2 },
+        tabBarIconStyle: { marginBottom: -2 },
         tabBarIcon: ({ focused, color }) => {
           const tab = TABS.find((t) => t.name === route.name);
           return (
             <View style={[ts.iconWrap, focused && { backgroundColor: colors.tabActiveBg }]}>
-              <Ionicons name={focused ? tab.icon : `${tab.icon}-outline`} size={22} color={color} />
+              <Ionicons name={focused ? tab.icon : `${tab.icon}-outline`} size={24} color={color} />
             </View>
           );
         },
@@ -72,7 +77,7 @@ const TabNavigator = () => {
 
 const ts = StyleSheet.create({
   iconWrap: {
-    width: 44, height: 30, borderRadius: 15,
+    width: 48, height: 34, borderRadius: 17,
     alignItems: 'center', justifyContent: 'center',
   },
 });

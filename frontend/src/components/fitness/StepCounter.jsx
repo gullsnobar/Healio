@@ -3,22 +3,26 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
 
-const StepCounter = ({ steps = 0, goal = 10000 }) => {
+const StepCounter = ({ steps = 0, goal = 10000, dark }) => {
   const { colors, isDark } = useAppTheme();
   const pct = Math.min(steps / goal, 1);
-  const fillColor = isDark ? '#fff' : '#38BDF8';
+  const onGrad = dark;
+  const mainColor = onGrad ? '#FFFFFF' : colors.text;
+  const subColor = onGrad ? 'rgba(255,255,255,0.75)' : colors.textSecondary;
+  const fillColor = onGrad ? '#FFFFFF' : '#38BDF8';
+  const trackColor = onGrad ? 'rgba(255,255,255,0.25)' : colors.border;
 
   return (
     <View style={sc.container}>
       <View style={sc.row}>
-        <Ionicons name="footsteps" size={40} color={isDark ? '#fff' : '#38BDF8'} />
+        <Ionicons name="footsteps" size={40} color={onGrad ? '#FFFFFF' : (isDark ? '#fff' : '#38BDF8')} />
         <View style={sc.textWrap}>
-          <Text style={[sc.count, { color: colors.text }]}>{steps.toLocaleString()}</Text>
-          <Text style={[sc.label, { color: colors.textSecondary }]}>of {goal.toLocaleString()} steps</Text>
+          <Text style={[sc.count, { color: mainColor }]}>{steps.toLocaleString()}</Text>
+          <Text style={[sc.label, { color: subColor }]}>of {goal.toLocaleString()} steps</Text>
         </View>
-        <Text style={[sc.pct, { color: colors.text }]}>{Math.round(pct * 100)}%</Text>
+        <Text style={[sc.pct, { color: mainColor }]}>{Math.round(pct * 100)}%</Text>
       </View>
-      <View style={[sc.track, { backgroundColor: colors.border }]}>
+      <View style={[sc.track, { backgroundColor: trackColor }]}>
         <View style={[sc.fill, { width: `${pct * 100}%`, backgroundColor: fillColor }]} />
       </View>
     </View>

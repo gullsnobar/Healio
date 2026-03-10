@@ -65,6 +65,14 @@ const FitnessOverviewScreen = ({ navigation }) => {
           <ActionBtn icon="restaurant-outline" label="Diet Log"     color={colors.warningDark} bg={colors.warningLight} onPress={nav('DietLog')} />
           <ActionBtn icon="create-outline"    label="Manual Entry" color={colors.fitnessSleep} bg={colors.fitnessSleepBg} onPress={nav('ManualEntry')} />
         </View>
+        <View style={[fs.actionRow, { marginTop: 10 }]}>
+          <ActionBtn icon="barbell-outline"    label="Exercise"     color={isDark ? '#C4B5FD' : '#7C3AED'} bg={isDark ? '#3B1F7E' : '#EDE9FE'} onPress={nav('ExerciseLog')} />
+          <ActionBtn icon="time-outline"       label="Meal History" color={isDark ? '#FB923C' : '#EA580C'} bg={isDark ? '#7C2D12' : '#FFF7ED'} onPress={nav('MealHistory')} />
+        </View>
+        <View style={[fs.actionRow, { marginTop: 10 }]}>
+          <ActionBtn icon="bar-chart-outline"  label="Weekly Charts" color={isDark ? '#7DD3FC' : '#0369A1'} bg={isDark ? '#1E3A5F' : '#E0F2FE'}  onPress={nav('WeeklyCharts')} />
+          <ActionBtn icon="bulb-outline"       label="AI Insights"   color={isDark ? '#6EE7B7' : '#059669'} bg={isDark ? '#064E3B' : '#ECFDF5'}  onPress={nav('HealthInsights')} />
+        </View>
       </View>
     </ScrollView>
   );

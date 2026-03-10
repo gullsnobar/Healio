@@ -40,7 +40,7 @@ const MarkAsTakenButton = ({ medicationId, onMarkTaken, isTaken = false }) => {
 
   return (
     <TouchableOpacity
-      style={[styles.button, { backgroundColor: colors.primary }, taken && styles.buttonTaken]}
+      style={[styles.button, { backgroundColor: colors.primary }, taken && [styles.buttonTaken, { backgroundColor: colors.successLight, borderColor: colors.success }]]}
       onPress={handlePress}
       activeOpacity={taken ? 1 : 0.7}
       disabled={loading}
@@ -54,7 +54,7 @@ const MarkAsTakenButton = ({ medicationId, onMarkTaken, isTaken = false }) => {
             size={20}
             color={taken ? colors.success : '#fff'}
           />
-          <Text style={[styles.text, taken && styles.textTaken]}>
+          <Text style={[styles.text, taken && { color: colors.success }]}>
             {taken ? 'Taken' : 'Mark as Taken'}
           </Text>
         </>
@@ -75,17 +75,12 @@ const styles = StyleSheet.create({
     minHeight: 42,
   },
   buttonTaken: {
-    backgroundColor: '#D1FAE5',
     borderWidth: 1,
-    borderColor: '#10B981',
   },
   text: {
     color: '#fff',
     fontSize: 14,
     fontWeight: '600',
-  },
-  textTaken: {
-    color: '#10B981',
   },
 });
 

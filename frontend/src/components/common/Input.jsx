@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TextInput, HelperText } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
-import colors from '../../styles/colors';
 import { useAppTheme } from '../../styles/ThemeContext';
 
 const Input = ({
