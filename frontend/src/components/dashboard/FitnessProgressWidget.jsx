@@ -29,8 +29,8 @@ const FitnessProgressWidget = ({ data = {}, onPress }) => {
         return (
           <View key={key} style={[styles.stat, { backgroundColor: bgMap[key] || colors.cardAlt }]}>
             <Ionicons name={icon} size={22} color={color} />
-            <Text style={[styles.num, { color: '#FFFFFF' }]}>{fmt(val)}</Text>
-            <Text style={[styles.statLabel, { color: '#FFFFFF' }]}>{label}</Text>
+            <Text style={[styles.num, { color: color }]}>{fmt(val)}</Text>
+            <Text style={[styles.statLabel, { color: colors.text }]}>{label}</Text>
             <View style={styles.miniTrack}>
               <View style={[styles.miniFill, { width: `${pct * 100}%`, backgroundColor: color }]} />
             </View>
