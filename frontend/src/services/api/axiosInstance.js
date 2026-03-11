@@ -16,4 +16,75 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Handle 401 responses by refreshing the token
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(({ resolve, reject }) => {
+    if (error) reject(error);
+    else resolve(token);
+  });
+  failedQueue = [];
+};
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status !== 401 || originalRequest._retry) {
+      return Promise.reject(error);
+    }
+
+    // Don't try to refresh if this was already a refresh or auth request
+    if (originalRequest.url?.includes('/auth/')) {
+      return Promise.reject(error);
+    }
+
+    if (isRefreshing) {
+      return new Promise((resolve, reject) => {
+        failedQueue.push({ resolve, reject });
+      }).then((token) => {
+        originalRequest.headers.Authorization = 'Bearer ' + token;
+        return api(originalRequest);
+      });
+    }
+
+    originalRequest._retry = true;
+    isRefreshing = true;
+
+    try {
+      const refreshToken = await AsyncStorage.getItem('refresh_token');
+      if (!refreshToken) {
+        throw new Error('No refresh token');
+      }
+
+      // Use a plain axios call to avoid interceptor loops
+      const res = await axios.post(
+        apiConfig.baseURL + '/auth/refresh-token',
+        { refreshToken },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+
+      const { accessToken, refreshToken: newRefreshToken } = res.data.data;
+      await AsyncStorage.setItem('auth_token', accessToken);
+      if (newRefreshToken) {
+        await AsyncStorage.setItem('refresh_token', newRefreshToken);
+      }
+
+      processQueue(null, accessToken);
+      originalRequest.headers.Authorization = 'Bearer ' + accessToken;
+      return api(originalRequest);
+    } catch (refreshError) {
+      processQueue(refreshError, null);
+      // Clear tokens — user must log in again
+      await AsyncStorage.multiRemove(['auth_token', 'refresh_token']);
+      return Promise.reject(refreshError);
+    } finally {
+      isRefreshing = false;
+    }
+  }
+);
+
 export default api;

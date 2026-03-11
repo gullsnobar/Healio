@@ -32,8 +32,8 @@ export const setAuthToken = (token) => {
 export const apiMiddleware = (store) => (next) => (action) => {
   // Update cached token when auth actions complete
   const result = next(action);
-  if (action.type === 'auth/login/fulfilled' && action.payload?.token) {
-    setAuthToken(action.payload.token);
+  if (action.type === 'auth/login/fulfilled' && action.payload?.accessToken) {
+    setAuthToken(action.payload.accessToken);
   } else if (action.type === 'auth/logout/fulfilled') {
     setAuthToken(null);
   }

@@ -32,7 +32,7 @@ const ResetPasswordScreen = ({ route, navigation }) => {
       >
         {/* Back button */}
         <TouchableOpacity onPress={() => navigation.goBack()} style={[s.backBtn, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Ionicons name="chevron-back" size={24} color={colors.textSecondary} />
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
 
         <PasswordReset onSubmit={handleSubmit} loading={loading} />

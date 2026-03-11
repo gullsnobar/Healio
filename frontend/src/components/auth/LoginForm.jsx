@@ -10,6 +10,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAppTheme } from '../../styles/ThemeContext';
+import GoogleIcon from '../common/GoogleIcon';
 
 const LoginForm = ({ onSubmit, onForgotPassword, onRegister, onGoogleSignIn }) => {
   const { colors, isDark } = useAppTheme();
@@ -29,7 +30,7 @@ const LoginForm = ({ onSubmit, onForgotPassword, onRegister, onGoogleSignIn }) =
       style.id = styleId;
       document.head.appendChild(style);
     }
-    const bg = isDark ? '#1E293B' : '#FFFFFF';
+    const bg = isDark ? '#334155' : '#FFFFFF';
     const fg = isDark ? '#E2E8F0' : '#0F172A';
     style.textContent = `
       input:-webkit-autofill,
@@ -57,7 +58,7 @@ const LoginForm = ({ onSubmit, onForgotPassword, onRegister, onGoogleSignIn }) =
   return (
     <View style={s.container}>
       {/* Email / Phone */}
-      <View style={[s.inputWrap, { backgroundColor: colors.card, borderColor: colors.border }, focusedField === 'id' && { borderColor: colors.primary, backgroundColor: isDark ? colors.cardAlt : colors.primaryLight }]}>
+      <View style={[s.inputWrap, { backgroundColor: isDark ? colors.cardAlt : colors.card, borderColor: colors.inputBorder }, focusedField === 'id' && { borderColor: colors.primary, backgroundColor: isDark ? colors.card : colors.primaryLight }]}>
         <Ionicons name="mail-outline" size={20} color={focusedField === 'id' ? colors.primary : colors.textTertiary} style={s.inputIcon} />
         <TextInput
           style={[s.input, { color: colors.text }]}
@@ -77,7 +78,7 @@ const LoginForm = ({ onSubmit, onForgotPassword, onRegister, onGoogleSignIn }) =
       </View>
 
       {/* Password */}
-      <View style={[s.inputWrap, { backgroundColor: colors.card, borderColor: colors.border }, focusedField === 'pw' && { borderColor: colors.primary, backgroundColor: isDark ? colors.cardAlt : colors.primaryLight }]}>
+      <View style={[s.inputWrap, { backgroundColor: isDark ? colors.cardAlt : colors.card, borderColor: colors.inputBorder }, focusedField === 'pw' && { borderColor: colors.primary, backgroundColor: isDark ? colors.card : colors.primaryLight }]}>
         <Ionicons name="lock-closed-outline" size={20} color={focusedField === 'pw' ? colors.primary : colors.textTertiary} style={s.inputIcon} />
         <TextInput
           style={[s.input, { color: colors.text }]}
@@ -120,7 +121,7 @@ const LoginForm = ({ onSubmit, onForgotPassword, onRegister, onGoogleSignIn }) =
 
       {/* Google sign-in */}
       <TouchableOpacity style={[s.googleBtn, { borderColor: colors.border, backgroundColor: colors.card }]} activeOpacity={0.8} onPress={onGoogleSignIn}>
-        <Ionicons name="logo-google" size={20} color="#DB4437" />
+        <GoogleIcon size={20} />
         <Text style={[s.googleText, { color: colors.text }]}>Continue with Google</Text>
       </TouchableOpacity>
 
@@ -143,7 +144,7 @@ const s = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 16,
     marginBottom: 16,
-    borderWidth: 1.5,
+    borderWidth: 1,
     height: 56,
   },
   input: {

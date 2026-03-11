@@ -1,6 +1,6 @@
 ﻿const jwt = require('jsonwebtoken');
 const User = require('../../models/User');
-const { sendOTPEmail } = require('../../services/email/emailService');
+const { sendOTPEmail, isEmailReady } = require('../../services/email/emailService');
 const logger = require('../../utils/logger');
 
 const generateTokens = (userId) => {
@@ -19,13 +19,16 @@ exports.register = async (req, res, next) => {
     user.otpCode = otp;
     user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
-    // Send OTP email (non-blocking — don't fail registration if email isn't configured)
+    let otpSent = false;
     try {
       await sendOTPEmail(email, otp);
+      otpSent = true;
     } catch (emailErr) {
       logger.warn('Could not send OTP email: ' + emailErr.message + '. OTP for ' + email + ': ' + otp);
     }
-    res.status(201).json({ success: true, message: 'Registration successful. Please verify your email.', data: { userId: user._id } });
+    const responseData = { userId: user._id, otpSent };
+    if (!otpSent) responseData.emailIssue = true;
+    res.status(201).json({ success: true, message: otpSent ? 'Registration successful. Please check your email for the verification code.' : 'Account created, but we couldn\'t send the verification email. Please use "Resend Code" or contact support.', data: responseData });
   } catch (error) { next(error); }
 };
 
@@ -44,6 +47,13 @@ exports.login = async (req, res, next) => {
     user.lastLogin = new Date();
     await user.save();
     res.json({ success: true, data: { user, ...tokens } });
+  } catch (error) { next(error); }
+};
+
+exports.getMe = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId);
+    res.json({ success: true, data: { user } });
   } catch (error) { next(error); }
 };
 
@@ -76,12 +86,16 @@ exports.forgotPassword = async (req, res, next) => {
     user.otpCode = otp;
     user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
+    let otpSent = false;
     try {
       await sendOTPEmail(user.email, otp);
+      otpSent = true;
     } catch (emailErr) {
       logger.warn('Could not send OTP email: ' + emailErr.message + '. OTP for ' + user.email + ': ' + otp);
     }
-    res.json({ success: true, message: 'OTP sent to your email' });
+    const responseData = { otpSent };
+    if (!otpSent) responseData.emailIssue = true;
+    res.json({ success: true, message: otpSent ? 'Verification code sent to your email.' : 'Could not send the verification email. Please try again later or contact support.', data: responseData });
   } catch (error) { next(error); }
 };
 
@@ -94,12 +108,16 @@ exports.resendOTP = async (req, res, next) => {
     user.otpCode = otp;
     user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
+    let otpSent = false;
     try {
       await sendOTPEmail(email, otp);
+      otpSent = true;
     } catch (emailErr) {
       logger.warn('Could not send OTP email: ' + emailErr.message + '. OTP for ' + email + ': ' + otp);
     }
-    res.json({ success: true, message: 'OTP resent successfully' });
+    const responseData = { otpSent };
+    if (!otpSent) responseData.emailIssue = true;
+    res.json({ success: true, message: otpSent ? 'Verification code resent successfully.' : 'Could not resend the verification email. Please try again later.', data: responseData });
   } catch (error) { next(error); }
 };
 
@@ -126,7 +144,8 @@ exports.verifyOTP = async (req, res, next) => {
       user.refreshToken = tokens.refreshToken;
       user.lastLogin = new Date();
       await user.save();
-      return res.json({ success: true, message: 'Email verified successfully', data: { user: user.toObject(), ...tokens } });
+      // user is a mongoose document, so res.json() will call user.toJSON() automatically
+      return res.json({ success: true, message: 'Email verified successfully', data: { user, ...tokens } });
     }
 
     res.json({ success: true, message: 'OTP verified successfully' });

@@ -1,16 +1,18 @@
-﻿import React from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, StatusBar, TouchableOpacity } from 'react-native';
+﻿import React, { useState } from 'react';
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, StatusBar, TouchableOpacity } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import OTPVerification from '../../components/auth/OTPVerification';
+import Alert from '../../components/common/Alert';
 import { authAPI } from '../../services/api/authAPI';
 import { verifyOTP } from '../../redux/slices/authSlice';
 import { useAppTheme } from '../../styles/ThemeContext';
 
 const OTPScreen = ({ route, navigation }) => {
-  const { email, mode } = route.params || {};
+  const { email, mode, otpSent } = route.params || {};
   const dispatch = useDispatch();
   const { colors, isDark } = useAppTheme();
+  const [emailFailed, setEmailFailed] = useState(otpSent === false);
 
   const handleVerify = async (otp) => {
     if (mode === 'reset') {
@@ -21,7 +23,15 @@ const OTPScreen = ({ route, navigation }) => {
     }
   };
 
-  const handleResend = () => authAPI.resendOTP(email);
+  const handleResend = async () => {
+    const res = await authAPI.resendOTP(email);
+    if (res.data?.data?.otpSent) {
+      setEmailFailed(false);
+    } else {
+      setEmailFailed(true);
+    }
+    return res;
+  };
 
   return (
     <KeyboardAvoidingView style={[s.c, { backgroundColor: colors.background }]} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -33,8 +43,18 @@ const OTPScreen = ({ route, navigation }) => {
       >
         {/* Back button */}
         <TouchableOpacity onPress={() => navigation.goBack()} style={[s.backBtn, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Ionicons name="chevron-back" size={24} color={colors.textSecondary} />
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
+
+        {/* Email delivery warning */}
+        {emailFailed && (
+          <View style={s.alertWrap}>
+            <Alert
+              variant="warning"
+              message="We couldn't deliver the verification email. Please check your email address or tap Resend Code below. If the issue persists, contact support."
+            />
+          </View>
+        )}
 
         <OTPVerification email={email} onVerify={handleVerify} onResend={handleResend} />
       </ScrollView>
@@ -60,6 +80,9 @@ const s = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     marginBottom: 24,
+  },
+  alertWrap: {
+    marginBottom: 16,
   },
 });
 export default OTPScreen;

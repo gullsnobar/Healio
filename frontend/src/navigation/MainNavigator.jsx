@@ -1,5 +1,7 @@
 import React from 'react';
+import { TouchableOpacity } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../styles/theme';
 
 import TabNavigator from './TabNavigator';
@@ -66,12 +68,19 @@ const MainNavigator = () => {
   const { colors } = useAppTheme();
   return (
     <Stack.Navigator
-      screenOptions={{
-        headerStyle: { backgroundColor: colors.primary },
-        headerTintColor: '#FFFFFF',
+      screenOptions={({ navigation }) => ({
+        headerStyle: { backgroundColor: colors.card },
+        headerTintColor: colors.text,
         headerTitleStyle: { fontWeight: '700', fontSize: 17 },
+        headerShadowVisible: false,
+        headerLeft: () =>
+          navigation.canGoBack() ? (
+            <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: 8, padding: 4 }}>
+              <Ionicons name="arrow-back" size={24} color={colors.text} />
+            </TouchableOpacity>
+          ) : null,
         animation: 'slide_from_right',
-      }}
+      })}
     >
       <Stack.Screen
         name="MainTabs"

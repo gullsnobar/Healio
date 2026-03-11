@@ -1,4 +1,4 @@
-﻿import { configureStore } from '@reduxjs/toolkit';
+﻿import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import authSlice from './slices/authSlice';
 import userSlice from './slices/userSlice';
 import medicationSlice from './slices/medicationSlice';
@@ -15,23 +15,32 @@ import healthInsightSlice from './slices/healthInsightSlice';
 import aiInsightsSlice from './slices/aiInsightsSlice';
 import { apiMiddleware } from './middleware/apiMiddleware';
 
+const appReducer = combineReducers({
+  auth: authSlice,
+  user: userSlice,
+  medication: medicationSlice,
+  appointment: appointmentSlice,
+  labReport: labReportSlice,
+  fitness: fitnessSlice,
+  chatbot: chatbotSlice,
+  recommendation: recommendationSlice,
+  trustedContact: trustedContactSlice,
+  report: reportSlice,
+  notification: notificationSlice,
+  reminder: reminderSlice,
+  healthInsight: healthInsightSlice,
+  aiInsights: aiInsightsSlice,
+});
+
+const rootReducer = (state, action) => {
+  if (action.type === 'auth/logout/fulfilled' || action.type === 'auth/logout/rejected') {
+    state = undefined;
+  }
+  return appReducer(state, action);
+};
+
 const store = configureStore({
-  reducer: {
-    auth: authSlice,
-    user: userSlice,
-    medication: medicationSlice,
-    appointment: appointmentSlice,
-    labReport: labReportSlice,
-    fitness: fitnessSlice,
-    chatbot: chatbotSlice,
-    recommendation: recommendationSlice,
-    trustedContact: trustedContactSlice,
-    report: reportSlice,
-    notification: notificationSlice,
-    reminder: reminderSlice,
-    healthInsight: healthInsightSlice,
-    aiInsights: aiInsightsSlice,
-  },
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }).concat(apiMiddleware),
 });
 

@@ -32,6 +32,13 @@ const startServer = async () => {
     await connectDB();
     logger.info('MongoDB connected successfully');
 
+    // Verify email configuration (non-blocking — server runs even without email)
+    const { verifyEmailConnection } = require('./src/services/email/emailService');
+    const emailOk = await verifyEmailConnection();
+    if (!emailOk) {
+      logger.warn('⚠ Email service unavailable — OTP emails will not be sent');
+    }
+
     startAllJobs();
     logger.info('Cron jobs started');
 

@@ -24,7 +24,11 @@ const RegisterScreen = ({ navigation }) => {
     const result = await dispatch(registerUser(data));
     if (registerUser.fulfilled.match(result)) {
       dispatch(clearError());
-      navigation.navigate('OTP', { email: data.email });
+      const regData = result.payload?.data;
+      navigation.navigate('OTP', {
+        email: data.email,
+        otpSent: regData?.otpSent ?? true,
+      });
     }
   };
 
@@ -42,7 +46,7 @@ const RegisterScreen = ({ navigation }) => {
       >
         {/* Back button */}
         <TouchableOpacity onPress={() => navigation.goBack()} style={[s.backBtn, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Ionicons name="chevron-back" size={24} color={colors.textSecondary} />
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
 
         {/* Heading */}

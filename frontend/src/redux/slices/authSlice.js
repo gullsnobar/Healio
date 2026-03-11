@@ -8,6 +8,7 @@ export const loginUser = createAsyncThunk('auth/login', async (credentials, { re
     const res = await authAPI.login(credentials);
     const { user, accessToken, refreshToken } = res.data.data;
     await secureStorage.setToken(accessToken);
+    await secureStorage.setRefreshToken(refreshToken);
     return { user, accessToken, refreshToken };
   }
   catch (err) {
@@ -36,6 +37,7 @@ export const verifyOTP = createAsyncThunk('auth/verifyOTP', async ({ email, otp,
     // For registration flow, backend returns tokens for auto-login
     if (data?.accessToken) {
       await secureStorage.setToken(data.accessToken);
+      if (data.refreshToken) await secureStorage.setRefreshToken(data.refreshToken);
       return { user: data.user, accessToken: data.accessToken, refreshToken: data.refreshToken };
     }
     return res.data;
@@ -45,7 +47,9 @@ export const verifyOTP = createAsyncThunk('auth/verifyOTP', async ({ email, otp,
 });
 
 export const logoutUser = createAsyncThunk('auth/logout', async () => {
-  await authAPI.logout(); await secureStorage.removeToken();
+  try { await authAPI.logout(); } catch (_) { /* ignore – clear tokens regardless */ }
+  await secureStorage.removeToken();
+  await secureStorage.removeRefreshToken();
 });
 
 export const googleSignIn = createAsyncThunk('auth/googleSignIn', async (_, { rejectWithValue }) => {
@@ -56,6 +60,7 @@ export const googleSignIn = createAsyncThunk('auth/googleSignIn', async (_, { re
     const res = await authAPI.googleAuth(token, profile);
     const { user, accessToken, refreshToken } = res.data.data;
     await secureStorage.setToken(accessToken);
+    await secureStorage.setRefreshToken(refreshToken);
     return { user, accessToken, refreshToken };
   } catch (err) {
     const message = err?.response?.data?.message || err?.message || 'Google sign-in failed';
@@ -63,12 +68,41 @@ export const googleSignIn = createAsyncThunk('auth/googleSignIn', async (_, { re
   }
 });
 
+export const checkAuth = createAsyncThunk('auth/checkAuth', async (_, { dispatch, rejectWithValue }) => {
+  try {
+    const token = await secureStorage.getToken();
+    if (!token) return rejectWithValue('No token');
+    
+    // Validate token and get user profile
+    const res = await authAPI.getMe();
+    return { user: res.data.data.user, accessToken: token };
+  } catch (err) {
+    // If validation fails, ensure we clear local state
+    await dispatch(logoutUser());
+    return rejectWithValue(err.response?.data?.message || 'Session expired');
+  }
+});
+
 const authSlice = createSlice({
   name: 'auth',
-  initialState: { user: null, token: null, isAuthenticated: false, loading: false, error: null },
+  initialState: { user: null, token: null, isAuthenticated: false, loading: false, isAuthLoading: true, error: null },
   reducers: { clearError: (state) => { state.error = null; } },
   extraReducers: (builder) => {
     builder
+      // checkAuth
+      .addCase(checkAuth.pending, (state) => { state.isAuthLoading = true; })
+      .addCase(checkAuth.fulfilled, (state, action) => {
+        state.isAuthLoading = false;
+        state.isAuthenticated = true;
+        state.user = action.payload.user;
+        state.token = action.payload.accessToken;
+      })
+      .addCase(checkAuth.rejected, (state) => {
+        state.isAuthLoading = false;
+        state.isAuthenticated = false;
+        state.user = null;
+        state.token = null;
+      })
       .addCase(loginUser.pending, (state) => { state.loading = true; state.error = null; })
       .addCase(loginUser.fulfilled, (state, action) => { state.loading = false; state.isAuthenticated = true; state.user = action.payload.user; state.token = action.payload.accessToken; })
       .addCase(loginUser.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
@@ -88,6 +122,7 @@ const authSlice = createSlice({
       })
       .addCase(verifyOTP.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
       .addCase(logoutUser.fulfilled, (state) => { state.user = null; state.token = null; state.isAuthenticated = false; })
+      .addCase(logoutUser.rejected, (state) => { state.user = null; state.token = null; state.isAuthenticated = false; })
       .addCase(googleSignIn.pending, (state) => { state.loading = true; state.error = null; })
       .addCase(googleSignIn.fulfilled, (state, action) => { state.loading = false; state.isAuthenticated = true; state.user = action.payload.user; state.token = action.payload.accessToken; })
       .addCase(googleSignIn.rejected, (state, action) => { state.loading = false; state.error = action.payload; });

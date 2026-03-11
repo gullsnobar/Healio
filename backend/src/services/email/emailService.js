@@ -1,18 +1,68 @@
 ﻿const nodemailer = require('nodemailer');
 const logger = require('../../utils/logger');
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: Number(process.env.EMAIL_PORT) || 587,
-  secure: false,
-  auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASSWORD },
-  tls: { rejectUnauthorized: false },
-});
+let transporter = null;
+let emailReady = false;
 
-const FROM = `HEALIO <${process.env.EMAIL_USER}>`;
+const createTransporter = () => {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+    logger.warn('EMAIL_USER or EMAIL_PASSWORD not set — email sending disabled');
+    return null;
+  }
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASSWORD },
+    tls: { rejectUnauthorized: false },
+    pool: true,
+    maxConnections: 3,
+    rateDelta: 1000,
+    rateLimit: 5,
+  });
+};
+
+/**
+ * Verify SMTP connection on startup. Call this from server.js after dotenv loads.
+ * Returns true if connected, false otherwise (app can still run without email).
+ */
+exports.verifyEmailConnection = async () => {
+  transporter = createTransporter();
+  if (!transporter) return false;
+  try {
+    await transporter.verify();
+    emailReady = true;
+    logger.info('SMTP email connection verified — emails will be delivered');
+    return true;
+  } catch (err) {
+    emailReady = false;
+    logger.error('SMTP email verification FAILED: ' + err.message);
+    logger.error('OTP emails will NOT be sent. Fix EMAIL_USER / EMAIL_PASSWORD in .env');
+    return false;
+  }
+};
+
+exports.isEmailReady = () => emailReady;
+
+const FROM = () => `HEALIO <${process.env.EMAIL_USER}>`;
 
 exports.sendOTPEmail = async (email, otp) => {
-  await transporter.sendMail({ from: FROM, to: email, subject: 'HEALIO - Verification OTP', html: '<h2>Your OTP is: <b>' + otp + '</b></h2><p>Valid for 10 minutes.</p>' });
+  if (!transporter || !emailReady) {
+    throw new Error('Email service not configured or SMTP credentials invalid');
+  }
+  await transporter.sendMail({
+    from: FROM(),
+    to: email,
+    subject: 'HEALIO - Verification Code',
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#f8fafc;border-radius:12px;">
+        <h2 style="color:#0F766E;margin:0 0 8px;">HEALIO</h2>
+        <p style="color:#334155;font-size:15px;">Your verification code is:</p>
+        <div style="background:#ffffff;border:2px solid #14B8A6;border-radius:10px;padding:20px;text-align:center;margin:16px 0;">
+          <span style="font-size:32px;font-weight:bold;letter-spacing:8px;color:#0F766E;">${otp}</span>
+        </div>
+        <p style="color:#64748B;font-size:13px;">This code expires in 10 minutes. If you didn't request this, ignore this email.</p>
+      </div>
+    `,
+  });
   logger.info('OTP email sent to ' + email);
 };
 

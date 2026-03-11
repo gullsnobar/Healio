@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,9 +11,33 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAppTheme } from '../../styles/ThemeContext';
+import GoogleIcon from '../common/GoogleIcon';
 
 const RegisterForm = ({ onSubmit, onLogin, onGoogleSignIn }) => {
-  const { colors } = useAppTheme();
+  const { colors, isDark } = useAppTheme();
+
+  // Override Chrome autofill background for dark mode
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const styleId = 'healio-autofill-override';
+    let style = document.getElementById(styleId);
+    if (!style) {
+      style = document.createElement('style');
+      style.id = styleId;
+      document.head.appendChild(style);
+    }
+    const bg = isDark ? '#334155' : '#FFFFFF';
+    const fg = isDark ? '#E2E8F0' : '#0F172A';
+    style.textContent = `
+      input:-webkit-autofill,
+      input:-webkit-autofill:hover,
+      input:-webkit-autofill:focus {
+        -webkit-box-shadow: 0 0 0 1000px ${bg} inset !important;
+        -webkit-text-fill-color: ${fg} !important;
+        caret-color: ${fg};
+      }
+    `;
+  }, [isDark]);
   const [form, setForm] = useState({
     fullName: '',
     email: '',
@@ -79,12 +103,12 @@ const RegisterForm = ({ onSubmit, onLogin, onGoogleSignIn }) => {
     const hasError = !!errors[key];
     return (
       <View key={key} style={{ marginBottom: hasError ? 4 : 16 }}>
-        <View style={[s.inputWrap, { backgroundColor: colors.cardAlt, borderColor: colors.cardAlt },
-          isFocused && { borderColor: colors.primary, backgroundColor: colors.card },
+        <View style={[s.inputWrap, { backgroundColor: isDark ? colors.cardAlt : colors.card, borderColor: colors.inputBorder },
+          isFocused && { borderColor: colors.primary, backgroundColor: isDark ? colors.card : colors.primaryLight },
           hasError && { borderColor: colors.error }]}>
           <Ionicons name={FIELD_ICONS[key] || 'ellipse-outline'} size={20} color={isFocused ? colors.primary : colors.textTertiary} style={s.inputIcon} />
           <TextInput
-            style={s.input}
+            style={[s.input, { color: colors.text }]}
             placeholder={placeholder}
             placeholderTextColor={colors.textTertiary}
             value={form[key]}
@@ -144,7 +168,7 @@ const RegisterForm = ({ onSubmit, onLogin, onGoogleSignIn }) => {
 
       {/* Google sign-in */}
       <TouchableOpacity style={[s.googleBtn, { borderColor: colors.border, backgroundColor: colors.card }]} activeOpacity={0.8} onPress={onGoogleSignIn}>
-        <Ionicons name="logo-google" size={20} color="#DB4437" />
+        <GoogleIcon size={20} />
         <Text style={[s.googleText, { color: colors.text }]}>Continue with Google</Text>
       </TouchableOpacity>
 
@@ -168,7 +192,7 @@ const s = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 12,
     paddingHorizontal: 16,
-    borderWidth: 1.5,
+    borderWidth: 1,
     height: 56,
   },
   input: {
@@ -176,6 +200,7 @@ const s = StyleSheet.create({
     fontSize: 15,
     letterSpacing: 0.2,
     height: '100%',
+    backgroundColor: 'transparent',
     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
   },
   eyeBtn: { padding: 8 },

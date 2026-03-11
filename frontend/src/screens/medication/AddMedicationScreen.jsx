@@ -18,7 +18,7 @@ const AddMedicationScreen = ({ navigation }) => {
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
       <View style={s.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={[s.backBtn, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Ionicons name="chevron-back" size={24} color={colors.textSecondary} />
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <View style={s.headerText}>
           <Text style={[s.title, { color: colors.text }]}>Add New Medicine</Text>

@@ -14,7 +14,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { logout } from '../../redux/slices/authSlice';
+import { logoutUser } from '../../redux/slices/authSlice';
 import { useAppTheme } from '../../styles/ThemeContext';
 
 const ProfileScreen = ({ navigation }) => {
@@ -52,7 +52,7 @@ const ProfileScreen = ({ navigation }) => {
   const handleLogout = () => {
     Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign Out', style: 'destructive', onPress: () => dispatch(logout()) },
+      { text: 'Sign Out', style: 'destructive', onPress: () => dispatch(logoutUser()) },
     ]);
   };
 
@@ -86,7 +86,7 @@ const ProfileScreen = ({ navigation }) => {
       {/* Top bar */}
       <View style={s.topBar}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={[s.backBtn, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Ionicons name="chevron-back" size={24} color={colors.textSecondary} />
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={[s.topTitle, { color: colors.text }]}>Profile</Text>
         <View style={{ width: 44 }} />

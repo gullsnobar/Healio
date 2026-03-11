@@ -17,7 +17,7 @@ const Input = ({
   inputStyle,
   ...rest
 }) => {
-  const { colors: themeColors } = useAppTheme();
+  const { colors: themeColors, isDark } = useAppTheme();
   const [secureVisible, setSecureVisible] = useState(!secureTextEntry);
 
   const renderLeftIcon = leftIcon
@@ -64,9 +64,10 @@ const Input = ({
         secureTextEntry={secureTextEntry && !secureVisible}
         left={renderLeftIcon ? renderLeftIcon() : undefined}
         right={renderRightIcon ? renderRightIcon() : undefined}
-        outlineColor={themeColors.border}
+        outlineColor={themeColors.inputBorder}
         activeOutlineColor={themeColors.primary}
-        style={[styles.input, { backgroundColor: themeColors.card }, inputStyle]}
+        style={[styles.input, { backgroundColor: isDark ? themeColors.cardAlt : themeColors.card }, inputStyle]}
+        textColor={themeColors.text}
         {...rest}
       />
       {!!error && !!errorMessage && (

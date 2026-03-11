@@ -160,6 +160,7 @@ const light = {
   // Border
   border:         '#E2E8F0',
   borderLight:    '#F1F5F9',
+  inputBorder:    '#CBD5E1',
 
   // Misc
   overlay:        'rgba(15,23,42,0.5)',
@@ -241,6 +242,7 @@ const dark = {
   // Border
   border:         palette.darkSurface,
   borderLight:    '#1E293B',
+  inputBorder:    '#475569',
 
   // Misc
   overlay:        'rgba(0,0,0,0.7)',

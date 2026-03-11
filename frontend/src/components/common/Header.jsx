@@ -16,7 +16,7 @@ const Header = ({
       <View style={styles.left}>
         {onBackPress ? (
           <TouchableOpacity onPress={onBackPress} style={styles.iconBtn}>
-            <Ionicons name="arrow-back" size={24} color={colors.primary} />
+            <Ionicons name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
         ) : (
           <View style={styles.iconPlaceholder} />

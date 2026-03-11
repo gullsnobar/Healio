@@ -4,4 +4,7 @@ export const secureStorage = {
   getToken: async () => AsyncStorage.getItem('auth_token'),
   setToken: async (token) => AsyncStorage.setItem('auth_token', token),
   removeToken: async () => AsyncStorage.removeItem('auth_token'),
+  getRefreshToken: async () => AsyncStorage.getItem('refresh_token'),
+  setRefreshToken: async (token) => AsyncStorage.setItem('refresh_token', token),
+  removeRefreshToken: async () => AsyncStorage.removeItem('refresh_token'),
 };

@@ -49,7 +49,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
       >
         {/* Back button */}
         <TouchableOpacity onPress={() => navigation.goBack()} style={[s.backBtn, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Ionicons name="chevron-back" size={24} color={colors.textSecondary} />
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
 
         {/* Heading */}
@@ -59,7 +59,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
         </Text>
 
         {/* Email input */}
-        <View style={[s.inputWrap, { backgroundColor: colors.cardAlt, borderColor: focused ? colors.primary : colors.cardAlt }]}>
+        <View style={[s.inputWrap, { backgroundColor: isDark ? colors.cardAlt : colors.card, borderColor: focused ? colors.primary : colors.inputBorder }]}>
           <TextInput
             style={[s.input, { color: colors.text }]}
             placeholder="Enter your email"
@@ -130,7 +130,7 @@ const s = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 16,
     marginBottom: 32,
-    borderWidth: 1.5,
+    borderWidth: 1,
     height: 56,
   },
   input: {
