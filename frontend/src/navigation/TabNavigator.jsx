@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet, Platform, Dimensions } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAppTheme } from '../styles/ThemeContext';
@@ -22,9 +22,11 @@ const TABS = [
 
 const TabNavigator = () => {
   const { colors, isDark } = useAppTheme();
+  const screenWidth = Dimensions.get('window').width;
+  const isSmall = screenWidth < 400;
 
-  const tabBarHeight = Platform.select({ ios: 88, android: 64, default: 68 });
-  const tabBarPaddingBottom = Platform.select({ ios: 28, android: 8, default: 10 });
+  const tabBarHeight = Platform.select({ ios: 88, android: 64, default: isSmall ? 60 : 68 });
+  const tabBarPaddingBottom = Platform.select({ ios: 28, android: 8, default: isSmall ? 6 : 10 });
 
   return (
     <Tab.Navigator
@@ -47,13 +49,13 @@ const TabNavigator = () => {
         },
         tabBarActiveTintColor: colors.tabActive,
         tabBarInactiveTintColor: colors.tabInactive,
-        tabBarLabelStyle: { fontSize: 11, fontWeight: '600', marginTop: 2 },
+        tabBarLabelStyle: { fontSize: isSmall ? 10 : 11, fontWeight: '600', marginTop: 1 },
         tabBarIconStyle: { marginBottom: -2 },
         tabBarIcon: ({ focused, color }) => {
           const tab = TABS.find((t) => t.name === route.name);
           return (
-            <View style={[ts.iconWrap, focused && { backgroundColor: colors.tabActiveBg }]}>
-              <Ionicons name={focused ? tab.icon : `${tab.icon}-outline`} size={24} color={color} />
+            <View style={[ts.iconWrap, isSmall && ts.iconWrapSmall, focused && { backgroundColor: colors.tabActiveBg }]}>
+              <Ionicons name={focused ? tab.icon : `${tab.icon}-outline`} size={isSmall ? 20 : 24} color={color} />
             </View>
           );
         },
@@ -79,6 +81,9 @@ const ts = StyleSheet.create({
   iconWrap: {
     width: 48, height: 34, borderRadius: 17,
     alignItems: 'center', justifyContent: 'center',
+  },
+  iconWrapSmall: {
+    width: 38, height: 28, borderRadius: 14,
   },
 });
 

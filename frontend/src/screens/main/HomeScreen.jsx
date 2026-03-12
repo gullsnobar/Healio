@@ -13,7 +13,8 @@ import DashboardOverview from '../../components/dashboard/DashboardOverview';
 import { fetchDashboardData } from '../../redux/slices/userSlice';
 
 const { width: SCREEN_W } = Dimensions.get('window');
-const CARD_W = (SCREEN_W - 52) / 2;
+const IS_SMALL = SCREEN_W < 400;
+const CARD_W = (SCREEN_W - (IS_SMALL ? 44 : 52)) / 2;
 
 /* ─── date helpers ─── */
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -44,7 +45,7 @@ const QuickStatCard = ({ icon, label, value, unit, color, bg, colors }) => (
     android: { elevation: 2 },
   })]}>
     <View style={[st.statIconWrap, { backgroundColor: bg }]}>
-      <Ionicons name={icon} size={22} color={color} />
+      <Ionicons name={icon} size={IS_SMALL ? 18 : 22} color={color} />
     </View>
     <Text style={[st.statValue, { color: colors.text }]}>{value}<Text style={[st.statUnit, { color: colors.textTertiary }]}> {unit}</Text></Text>
     <Text style={[st.statLabel, { color: colors.textTertiary }]}>{label}</Text>
@@ -288,10 +289,10 @@ const st = StyleSheet.create({
   /* Stats grid */
   statsSection: { paddingHorizontal: 20, marginBottom: 8 },
   sectionTitle: { fontSize: 17, fontWeight: '700', marginBottom: 12 },
-  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  statCard: { width: CARD_W, borderRadius: 16, padding: 14 },
-  statIconWrap: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
-  statValue: { fontSize: 20, fontWeight: '800' },
+  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: IS_SMALL ? 8 : 12 },
+  statCard: { width: CARD_W, borderRadius: 16, padding: IS_SMALL ? 10 : 14 },
+  statIconWrap: { width: IS_SMALL ? 34 : 40, height: IS_SMALL ? 34 : 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: IS_SMALL ? 8 : 10 },
+  statValue: { fontSize: IS_SMALL ? 17 : 20, fontWeight: '800' },
   statUnit: { fontSize: 12, fontWeight: '600' },
   statLabel: { fontSize: 12, fontWeight: '500', marginTop: 2 },
 

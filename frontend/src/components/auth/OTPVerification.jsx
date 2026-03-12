@@ -13,7 +13,7 @@ import { useAppTheme } from '../../styles/theme';
 const OTP_LENGTH = 6;
 
 const OTPVerification = ({ onVerify, onResend, email }) => {
-  const { colors } = useAppTheme();
+  const { colors, isDark } = useAppTheme();
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''));
   const [timer, setTimer] = useState(60);
   const [loading, setLoading] = useState(false);
@@ -101,9 +101,9 @@ const OTPVerification = ({ onVerify, onResend, email }) => {
             ref={(ref) => (inputs.current[i] = ref)}
             style={[
               s.otpBox,
-              { backgroundColor: colors.borderLight, borderColor: colors.borderLight, color: colors.text },
-              focusedIndex === i && { borderColor: colors.primary, backgroundColor: colors.card },
-              digit ? { borderColor: colors.primary, backgroundColor: colors.primaryLight } : null,
+              { backgroundColor: isDark ? colors.cardAlt : colors.card, borderColor: colors.inputBorder, color: colors.text },
+              focusedIndex === i && { borderColor: colors.primary, backgroundColor: isDark ? colors.card : '#F0FDFA' },
+              digit ? { borderColor: colors.primary, backgroundColor: isDark ? colors.card : '#F0FDFA' } : null,
               error ? s.otpBoxError : null,
             ]}
             keyboardType="number-pad"
@@ -179,7 +179,7 @@ const s = StyleSheet.create({
     width: 48,
     height: 56,
     borderRadius: 12,
-    borderWidth: 1.5,
+    borderWidth: 1,
     textAlign: 'center',
     fontSize: 22,
     fontWeight: '800',
