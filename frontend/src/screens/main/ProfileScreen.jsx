@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { logoutUser } from '../../redux/slices/authSlice';
 import { useAppTheme } from '../../styles/ThemeContext';
+import Button from '../../components/common/Button';
 
 const ProfileScreen = ({ navigation }) => {
   const { colors, isDark } = useAppTheme();
@@ -115,20 +116,31 @@ const ProfileScreen = ({ navigation }) => {
 
       {/* Save button */}
       <View style={s.formSection}>
-        <TouchableOpacity onPress={handleSave} activeOpacity={0.85}>
-          <LinearGradient colors={colors.primaryGrad} style={s.saveBtn}>
-            <Text style={s.saveBtnText}>Save</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+        <Button
+          variant="primary"
+          size="large"
+          icon="checkmark-circle-outline"
+          onPress={handleSave}
+          colors={colors}
+        >
+          Save Profile
+        </Button>
       </View>
 
       {/* Dark mode toggle */}
 
       {/* Sign out */}
-      <TouchableOpacity onPress={handleLogout} style={s.signOutBtn} activeOpacity={0.7}>
-        <Ionicons name="log-out-outline" size={20} color={colors.error} />
-        <Text style={[s.signOutText, { color: colors.error }]}>Sign out</Text>
-      </TouchableOpacity>
+      <View style={{ paddingHorizontal: 24, marginTop: 16 }}>
+        <Button
+          variant="danger"
+          size="large"
+          icon="log-out-outline"
+          onPress={handleLogout}
+          colors={colors}
+        >
+          Sign Out
+        </Button>
+      </View>
     </ScrollView>
   );
 };
@@ -203,21 +215,6 @@ const s = StyleSheet.create({
   },
 
   /* Save */
-  saveBtn: {
-    height: 56,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#14B8A6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 6,
-    marginTop: 8,
-  },
-  saveBtnText: { color: '#FFF', fontSize: 16, fontWeight: '700', letterSpacing: 0.5 },
-
-  /* Sign out */
   signOutBtn: {
     flexDirection: 'row',
     alignItems: 'center',
