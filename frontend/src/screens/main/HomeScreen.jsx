@@ -12,9 +12,10 @@ import ThemeToggle from '../../components/common/ThemeToggle';
 import DashboardOverview from '../../components/dashboard/DashboardOverview';
 import { fetchDashboardData } from '../../redux/slices/userSlice';
 
-const { width: SCREEN_W } = Dimensions.get('window');
+const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 const IS_SMALL = SCREEN_W < 400;
-const CARD_W = (SCREEN_W - (IS_SMALL ? 44 : 52)) / 2;
+const IS_TABLET = SCREEN_W >= 768;
+const CARD_W = IS_TABLET ? (SCREEN_W - 60) / 3 : (SCREEN_W - (IS_SMALL ? 44 : 52)) / 2;
 
 /* ─── date helpers ─── */
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -174,8 +175,9 @@ const HomeScreen = ({ navigation }) => {
       <View style={st.medSection}>
         <View style={st.sectionHeader}>
           <Text style={[st.sectionTitle, { color: colors.text }]}>Medication Progress</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Medications')}>
+          <TouchableOpacity onPress={() => navigation.navigate('Medications')} style={st.seeAllContainer}>
             <Text style={[st.seeAll, { color: colors.primary }]}>See All</Text>
+            <Text style={[st.seeAllDesc, { color: colors.textTertiary }]}>View & manage meds</Text>
           </TouchableOpacity>
         </View>
         <View style={[st.medCard, { backgroundColor: colors.card }, Platform.select({
@@ -218,8 +220,9 @@ const HomeScreen = ({ navigation }) => {
         <View style={st.schedSection}>
           <View style={st.sectionHeader}>
             <Text style={[st.sectionTitle, { color: colors.text }]}>Today's Schedule</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Reminders')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Reminders')} style={st.seeAllContainer}>
               <Text style={[st.seeAll, { color: colors.primary }]}>View All</Text>
+              <Text style={[st.seeAllDesc, { color: colors.textTertiary }]}>Manage reminders</Text>
             </TouchableOpacity>
           </View>
           {dashboardData.reminders.slice(0, 4).map((item, i) => (
@@ -263,38 +266,38 @@ const st = StyleSheet.create({
   content: { paddingBottom: 32 },
 
   /* Header */
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 },
-  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  brandPill: { width: 36, height: 36, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  brand: { fontSize: 18, fontWeight: '800', letterSpacing: 1 },
-  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  iconBtn: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
-  avatarSmall: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
-  avatarText: { color: '#FFF', fontSize: 14, fontWeight: '700' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: IS_SMALL ? 16 : 20, paddingTop: 12, paddingBottom: 8 },
+  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: IS_SMALL ? 8 : 10 },
+  brandPill: { width: IS_SMALL ? 32 : 36, height: IS_SMALL ? 32 : 36, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  brand: { fontSize: IS_SMALL ? 16 : 18, fontWeight: '800', letterSpacing: 1 },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: IS_SMALL ? 8 : 12 },
+  iconBtn: { width: IS_SMALL ? 36 : 40, height: IS_SMALL ? 36 : 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
+  avatarSmall: { width: IS_SMALL ? 32 : 36, height: IS_SMALL ? 32 : 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
+  avatarText: { color: '#FFF', fontSize: IS_SMALL ? 12 : 14, fontWeight: '700' },
 
   /* Greeting */
-  greetingSection: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12 },
-  greetingLabel: { fontSize: 14, fontWeight: '500' },
-  greetingName: { fontSize: 26, fontWeight: '800', letterSpacing: -0.3, marginTop: 2 },
+  greetingSection: { paddingHorizontal: IS_SMALL ? 16 : 20, paddingTop: 16, paddingBottom: 12 },
+  greetingLabel: { fontSize: IS_SMALL ? 12 : 14, fontWeight: '500' },
+  greetingName: { fontSize: IS_SMALL ? 24 : 26, fontWeight: '800', letterSpacing: -0.3, marginTop: 2 },
 
   /* Hero card */
-  heroCard: { marginHorizontal: 20, borderRadius: 20, padding: 20, marginBottom: 20, overflow: 'hidden' },
+  heroCard: { marginHorizontal: IS_SMALL ? 16 : 20, borderRadius: 20, padding: IS_SMALL ? 16 : 20, marginBottom: 20, overflow: 'hidden' },
   heroRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   heroLeft: { flex: 1, marginRight: 12 },
-  heroLabel: { fontSize: 14, fontWeight: '600', color: 'rgba(255,255,255,0.7)', marginBottom: 4 },
-  heroScore: { fontSize: 44, fontWeight: '900', color: '#FFF' },
-  heroMax: { fontSize: 18, fontWeight: '600', color: 'rgba(255,255,255,0.5)' },
+  heroLabel: { fontSize: IS_SMALL ? 12 : 14, fontWeight: '600', color: 'rgba(255,255,255,0.7)', marginBottom: 4 },
+  heroScore: { fontSize: IS_SMALL ? 36 : 44, fontWeight: '900', color: '#FFF' },
+  heroMax: { fontSize: IS_SMALL ? 14 : 18, fontWeight: '600', color: 'rgba(255,255,255,0.5)' },
   heroGradeRow: { flexDirection: 'row', alignItems: 'center', marginTop: 8 },
   heroDot: { width: 8, height: 8, borderRadius: 4, marginRight: 6 },
-  heroGradeText: { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.85)' },
+  heroGradeText: { fontSize: IS_SMALL ? 12 : 13, fontWeight: '600', color: 'rgba(255,255,255,0.85)' },
   heroTrack: { height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.2)', marginTop: 12 },
   heroFill: { height: 6, borderRadius: 3, backgroundColor: '#FFF' },
   heroRingWrap: { alignItems: 'center', justifyContent: 'center' },
   heroRingCenter: { position: 'absolute', alignItems: 'center', justifyContent: 'center' },
 
   /* Stats grid */
-  statsSection: { paddingHorizontal: 20, marginBottom: 8 },
-  sectionTitle: { fontSize: 17, fontWeight: '700', marginBottom: 12 },
+  statsSection: { paddingHorizontal: IS_SMALL ? 16 : 20, marginBottom: 8 },
+  sectionTitle: { fontSize: IS_SMALL ? 15 : 17, fontWeight: '700', marginBottom: 12 },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: IS_SMALL ? 8 : 12 },
   statCard: { width: CARD_W, borderRadius: 16, padding: IS_SMALL ? 10 : 14 },
   statIconWrap: { width: IS_SMALL ? 34 : 40, height: IS_SMALL ? 34 : 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: IS_SMALL ? 8 : 10 },
@@ -303,39 +306,41 @@ const st = StyleSheet.create({
   statLabel: { fontSize: 12, fontWeight: '500', marginTop: 2 },
 
   /* Date */
-  dateSection: { paddingHorizontal: 20, marginTop: 8 },
-  dayList: { paddingHorizontal: 16, paddingBottom: 16, gap: 8 },
-  dayItem: { width: 52, height: 72, borderRadius: 16, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
+  dateSection: { paddingHorizontal: IS_SMALL ? 16 : 20, marginTop: 8 },
+  dayList: { paddingHorizontal: IS_SMALL ? 12 : 16, paddingBottom: 16, gap: 8 },
+  dayItem: { width: IS_SMALL ? 48 : 52, height: IS_SMALL ? 68 : 72, borderRadius: 16, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
   dayName: { fontSize: 11, fontWeight: '600', marginBottom: 4 },
   dayNameActive: { color: 'rgba(255,255,255,0.8)' },
-  dayDate: { fontSize: 18, fontWeight: '800' },
+  dayDate: { fontSize: IS_SMALL ? 16 : 18, fontWeight: '800' },
   dayDateActive: { color: '#FFF' },
   todayDot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: '#FFF', marginTop: 4 },
 
   /* Med progress */
-  medSection: { paddingHorizontal: 20, marginBottom: 8, marginTop: 8 },
+  medSection: { paddingHorizontal: IS_SMALL ? 16 : 20, marginBottom: 8, marginTop: 8 },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
+  seeAllContainer: { alignItems: 'flex-end' },
   seeAll: { fontSize: 13, fontWeight: '600' },
-  medCard: { borderRadius: 20, padding: 20 },
-  medRow: { flexDirection: 'row', alignItems: 'center', gap: 20 },
+  seeAllDesc: { fontSize: 11, marginTop: 2 },
+  medCard: { borderRadius: 20, padding: IS_SMALL ? 16 : 20 },
+  medRow: { flexDirection: 'row', alignItems: 'center', gap: IS_SMALL ? 16 : 20 },
   medRingWrap: { alignItems: 'center', justifyContent: 'center' },
   medRingCenter: { position: 'absolute', alignItems: 'center' },
-  medRingNum: { fontSize: 22, fontWeight: '800' },
-  medRingSub: { fontSize: 13, fontWeight: '600' },
+  medRingNum: { fontSize: IS_SMALL ? 20 : 22, fontWeight: '800' },
+  medRingSub: { fontSize: IS_SMALL ? 12 : 13, fontWeight: '600' },
   medStats: { flex: 1, gap: 10 },
   medStatRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   medStatDot: { width: 8, height: 8, borderRadius: 4 },
-  medStatLabel: { flex: 1, fontSize: 13, fontWeight: '500' },
-  medStatVal: { fontSize: 15, fontWeight: '700' },
+  medStatLabel: { flex: 1, fontSize: IS_SMALL ? 12 : 13, fontWeight: '500' },
+  medStatVal: { fontSize: IS_SMALL ? 14 : 15, fontWeight: '700' },
 
   /* Schedule */
-  schedSection: { paddingHorizontal: 20, marginTop: 8 },
-  schedItem: { flexDirection: 'row', alignItems: 'center', borderRadius: 16, padding: 14, marginBottom: 10, borderWidth: 1 },
-  schedIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: 12 },
+  schedSection: { paddingHorizontal: IS_SMALL ? 16 : 20, marginTop: 8 },
+  schedItem: { flexDirection: 'row', alignItems: 'center', borderRadius: 16, padding: IS_SMALL ? 12 : 14, marginBottom: 10, borderWidth: 1 },
+  schedIcon: { width: IS_SMALL ? 40 : 44, height: IS_SMALL ? 40 : 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: 12 },
   schedInfo: { flex: 1 },
-  schedName: { fontSize: 15, fontWeight: '700' },
+  schedName: { fontSize: IS_SMALL ? 14 : 15, fontWeight: '700' },
   schedSub: { fontSize: 12, marginTop: 2, fontWeight: '500' },
-  timeBadge: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 },
+  timeBadge: { paddingHorizontal: IS_SMALL ? 10 : 12, paddingVertical: 6, borderRadius: 8 },
   timeText: { fontSize: 12, fontWeight: '700' },
 });
 

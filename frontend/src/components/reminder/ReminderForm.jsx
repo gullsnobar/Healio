@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Platform, Alert, ActivityIndicator,
+  View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Platform, Alert, ActivityIndicator, Dimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAppTheme } from '../../styles/ThemeContext';
 import Button from '../common/Button';
+
+const { width: SCREEN_W } = Dimensions.get('window');
+const IS_SMALL = SCREEN_W < 400;
 
 const REPEAT_OPTIONS = ['none', 'daily', 'weekly', 'monthly'];
 const FREQUENCY_OPTIONS = ['Once daily', 'Twice daily', 'Three times daily', 'Every 8 hours', 'As needed'];
@@ -217,6 +220,11 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
         >
           {loading ? 'Saving...' : 'Save Reminder'}
         </Button>
+        <Text style={s.buttonDesc}>
+          {reminderType === 'medication' ? 'Set up medication reminders to stay on track with your treatment' :
+           reminderType === 'appointment' ? 'Schedule appointment reminders to never miss important visits' :
+           'Create lab report reminders to track your health tests'}
+        </Text>
       </View>
     </ScrollView>
   );
@@ -224,18 +232,19 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
 
 const s = StyleSheet.create({
   container: { flex: 1 },
-  section: { borderRadius: 14, padding: 16, marginBottom: 16, elevation: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4 },
-  sectionTitle: { fontSize: 15, fontWeight: '700', marginBottom: 14 },
+  section: { borderRadius: 14, padding: IS_SMALL ? 12 : 16, marginBottom: 16, elevation: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4 },
+  sectionTitle: { fontSize: IS_SMALL ? 14 : 15, fontWeight: '700', marginBottom: 14 },
   fieldGroup: { marginBottom: 14 },
-  fieldLabel: { fontSize: 12, fontWeight: '600', marginBottom: 6 },
-  input: { borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14 },
-  dateBtn: { flexDirection: 'row', alignItems: 'center', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12 },
-  dateBtnText: { fontSize: 14, marginLeft: 8 },
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  chip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5 },
-  chipText: { fontSize: 12, fontWeight: '500' },
+  fieldLabel: { fontSize: IS_SMALL ? 11 : 12, fontWeight: '600', marginBottom: 6 },
+  input: { borderRadius: 10, paddingHorizontal: IS_SMALL ? 12 : 14, paddingVertical: IS_SMALL ? 10 : 12, fontSize: IS_SMALL ? 13 : 14 },
+  dateBtn: { flexDirection: 'row', alignItems: 'center', borderRadius: 10, paddingHorizontal: IS_SMALL ? 12 : 14, paddingVertical: IS_SMALL ? 10 : 12 },
+  dateBtnText: { fontSize: IS_SMALL ? 13 : 14, marginLeft: 8 },
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: IS_SMALL ? 4 : 6 },
+  chip: { paddingHorizontal: IS_SMALL ? 10 : 12, paddingVertical: IS_SMALL ? 6 : 7, borderRadius: 20, borderWidth: 1.5 },
+  chipText: { fontSize: IS_SMALL ? 11 : 12, fontWeight: '500' },
   row: { flexDirection: 'row', alignItems: 'flex-start' },
   submitWrapper: { marginTop: 16, marginBottom: 32 },
+  buttonDesc: { fontSize: IS_SMALL ? 11 : 12, color: colors.textSecondary, textAlign: 'center', marginTop: 8, lineHeight: IS_SMALL ? 16 : 18 },
 });
 
 export default ReminderForm;

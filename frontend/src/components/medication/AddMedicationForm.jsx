@@ -10,12 +10,16 @@ import {
   Platform,
   Switch,
   Modal,
+  Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAppTheme } from '../../styles/ThemeContext';
 import DatePickerField from '../common/DatePickerField';
 import Button from '../common/Button';
+
+const { width: SCREEN_W } = Dimensions.get('window');
+const IS_SMALL = SCREEN_W < 400;
 
 const MED_TYPES = ['Capsule', 'Tablet', 'Drops', 'Syrup', 'Injection', 'Other'];
 const DOSAGE_UNITS = ['mg', 'ml', 'tablets', 'capsules', 'drops', 'units'];
@@ -289,14 +293,17 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
       >
         {initialData ? 'Update Medicine' : 'Save Medicine'}
       </Button>
+      <Text style={[s.buttonDesc, { color: colors.textTertiary }]}>
+        {initialData ? 'Update your medication details and schedule' : 'Add this medicine to your daily routine'}
+      </Text>
     </ScrollView>
   );
 };
 
 const s = StyleSheet.create({
-  container: { padding: 24, paddingBottom: 48 },
+  container: { padding: IS_SMALL ? 16 : 24, paddingBottom: 48 },
   sectionLabel: {
-    fontSize: 14,
+    fontSize: IS_SMALL ? 13 : 14,
     fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
@@ -306,14 +313,14 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 12,
-    paddingHorizontal: 16,
+    paddingHorizontal: IS_SMALL ? 12 : 16,
     marginBottom: 14,
     borderWidth: 1.5,
-    height: 56,
+    height: IS_SMALL ? 52 : 56,
   },
   input: {
     flex: 1,
-    fontSize: 15,
+    fontSize: IS_SMALL ? 14 : 15,
     letterSpacing: 0.2,
     height: '100%',
     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
@@ -323,32 +330,32 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderRadius: 12,
-    paddingHorizontal: 16,
-    height: 56,
+    paddingHorizontal: IS_SMALL ? 12 : 16,
+    height: IS_SMALL ? 52 : 56,
     marginBottom: 14,
     borderWidth: 1.5,
   },
-  dropdownValue: { fontSize: 15, fontWeight: '500' },
-  dropdownPlaceholder: { fontSize: 15 },
-  rowGap: { flexDirection: 'row', gap: 10 },
+  dropdownValue: { fontSize: IS_SMALL ? 14 : 15, fontWeight: '500' },
+  dropdownPlaceholder: { fontSize: IS_SMALL ? 14 : 15 },
+  rowGap: { flexDirection: 'row', gap: IS_SMALL ? 8 : 10 },
   dayRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: IS_SMALL ? 6 : 8,
     marginBottom: 16,
   },
   dayChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingHorizontal: IS_SMALL ? 12 : 14,
+    paddingVertical: IS_SMALL ? 8 : 10,
     borderRadius: 10,
     borderWidth: 1.5,
     borderColor: 'transparent',
   },
-  dayChipText: { fontSize: 13, fontWeight: '600' },
+  dayChipText: { fontSize: IS_SMALL ? 12 : 13, fontWeight: '600' },
   timeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: IS_SMALL ? 6 : 8,
     marginBottom: 10,
   },
   removeTimeBtn: { padding: 4 },
@@ -358,18 +365,19 @@ const s = StyleSheet.create({
     gap: 6,
     marginBottom: 16,
   },
-  addTimeText: { fontSize: 14, fontWeight: '600' },
+  addTimeText: { fontSize: IS_SMALL ? 13 : 14, fontWeight: '600' },
   alarmRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderRadius: 14,
-    padding: 16,
+    padding: IS_SMALL ? 14 : 16,
     marginBottom: 16,
     borderWidth: 1,
   },
-  alarmTitle: { fontSize: 15, fontWeight: '700' },
+  alarmTitle: { fontSize: IS_SMALL ? 14 : 15, fontWeight: '700' },
   alarmSub: { fontSize: 12, marginTop: 2 },
+  buttonDesc: { fontSize: IS_SMALL ? 12 : 13, textAlign: 'center', marginTop: 8, marginBottom: 16 },
 
   /* Modal */
   modalOverlay: {
