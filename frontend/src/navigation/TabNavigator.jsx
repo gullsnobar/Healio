@@ -6,18 +6,18 @@ import { useAppTheme } from '../styles/ThemeContext';
 
 import HomeScreen from '../screens/main/HomeScreen';
 import DashboardScreen from '../screens/main/DashboardScreen';
-import MedicationListScreen from '../screens/medication/MedicationListScreen';
+import RemindersScreen from '../screens/reminder/RemindersScreen';
 import FitnessOverviewScreen from '../screens/fitness/FitnessOverviewScreen';
 import ChatbotScreen from '../screens/chatbot/ChatbotScreen';
 
 const Tab = createBottomTabNavigator();
 
 const TABS = [
-  { name: 'Home',        label: 'Home',       icon: 'home',                  component: HomeScreen },
-  { name: 'Dashboard',   label: 'Analytics',  icon: 'stats-chart',           component: DashboardScreen },
-  { name: 'Medications', label: 'Meds',       icon: 'medkit',                component: MedicationListScreen },
-  { name: 'Fitness',     label: 'Fitness',    icon: 'heart-circle',          component: FitnessOverviewScreen },
-  { name: 'AIChat',      label: 'AI Chat',    icon: 'chatbubble-ellipses',   component: ChatbotScreen },
+  { name: 'Home',       label: 'Home',       icon: 'home',                  component: HomeScreen },
+  { name: 'Dashboard',  label: 'Analytics',  icon: 'stats-chart',           component: DashboardScreen },
+  { name: 'Reminders',  label: 'Reminders',  icon: 'notifications',         component: RemindersScreen },
+  { name: 'Fitness',    label: 'Fitness',    icon: 'heart-circle',          component: FitnessOverviewScreen },
+  { name: 'AIChat',     label: 'AI Chat',    icon: 'chatbubble-ellipses',   component: ChatbotScreen },
 ];
 
 const TabNavigator = () => {
