@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAppTheme } from '../../styles/ThemeContext';
+import Button from '../common/Button';
 
 const REPEAT_OPTIONS = ['none', 'daily', 'weekly', 'monthly'];
 const FREQUENCY_OPTIONS = ['Once daily', 'Twice daily', 'Three times daily', 'Every 8 hours', 'As needed'];
@@ -204,16 +205,19 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
       )}
 
       {/* Submit */}
-      <TouchableOpacity style={[s.submitBtn, { opacity: loading ? 0.6 : 1 }]} onPress={handleSubmit} disabled={loading} activeOpacity={0.85}>
-        <LinearGradient colors={[colors.primary, colors.primaryDark]} style={s.submitGrad}>
-          {loading ? <ActivityIndicator color="#FFF" /> : (
-            <>
-              <Ionicons name="checkmark-circle-outline" size={20} color="#FFF" />
-              <Text style={s.submitText}>Save Reminder</Text>
-            </>
-          )}
-        </LinearGradient>
-      </TouchableOpacity>
+      <View style={s.submitWrapper}>
+        <Button
+          variant="primary"
+          size="large"
+          onPress={handleSubmit}
+          disabled={loading}
+          loading={loading}
+          icon="checkmark-circle-outline"
+          colors={colors}
+        >
+          {loading ? 'Saving...' : 'Save Reminder'}
+        </Button>
+      </View>
     </ScrollView>
   );
 };
@@ -231,9 +235,7 @@ const s = StyleSheet.create({
   chip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5 },
   chipText: { fontSize: 12, fontWeight: '500' },
   row: { flexDirection: 'row', alignItems: 'flex-start' },
-  submitBtn: { marginTop: 8 },
-  submitGrad: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 16, borderRadius: 12 },
-  submitText: { color: '#FFF', fontSize: 16, fontWeight: '700', marginLeft: 8 },
+  submitWrapper: { marginTop: 16, marginBottom: 32 },
 });
 
 export default ReminderForm;

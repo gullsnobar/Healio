@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { reminderAPI } from '../../services/api/reminderAPI';
 import { deleteReminder, completeReminder, snoozeReminder } from '../../redux/slices/reminderSlice';
 import { useAppTheme } from '../../styles/ThemeContext';
+import Button from '../../components/common/Button';
 
 const TYPE_META = {
   medication: { color: '#14B8A6', icon: 'medical-outline', label: 'Medication' },
@@ -160,22 +161,36 @@ const ReminderDetailsScreen = ({ navigation, route }) => {
       {/* Bottom action bar */}
       {!reminder.isCompleted && (
         <View style={[s.actionBar, { backgroundColor: bg, borderTopColor: isDark ? '#334155' : '#E2E8F0' }]}>
-          <TouchableOpacity style={s.actionBtn} onPress={handleSnooze}>
-            <Ionicons name="alarm-outline" size={22} color="#F59E0B" />
-            <Text style={[s.actionLabel, { color: '#F59E0B' }]}>Snooze 15m</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleComplete} activeOpacity={0.85}>
-            <LinearGradient colors={['#10B981', '#059669']} style={s.completeBtn}>
-              <Ionicons name="checkmark-outline" size={22} color="#FFF" />
-              <Text style={s.completeText}>
-                {reminder.reminderType === 'medication' ? 'Taken ✓' : 'Complete'}
-              </Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity style={s.actionBtn} onPress={handleDelete}>
-            <Ionicons name="trash-outline" size={22} color="#EF4444" />
-            <Text style={[s.actionLabel, { color: '#EF4444' }]}>Delete</Text>
-          </TouchableOpacity>
+          <Button
+            variant="secondary"
+            size="medium"
+            onPress={handleSnooze}
+            icon="alarm-outline"
+            colors={colors}
+            style={{ flex: 1, marginHorizontal: 4 }}
+          >
+            Snooze
+          </Button>
+          <Button
+            variant="primary"
+            size="medium"
+            onPress={handleComplete}
+            icon="checkmark-circle-outline"
+            colors={colors}
+            style={{ flex: 1.2, marginHorizontal: 4 }}
+          >
+            {reminder.reminderType === 'medication' ? 'Taken ✓' : 'Complete'}
+          </Button>
+          <Button
+            variant="danger"
+            size="medium"
+            onPress={handleDelete}
+            icon="trash-outline"
+            colors={colors}
+            style={{ flex: 1, marginHorizontal: 4 }}
+          >
+            Delete
+          </Button>
         </View>
       )}
     </View>
@@ -197,14 +212,11 @@ const s = StyleSheet.create({
   infoValue: { fontSize: 14, marginTop: 2 },
   actionBar: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around',
-    paddingVertical: 14, paddingHorizontal: 16, borderTopWidth: 1,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingVertical: 12, paddingHorizontal: 12, borderTopWidth: 1,
     elevation: 8,
+    gap: 8,
   },
-  actionBtn: { alignItems: 'center' },
-  actionLabel: { fontSize: 11, fontWeight: '600', marginTop: 4 },
-  completeBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 30 },
-  completeText: { color: '#FFF', fontWeight: '700', fontSize: 15, marginLeft: 6 },
 });
 
 export default ReminderDetailsScreen;
