@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAppTheme } from '../../styles/ThemeContext';
 import DatePickerField from '../common/DatePickerField';
+import Button from '../common/Button';
 
 const MED_TYPES = ['Capsule', 'Tablet', 'Drops', 'Syrup', 'Injection', 'Other'];
 const DOSAGE_UNITS = ['mg', 'ml', 'tablets', 'capsules', 'drops', 'units'];
@@ -276,11 +277,18 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
       </View>
 
       {/* Save button */}
-      <TouchableOpacity onPress={handleSubmit} disabled={disabled} activeOpacity={0.85} style={{ marginTop: 16 }}>
-        <LinearGradient colors={disabled ? [colors.textTertiary, colors.textTertiary] : colors.primaryGrad} style={s.saveBtn}>
-          <Text style={s.saveBtnText}>{loading ? 'Saving...' : (initialData ? 'Update Medicine' : 'Save')}</Text>
-        </LinearGradient>
-      </TouchableOpacity>
+      <Button
+        variant={disabled ? 'outline' : 'primary'}
+        size="large"
+        icon="checkmark-circle-outline"
+        onPress={handleSubmit}
+        loading={loading}
+        disabled={disabled}
+        colors={colors}
+        style={{ marginTop: 16 }}
+      >
+        {initialData ? 'Update Medicine' : 'Save Medicine'}
+      </Button>
     </ScrollView>
   );
 };
@@ -362,18 +370,6 @@ const s = StyleSheet.create({
   },
   alarmTitle: { fontSize: 15, fontWeight: '700' },
   alarmSub: { fontSize: 12, marginTop: 2 },
-  saveBtn: {
-    height: 56,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#14B8A6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 6,
-  },
-  saveBtnText: { color: '#FFF', fontSize: 16, fontWeight: '700', letterSpacing: 0.5 },
 
   /* Modal */
   modalOverlay: {
