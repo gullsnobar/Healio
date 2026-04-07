@@ -1,7 +1,10 @@
 ﻿import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
+
+const { width: SCREEN_W } = Dimensions.get('window');
+const IS_SMALL = SCREEN_W < 400;
 
 const ReportsScreen = ({ navigation }) => {
   const { colors } = useAppTheme();
@@ -25,5 +28,15 @@ const ReportsScreen = ({ navigation }) => {
   </ScrollView>
   );
 };
-const s = StyleSheet.create({c:{flex:1,padding:16},card:{flexDirection:'row',alignItems:'center',padding:16,borderRadius:12,marginBottom:12,elevation:2},info:{flex:1,marginLeft:16},t:{fontSize:16,fontWeight:'600'},d:{fontSize:13,marginTop:2},header:{flexDirection:'row',alignItems:'center',paddingHorizontal:16,paddingVertical:12,borderBottomWidth:1},backBtn:{padding:4},headerTitle:{fontSize:18,fontWeight:'700',flex:1,textAlign:'center'},headerSpacer:{width:32}});
+const s = StyleSheet.create({
+  c: { flex: 1, padding: IS_SMALL ? 12 : 16 },
+  card: { flexDirection: 'row', alignItems: 'center', padding: IS_SMALL ? 14 : 16, borderRadius: 12, marginBottom: 12, elevation: 2 },
+  info: { flex: 1, marginLeft: 16 },
+  t: { fontSize: IS_SMALL ? 15 : 16, fontWeight: '600' },
+  d: { fontSize: IS_SMALL ? 12 : 13, marginTop: 2 },
+  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: IS_SMALL ? 12 : 16, paddingVertical: IS_SMALL ? 10 : 12, borderBottomWidth: 1 },
+  backBtn: { padding: 4 },
+  headerTitle: { fontSize: IS_SMALL ? 16 : 18, fontWeight: '700', flex: 1, textAlign: 'center' },
+  headerSpacer: { width: 32 }
+});
 export default ReportsScreen;
