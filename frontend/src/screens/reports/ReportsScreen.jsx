@@ -7,6 +7,14 @@ const ReportsScreen = ({ navigation }) => {
   const { colors } = useAppTheme();
   return (
   <ScrollView style={[s.c, { backgroundColor: colors.background }]}>
+    {/* Header with back button */}
+    <View style={[s.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
+        <Ionicons name="arrow-back" size={24} color={colors.text} />
+      </TouchableOpacity>
+      <Text style={[s.headerTitle, { color: colors.text }]}>Health Reports</Text>
+      <View style={s.headerSpacer} />
+    </View>
     {[['Weekly Report','WeeklyReport','analytics-outline','Your weekly health summary'],['Monthly Report','MonthlyReport','calendar-outline','Monthly health overview']].map(([t,r,i,d])=>(
       <TouchableOpacity key={r} style={[s.card, { backgroundColor: colors.card }]} onPress={() => navigation.navigate(r)}>
         <Ionicons name={i} size={32} color={colors.primary} />
@@ -17,5 +25,5 @@ const ReportsScreen = ({ navigation }) => {
   </ScrollView>
   );
 };
-const s = StyleSheet.create({c:{flex:1,padding:16},card:{flexDirection:'row',alignItems:'center',padding:16,borderRadius:12,marginBottom:12,elevation:2},info:{flex:1,marginLeft:16},t:{fontSize:16,fontWeight:'600'},d:{fontSize:13,marginTop:2}});
+const s = StyleSheet.create({c:{flex:1,padding:16},card:{flexDirection:'row',alignItems:'center',padding:16,borderRadius:12,marginBottom:12,elevation:2},info:{flex:1,marginLeft:16},t:{fontSize:16,fontWeight:'600'},d:{fontSize:13,marginTop:2},header:{flexDirection:'row',alignItems:'center',paddingHorizontal:16,paddingVertical:12,borderBottomWidth:1},backBtn:{padding:4},headerTitle:{fontSize:18,fontWeight:'700',flex:1,textAlign:'center'},headerSpacer:{width:32}});
 export default ReportsScreen;
