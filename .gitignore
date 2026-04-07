@@ -40,7 +40,7 @@ frontend/ios/
 *.keystore
 
 # Firebase service account key
-backend/config/healio-e75ef-firebase-adminsdk-fbsvc-2b167d9c17.json
+backend/config/*.json
 
 # Backend uploads
 backend/uploads/*
