@@ -93,13 +93,17 @@ const HomeScreen = ({ navigation }) => {
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
 
       {/* Header */}
-      <View style={st.header}>
-        <View style={st.headerLeft}>
-          <View style={[st.brandPill, { backgroundColor: colors.primaryLight }]}>
-            <MaterialCommunityIcons name="heart-pulse" size={18} color={colors.primary} />
-          </View>
-          <Text style={[st.brand, { color: colors.text }]}>HEALIO</Text>
-        </View>
+      <View style={st.headerLeft}>
+  <TouchableOpacity
+    style={[st.iconBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
+    onPress={() => navigation.openDrawer()}>
+    <Ionicons name="menu-outline" size={24} color={colors.textSecondary} />
+  </TouchableOpacity>
+  <View style={[st.brandPill, { backgroundColor: colors.primaryLight }]}>
+    <MaterialCommunityIcons name="heart-pulse" size={18} color={colors.primary} />
+  </View>
+  <Text style={[st.brand, { color: colors.text }]}>HEALIO</Text>
+</View>
         <View style={st.headerRight}>
           <ThemeToggle variant="icon" size={20} />
           <TouchableOpacity style={[st.iconBtn, { backgroundColor: colors.card, borderColor: colors.border }]}

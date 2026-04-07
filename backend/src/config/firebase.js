@@ -1,21 +1,16 @@
 ﻿const admin = require('firebase-admin');
 const logger = require('../utils/logger');
 
-const { FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY, FIREBASE_CLIENT_EMAIL } = process.env;
+// Load Firebase service account from JSON file
+const serviceAccount = require('../../config/healio-bba24-firebase-adminsdk-fbsvc-b272baeefc.json');
 
 if (admin.apps.length) {
   logger.info('Firebase Admin already initialized');
-} else if (FIREBASE_PROJECT_ID && FIREBASE_PRIVATE_KEY && FIREBASE_CLIENT_EMAIL) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: FIREBASE_PROJECT_ID,
-      privateKey: FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-      clientEmail: FIREBASE_CLIENT_EMAIL,
-    }),
-  });
-  logger.info('Firebase Admin initialized');
 } else {
-  logger.warn('Firebase credentials not configured – push notifications disabled');
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+  });
+  logger.info('Firebase Admin initialized from service account file');
 }
 
 module.exports = admin;
