@@ -1,7 +1,10 @@
 ﻿import React from 'react';
-import { ScrollView, TouchableOpacity, Text, View, StyleSheet } from 'react-native';
+import { ScrollView, TouchableOpacity, Text, View, StyleSheet, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
+
+const { width: SCREEN_W } = Dimensions.get('window');
+const IS_SMALL = SCREEN_W < 400;
 
 const SettingsScreen = ({ navigation }) => {
   const { colors } = useAppTheme();
@@ -25,5 +28,13 @@ const SettingsScreen = ({ navigation }) => {
     </ScrollView>
   );
 };
-const s = StyleSheet.create({c:{flex:1,padding:16},item:{flexDirection:'row',alignItems:'center',padding:16,borderRadius:12,marginBottom:8,elevation:1},label:{flex:1,fontSize:16,marginLeft:12},header:{flexDirection:'row',alignItems:'center',paddingHorizontal:16,paddingVertical:12,borderBottomWidth:1},backBtn:{padding:4},headerTitle:{fontSize:18,fontWeight:'700',flex:1,textAlign:'center'},headerSpacer:{width:32}});
+const s = StyleSheet.create({
+  c: { flex: 1, padding: IS_SMALL ? 12 : 16 },
+  item: { flexDirection: 'row', alignItems: 'center', padding: IS_SMALL ? 14 : 16, borderRadius: 12, marginBottom: 8, elevation: 1 },
+  label: { flex: 1, fontSize: IS_SMALL ? 15 : 16, marginLeft: 12 },
+  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: IS_SMALL ? 12 : 16, paddingVertical: IS_SMALL ? 10 : 12, borderBottomWidth: 1 },
+  backBtn: { padding: 4 },
+  headerTitle: { fontSize: IS_SMALL ? 16 : 18, fontWeight: '700', flex: 1, textAlign: 'center' },
+  headerSpacer: { width: 32 }
+});
 export default SettingsScreen;

@@ -10,6 +10,7 @@ import {
   Alert,
   Platform,
   Image,
+  Dimensions,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,6 +18,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { logoutUser } from '../../redux/slices/authSlice';
 import { useAppTheme } from '../../styles/ThemeContext';
 import Button from '../../components/common/Button';
+
+const { width: SCREEN_W } = Dimensions.get('window');
+const IS_SMALL = SCREEN_W < 400;
 
 const ProfileScreen = ({ navigation }) => {
   const { colors, isDark } = useAppTheme();
@@ -125,12 +129,13 @@ const ProfileScreen = ({ navigation }) => {
         >
           Save Profile
         </Button>
+        <Text style={s.buttonDesc}>Update your personal information and preferences</Text>
       </View>
 
       {/* Dark mode toggle */}
 
       {/* Sign out */}
-      <View style={{ paddingHorizontal: 24, marginTop: 16 }}>
+      <View style={{ paddingHorizontal: IS_SMALL ? 20 : 24, marginTop: 16 }}>
         <Button
           variant="danger"
           size="large"
@@ -140,6 +145,7 @@ const ProfileScreen = ({ navigation }) => {
         >
           Sign Out
         </Button>
+        <Text style={s.buttonDesc}>Sign out of your HEALIO account</Text>
       </View>
     </ScrollView>
   );
@@ -154,7 +160,7 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    paddingHorizontal: IS_SMALL ? 16 : 20,
     paddingTop: 12,
     paddingBottom: 8,
   },
@@ -166,17 +172,17 @@ const s = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
   },
-  topTitle: { fontSize: 18, fontWeight: '700' },
+  topTitle: { fontSize: IS_SMALL ? 16 : 18, fontWeight: '700' },
 
   /* Avatar */
   avatarSection: {
     alignItems: 'center',
-    paddingVertical: 24,
+    paddingVertical: IS_SMALL ? 20 : 24,
   },
   avatarCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: IS_SMALL ? 80 : 100,
+    height: IS_SMALL ? 80 : 100,
+    borderRadius: IS_SMALL ? 40 : 50,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 14,
@@ -186,14 +192,14 @@ const s = StyleSheet.create({
     shadowRadius: 12,
     elevation: 6,
   },
-  avatarImg: { width: 100, height: 100, borderRadius: 50 },
-  avatarText: { fontSize: 40, fontWeight: '800', color: '#FFF' },
-  userName: { fontSize: 20, fontWeight: '800', letterSpacing: -0.3 },
+  avatarImg: { width: IS_SMALL ? 80 : 100, height: IS_SMALL ? 80 : 100, borderRadius: IS_SMALL ? 40 : 50 },
+  avatarText: { fontSize: IS_SMALL ? 32 : 40, fontWeight: '800', color: '#FFF' },
+  userName: { fontSize: IS_SMALL ? 18 : 20, fontWeight: '800', letterSpacing: -0.3 },
 
   /* Form */
-  formSection: { paddingHorizontal: 24 },
+  formSection: { paddingHorizontal: IS_SMALL ? 20 : 24 },
   fieldLabel: {
-    fontSize: 13,
+    fontSize: IS_SMALL ? 12 : 13,
     fontWeight: '600',
     marginBottom: 6,
     marginLeft: 4,
@@ -202,13 +208,13 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 12,
-    paddingHorizontal: 16,
+    paddingHorizontal: IS_SMALL ? 14 : 16,
     borderWidth: 1.5,
-    height: 56,
+    height: IS_SMALL ? 50 : 56,
   },
   input: {
     flex: 1,
-    fontSize: 15,
+    fontSize: IS_SMALL ? 14 : 15,
     letterSpacing: 0.2,
     height: '100%',
     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
@@ -224,6 +230,7 @@ const s = StyleSheet.create({
     marginTop: 16,
   },
   signOutText: { fontSize: 15, fontWeight: '700' },
+  buttonDesc: { fontSize: IS_SMALL ? 11 : 12, color: colors.textSecondary, textAlign: 'center', marginTop: 8, lineHeight: IS_SMALL ? 16 : 18 },
 });
 
 export default ProfileScreen;
