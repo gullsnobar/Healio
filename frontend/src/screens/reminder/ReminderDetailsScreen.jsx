@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, StatusBar,
+  View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, StatusBar, Dimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,6 +9,9 @@ import { reminderAPI } from '../../services/api/reminderAPI';
 import { deleteReminder, completeReminder, snoozeReminder } from '../../redux/slices/reminderSlice';
 import { useAppTheme } from '../../styles/ThemeContext';
 import Button from '../../components/common/Button';
+
+const { width: SCREEN_W } = Dimensions.get('window');
+const IS_SMALL = SCREEN_W < 400;
 
 const TYPE_META = {
   medication: { color: '#14B8A6', icon: 'medical-outline', label: 'Medication' },
@@ -96,7 +99,7 @@ const ReminderDetailsScreen = ({ navigation, route }) => {
   return (
     <View style={[s.container, { backgroundColor: isDark ? '#0F172A' : '#F8FAFC' }]}>
       <StatusBar barStyle="light-content" backgroundColor={colors.primaryDark} />
-      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 120 }}>
+      <ScrollView contentContainerStyle={{ padding: IS_SMALL ? 12 : 16, paddingBottom: 120 }}>
         {/* Header card */}
         <View style={[s.headerCard, { backgroundColor: bg }]}>
           <View style={[s.typeBadge, { backgroundColor: meta.color + '18' }]}>
@@ -161,36 +164,44 @@ const ReminderDetailsScreen = ({ navigation, route }) => {
       {/* Bottom action bar */}
       {!reminder.isCompleted && (
         <View style={[s.actionBar, { backgroundColor: bg, borderTopColor: isDark ? '#334155' : '#E2E8F0' }]}>
-          <Button
-            variant="secondary"
-            size="medium"
-            onPress={handleSnooze}
-            icon="alarm-outline"
-            colors={colors}
-            style={{ flex: 1, marginHorizontal: 4 }}
-          >
-            Snooze
-          </Button>
-          <Button
-            variant="primary"
-            size="medium"
-            onPress={handleComplete}
-            icon="checkmark-circle-outline"
-            colors={colors}
-            style={{ flex: 1.2, marginHorizontal: 4 }}
-          >
-            {reminder.reminderType === 'medication' ? 'Taken ✓' : 'Complete'}
-          </Button>
-          <Button
-            variant="danger"
-            size="medium"
-            onPress={handleDelete}
-            icon="trash-outline"
-            colors={colors}
-            style={{ flex: 1, marginHorizontal: 4 }}
-          >
-            Delete
-          </Button>
+          <View style={{ flex: 1, marginHorizontal: 4 }}>
+            <Button
+              variant="secondary"
+              size="medium"
+              onPress={handleSnooze}
+              icon="alarm-outline"
+              colors={colors}
+            >
+              Snooze
+            </Button>
+            <Text style={s.buttonDesc}>Remind me later</Text>
+          </View>
+          <View style={{ flex: 1.2, marginHorizontal: 4 }}>
+            <Button
+              variant="primary"
+              size="medium"
+              onPress={handleComplete}
+              icon="checkmark-circle-outline"
+              colors={colors}
+            >
+              {reminder.reminderType === 'medication' ? 'Taken ✓' : 'Complete'}
+            </Button>
+            <Text style={s.buttonDesc}>
+              {reminder.reminderType === 'medication' ? 'Mark as taken' : 'Mark as done'}
+            </Text>
+          </View>
+          <View style={{ flex: 1, marginHorizontal: 4 }}>
+            <Button
+              variant="danger"
+              size="medium"
+              onPress={handleDelete}
+              icon="trash-outline"
+              colors={colors}
+            >
+              Delete
+            </Button>
+            <Text style={s.buttonDesc}>Remove reminder</Text>
+          </View>
         </View>
       )}
     </View>
@@ -200,23 +211,24 @@ const ReminderDetailsScreen = ({ navigation, route }) => {
 const s = StyleSheet.create({
   container: { flex: 1 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  headerCard: { borderRadius: 16, padding: 20, marginBottom: 16, elevation: 2, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6 },
-  typeBadge: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
-  typeText: { fontWeight: '600', fontSize: 13, marginLeft: 6 },
-  title: { fontSize: 22, fontWeight: '700', marginTop: 12 },
+  headerCard: { borderRadius: 16, padding: IS_SMALL ? 16 : 20, marginBottom: 16, elevation: 2, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6 },
+  typeBadge: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', paddingHorizontal: IS_SMALL ? 10 : 12, paddingVertical: IS_SMALL ? 5 : 6, borderRadius: 20 },
+  typeText: { fontWeight: '600', fontSize: IS_SMALL ? 12 : 13, marginLeft: 6 },
+  title: { fontSize: IS_SMALL ? 20 : 22, fontWeight: '700', marginTop: 12 },
   completedBadge: { flexDirection: 'row', alignItems: 'center', marginTop: 8 },
-  section: { borderRadius: 14, padding: 16, marginBottom: 16, elevation: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4 },
-  sectionTitle: { fontSize: 14, fontWeight: '700', marginBottom: 12 },
+  section: { borderRadius: 14, padding: IS_SMALL ? 12 : 16, marginBottom: 16, elevation: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4 },
+  sectionTitle: { fontSize: IS_SMALL ? 13 : 14, fontWeight: '700', marginBottom: 12 },
   infoRow: { flexDirection: 'row', marginBottom: 12 },
-  infoLabel: { fontSize: 11, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.3 },
-  infoValue: { fontSize: 14, marginTop: 2 },
+  infoLabel: { fontSize: IS_SMALL ? 10 : 11, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.3 },
+  infoValue: { fontSize: IS_SMALL ? 13 : 14, marginTop: 2 },
   actionBar: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingVertical: 12, paddingHorizontal: 12, borderTopWidth: 1,
+    paddingVertical: IS_SMALL ? 10 : 12, paddingHorizontal: IS_SMALL ? 8 : 12, borderTopWidth: 1,
     elevation: 8,
-    gap: 8,
+    gap: IS_SMALL ? 4 : 8,
   },
+  buttonDesc: { fontSize: IS_SMALL ? 9 : 10, color: subColor, textAlign: 'center', marginTop: 2, lineHeight: IS_SMALL ? 12 : 14 },
 });
 
 export default ReminderDetailsScreen;
