@@ -17,6 +17,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useAppTheme } from '../../styles/ThemeContext';
 import DatePickerField from '../common/DatePickerField';
 import Button from '../common/Button';
+import Dropdown from '../common/Dropdown';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 const IS_SMALL = SCREEN_W < 400;
@@ -24,6 +26,140 @@ const IS_SMALL = SCREEN_W < 400;
 const MED_TYPES = ['Capsule', 'Tablet', 'Drops', 'Syrup', 'Injection', 'Other'];
 const DOSAGE_UNITS = ['mg', 'ml', 'tablets', 'capsules', 'drops', 'units'];
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+/**
+ * MedicationTimeInput Component
+ * Time picker with AM/PM toggle for medication scheduling
+ * On web: HTML time input + AM/PM toggle buttons
+ * On native: Native DateTimePicker with AM/PM support
+ */
+const MedicationTimeInput = ({ value, onChange, colors, style }) => {
+  const [showPicker, setShowPicker] = useState(false);
+  const [webInputValue, setWebInputValue] = useState('');
+
+  // Parse time value
+  const parseTimeValue = (input) => {
+    if (!input) return undefined;
+    if (input instanceof Date) return input;
+    if (typeof input === 'string' && /^[0-9]{2}:[0-9]{2}/.test(input)) {
+      const parsed = new Date(`1970-01-01T${input}:00`);
+      return Number.isNaN(parsed.getTime()) ? undefined : parsed;
+    }
+    const parsed = new Date(input);
+    return Number.isNaN(parsed.getTime()) ? undefined : parsed;
+  };
+
+  const formatTimeForISO = (time) => {
+    if (!time) return '';
+    const hours = String(time.getHours()).padStart(2, '0');
+    const minutes = String(time.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
+
+  const formatTime = (time) => {
+    if (!time) return '';
+    return time.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
+  const normalizedValue = parseTimeValue(value);
+  const displayValue = normalizedValue ? formatTime(normalizedValue) : '';
+
+  // Handle native picker changes (Android/iOS)
+  const handleChange = (event, selectedTime) => {
+    const eventType = event?.type;
+    if (Platform.OS === 'android') {
+      setShowPicker(false);
+    }
+    if (eventType === 'dismissed') {
+      return;
+    }
+    if (selectedTime) {
+      const hours = selectedTime.getHours();
+      const minutes = selectedTime.getMinutes();
+      const time24 = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+      const ampmValue = hours >= 12 ? 'PM' : 'AM';
+      const time12 = formatTimeForDisplay(time24, ampmValue);
+      onChange(time12);
+    }
+  };
+
+  // Web platform: HTML time input
+  if (Platform.OS === 'web') {
+    return (
+      <View style={[s.timeInputContainer, style]}>
+        <input
+          type="time"
+          value={webInputValue || formatTimeForISO(normalizedValue)}
+          onChange={(e) => {
+            setWebInputValue(e.target.value);
+            if (e.target.value && /^[0-2][0-9]:[0-5][0-9]$/.test(e.target.value)) {
+              const parsed = new Date(`1970-01-01T${e.target.value}:00`);
+              if (!Number.isNaN(parsed.getTime())) {
+                onChange(parsed);
+              }
+            }
+          }}
+          style={{
+            width: '100%',
+            height: 48,
+            fontSize: 15,
+            paddingLeft: 16,
+            paddingRight: 16,
+            borderWidth: 1,
+            border: `1.5px solid ${colors.border}`,
+            borderRadius: '12px',
+            outline: 'none',
+            fontFamily: 'inherit',
+            cursor: 'pointer',
+            backgroundColor: colors.cardAlt,
+            color: colors.text,
+            boxSizing: 'border-box',
+          }}
+        />
+      </View>
+    );
+  }
+
+  // Native platforms: TouchableOpacity with DateTimePicker
+  return (
+    <View style={[s.timeInputContainer, style]}>
+      <TouchableOpacity
+        style={[s.nativeTimeInput, {
+          backgroundColor: colors.cardAlt,
+          borderColor: colors.border
+        }]}
+        onPress={() => setShowPicker(true)}
+        activeOpacity={0.7}
+      >
+        <Ionicons
+          name="time-outline"
+          size={18}
+          color={displayValue ? colors.primary : colors.textTertiary}
+          style={{ marginRight: 8 }}
+        />
+        <Text style={[s.nativeTimeText, {
+          color: displayValue ? colors.text : colors.textTertiary
+        }]}>
+          {displayValue || 'Select Time'}
+        </Text>
+      </TouchableOpacity>
+
+      {showPicker && (
+        <DateTimePicker
+          value={normalizedValue || new Date()}
+          mode="time"
+          is24Hour={false}
+          display="default"
+          onChange={handleChange}
+        />
+      )}
+    </View>
+  );
+};
 
 /* Dropdown picker modal – defined outside to avoid stale closure issues */
 const DropdownModal = ({ visible, onClose, items, onSelect, selected, cardBg, textColor, primaryColor }) => (
@@ -54,7 +190,7 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
     dosageUnit: initialData?.dosageUnit || 'mg',
     amount: initialData?.amount || '',
     frequency: initialData?.frequency || 'Daily',
-    times: initialData?.times ? initialData.times.map(t => typeof t === 'string' ? t : t.time) : ['08:00'],
+    times: initialData?.times ? initialData.times.map(t => typeof t === 'string' ? t : t.time) : ['8:00 AM'],
     startDate: initialData?.startDate || '',
     endDate: initialData?.endDate || '',
     selectedDays: initialData?.selectedDays || [0, 2, 4], // Mon, Wed, Fri
@@ -77,7 +213,7 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
     update('selectedDays', next);
   };
 
-  const addTime = () => update('times', [...form.times, '12:00']);
+  const addTime = () => update('times', [...form.times, '12:00 PM']);
   const removeTime = (index) => {
     if (form.times.length <= 1) return;
     update('times', form.times.filter((_, i) => i !== index));
@@ -129,19 +265,13 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
       </View>
 
       {/* Type dropdown */}
-      <TouchableOpacity style={[s.dropdownWrap, { backgroundColor: colors.cardAlt, borderColor: colors.cardAlt }]} onPress={() => setShowTypeMenu(true)} activeOpacity={0.8}>
-        <Text style={form.type ? [s.dropdownValue, { color: colors.text }] : [s.dropdownPlaceholder, { color: colors.textTertiary }]}>{form.type || 'Type *'}</Text>
-        <Ionicons name="chevron-down" size={18} color={colors.textTertiary} />
-      </TouchableOpacity>
-      <DropdownModal
-        visible={showTypeMenu}
-        onClose={() => setShowTypeMenu(false)}
-        items={MED_TYPES}
-        onSelect={(v) => update('type', v)}
-        selected={form.type}
-        cardBg={colors.card}
-        textColor={colors.text}
-        primaryColor={colors.primary}
+      <Dropdown
+        label="Type"
+        value={form.type}
+        options={MED_TYPES}
+        placeholder="Select type"
+        onSelect={(value) => update('type', value)}
+        required
       />
 
       {/* Dose + Unit */}
@@ -158,20 +288,15 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
             onBlur={() => setFocusedField(null)}
           />
         </View>
-        <TouchableOpacity style={[s.dropdownWrap, { flex: 0.6, backgroundColor: colors.cardAlt, borderColor: colors.cardAlt }]} onPress={() => setShowUnitMenu(true)}>
-          <Text style={[s.dropdownValue, { color: colors.text }]}>{form.dosageUnit}</Text>
-          <Ionicons name="chevron-down" size={16} color={colors.textTertiary} />
-        </TouchableOpacity>
-        <DropdownModal
-          visible={showUnitMenu}
-          onClose={() => setShowUnitMenu(false)}
-          items={DOSAGE_UNITS}
-          onSelect={(v) => update('dosageUnit', v)}
-          selected={form.dosageUnit}
-          cardBg={colors.card}
-          textColor={colors.text}
-          primaryColor={colors.primary}
-        />
+        <View style={{ flex: 0.6 }}>
+          <Dropdown
+            label="Unit"
+            value={form.dosageUnit}
+            options={DOSAGE_UNITS}
+            placeholder="Unit"
+            onSelect={(value) => update('dosageUnit', value)}
+          />
+        </View>
       </View>
 
       {/* Amount */}
@@ -191,10 +316,12 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
       <Text style={[s.sectionLabel, { marginTop: 8, color: colors.textTertiary }]}>Reminders</Text>
 
       {/* Start Date */}
-      <DatePickerField
+      <Dropdown
+        label="Start Date"
         value={form.startDate}
-        onChange={(v) => update('startDate', v)}
-        placeholder="Start Date"
+        placeholder="Select start date"
+        mode="date"
+        onChange={(value) => update('startDate', value)}
       />
 
       {/* Day chips */}
@@ -213,18 +340,12 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
       {/* Times */}
       {form.times.map((time, i) => (
         <View key={i} style={s.timeRow}>
-          <View style={[s.inputWrap, { flex: 1, marginBottom: 0, backgroundColor: colors.cardAlt, borderColor: focusedField === `time${i}` ? colors.primary : colors.cardAlt }]}>
-            <Ionicons name="time-outline" size={18} color={colors.textTertiary} style={{ marginRight: 8 }} />
-            <TextInput
-              style={[s.input, { color: colors.text }]}
-              placeholder="HH:MM"
-              placeholderTextColor={colors.textTertiary}
-              value={time}
-              onChangeText={(v) => updateTime(i, v)}
-              onFocus={() => setFocusedField(`time${i}`)}
-              onBlur={() => setFocusedField(null)}
-            />
-          </View>
+          <MedicationTimeInput
+            value={time}
+            onChange={(value) => updateTime(i, value)}
+            colors={colors}
+            style={{ flex: 1, marginBottom: 0 }}
+          />
           {form.times.length > 1 && (
             <TouchableOpacity onPress={() => removeTime(i)} style={s.removeTimeBtn}>
               <Ionicons name="close-circle" size={22} color="#EF4444" />
@@ -378,6 +499,50 @@ const s = StyleSheet.create({
   alarmTitle: { fontSize: IS_SMALL ? 14 : 15, fontWeight: '700' },
   alarmSub: { fontSize: 12, marginTop: 2 },
   buttonDesc: { fontSize: IS_SMALL ? 12 : 13, textAlign: 'center', marginTop: 8, marginBottom: 16 },
+
+  /* MedicationTimeInput styles */
+  timeInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 1.5,
+    height: IS_SMALL ? 52 : 56,
+    marginBottom: 14,
+  },
+  ampmContainer: {
+    flexDirection: 'row',
+    borderTopRightRadius: 12,
+    borderBottomRightRadius: 12,
+    borderLeftWidth: 0,
+    overflow: 'hidden',
+  },
+  ampmButton: {
+    paddingHorizontal: IS_SMALL ? 12 : 16,
+    paddingVertical: IS_SMALL ? 8 : 10,
+    borderWidth: 1,
+    borderLeftWidth: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minWidth: IS_SMALL ? 40 : 50,
+  },
+  ampmText: {
+    fontSize: IS_SMALL ? 12 : 13,
+    fontWeight: '600',
+  },
+  nativeTimeInput: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 12,
+    paddingHorizontal: IS_SMALL ? 12 : 16,
+    height: '100%',
+    borderWidth: 1.5,
+  },
+  nativeTimeText: {
+    flex: 1,
+    fontSize: IS_SMALL ? 14 : 15,
+    letterSpacing: 0.2,
+  },
 
   /* Modal */
   modalOverlay: {

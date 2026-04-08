@@ -10,24 +10,23 @@ import {
 } from 'react-native';
 import { TextInput, Menu, Button, ProgressBar } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import * as DocumentPicker from 'expo-document-picker';
 import { useAppTheme } from '../../styles/ThemeContext';
+import Dropdown from '../common/Dropdown';
 
 const REPORT_TYPES = [
-  { key: 'blood', label: 'Blood Test' },
-  { key: 'xray', label: 'X-Ray' },
-  { key: 'mri', label: 'MRI' },
-  { key: 'ct', label: 'CT Scan' },
-  { key: 'urine', label: 'Urine Test' },
-  { key: 'other', label: 'Other' },
+  'Blood Test',
+  'X-Ray',
+  'MRI',
+  'CT Scan',
+  'Urine Test',
+  'Other',
 ];
 
 const UploadLabReport = ({ onUpload }) => {
   const { colors } = useAppTheme();
   const [title, setTitle] = useState('');
   const [reportType, setReportType] = useState('');
-  const [reportTypeLabel, setReportTypeLabel] = useState('');
   const [date, setDate] = useState(new Date());
   const [notes, setNotes] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
@@ -111,7 +110,6 @@ const UploadLabReport = ({ onUpload }) => {
       setTimeout(() => {
         setTitle('');
         setReportType('');
-        setReportTypeLabel('');
         setDate(new Date());
         setNotes('');
         setSelectedFile(null);
@@ -141,49 +139,23 @@ const UploadLabReport = ({ onUpload }) => {
           left={<TextInput.Icon icon="file-document-outline" />}
         />
 
-        <Menu
-          visible={showTypeMenu}
-          onDismiss={() => setShowTypeMenu(false)}
-          anchor={
-            <TouchableOpacity
-              style={[styles.pickerButton, { backgroundColor: colors.card, borderColor: colors.border }]}
-              onPress={() => setShowTypeMenu(true)}
-            >
-              <Ionicons name="flask-outline" size={20} color={colors.primary} />
-              <Text style={[styles.pickerText, { color: reportType ? colors.text : colors.textTertiary }]}>
-                {reportTypeLabel || 'Select Report Type *'}
-              </Text>
-              <Ionicons name="chevron-down" size={18} color={colors.textTertiary} />
-            </TouchableOpacity>
-          }
-        >
-          {REPORT_TYPES.map((rt) => (
-            <Menu.Item
-              key={rt.key}
-              title={rt.label}
-              onPress={() => {
-                setReportType(rt.key);
-                setReportTypeLabel(rt.label);
-                setShowTypeMenu(false);
-              }}
-            />
-          ))}
-        </Menu>
+        <Dropdown
+          label="Report Type"
+          value={reportType}
+          options={REPORT_TYPES}
+          placeholder="Select report type"
+          onSelect={setReportType}
+          required
+        />
 
-        <TouchableOpacity style={[styles.pickerButton, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={() => setShowDatePicker(true)}>
-          <Ionicons name="calendar-outline" size={20} color={colors.primary} />
-          <Text style={[styles.pickerText, { color: colors.text }]}>{formatDate(date)}</Text>
-          <Ionicons name="chevron-down" size={18} color={colors.textTertiary} />
-        </TouchableOpacity>
-
-        {showDatePicker && (
-          <DateTimePicker
-            value={date}
-            mode="date"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={handleDateChange}
-          />
-        )}
+        <Dropdown
+          label="Report Date"
+          value={date.toISOString().split('T')[0]}
+          placeholder="Select date"
+          mode="date"
+          onChange={(dateString) => setDate(new Date(dateString + 'T00:00:00'))}
+          required
+        />
 
         <Text style={[styles.sectionTitle, { marginTop: 20, color: colors.text }]}>File Upload</Text>
 

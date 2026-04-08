@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchReminders, setSelectedType } from '../../redux/slices/reminderSlice';
 import { useAppTheme } from '../../styles/ThemeContext';
+import Tooltip from '../../components/common/Tooltip';
 
 const TYPE_TABS = [
   { key: null, label: 'All', icon: 'list-outline' },
@@ -135,15 +136,17 @@ const RemindersScreen = ({ navigation }) => {
       )}
 
       {/* FAB */}
-      <TouchableOpacity
-        style={s.fabWrap}
-        onPress={() => navigation.navigate('AddReminder')}
-        activeOpacity={0.9}
-      >
-        <LinearGradient colors={[colors.primary, colors.primaryDark]} style={s.fab}>
-          <Ionicons name="add" size={30} color="#FFF" />
-        </LinearGradient>
-      </TouchableOpacity>
+      <Tooltip text="Add reminder">
+        <TouchableOpacity
+          style={s.fabWrap}
+          onPress={() => navigation.navigate('AddReminder')}
+          activeOpacity={0.9}
+        >
+          <LinearGradient colors={[colors.primary, colors.primaryDark]} style={s.fab}>
+            <Ionicons name="add" size={30} color="#FFF" />
+          </LinearGradient>
+        </TouchableOpacity>
+      </Tooltip>
     </View>
   );
 };

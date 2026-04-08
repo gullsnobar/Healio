@@ -174,7 +174,7 @@ const ReminderDetailsScreen = ({ navigation, route }) => {
             >
               Snooze
             </Button>
-            <Text style={s.buttonDesc}>Remind me later</Text>
+            <Text style={[s.buttonDesc, { color: subColor }]}>Remind me later</Text>
           </View>
           <View style={{ flex: 1.2, marginHorizontal: 4 }}>
             <Button
@@ -186,7 +186,7 @@ const ReminderDetailsScreen = ({ navigation, route }) => {
             >
               {reminder.reminderType === 'medication' ? 'Taken ✓' : 'Complete'}
             </Button>
-            <Text style={s.buttonDesc}>
+            <Text style={[s.buttonDesc, { color: subColor }]}> 
               {reminder.reminderType === 'medication' ? 'Mark as taken' : 'Mark as done'}
             </Text>
           </View>
@@ -200,7 +200,7 @@ const ReminderDetailsScreen = ({ navigation, route }) => {
             >
               Delete
             </Button>
-            <Text style={s.buttonDesc}>Remove reminder</Text>
+            <Text style={[s.buttonDesc, { color: subColor }]}>Remove reminder</Text>
           </View>
         </View>
       )}
@@ -228,7 +228,7 @@ const s = StyleSheet.create({
     elevation: 8,
     gap: IS_SMALL ? 4 : 8,
   },
-  buttonDesc: { fontSize: IS_SMALL ? 9 : 10, color: subColor, textAlign: 'center', marginTop: 2, lineHeight: IS_SMALL ? 12 : 14 },
+  buttonDesc: { fontSize: IS_SMALL ? 9 : 10, textAlign: 'center', marginTop: 2, lineHeight: IS_SMALL ? 12 : 14 },
 });
 
 export default ReminderDetailsScreen;

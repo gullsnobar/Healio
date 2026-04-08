@@ -12,6 +12,7 @@ const toYMD = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad
 const DatePickerField = ({ value, onChange, placeholder = 'Select Date', containerStyle }) => {
   const { colors, isDark } = useAppTheme();
   const [show, setShow] = useState(false);
+  const [webInputValue, setWebInputValue] = useState(value || '');
   const parsedDate = value ? new Date(value + 'T00:00:00') : new Date();
 
   const handleChange = (event, selectedDate) => {
@@ -20,6 +21,41 @@ const DatePickerField = ({ value, onChange, placeholder = 'Select Date', contain
     if (selectedDate) onChange(toYMD(selectedDate));
   };
 
+  // Web platform: return HTML date input
+  if (Platform.OS === 'web') {
+    return (
+      <input
+        type="date"
+        value={webInputValue}
+        onChange={(e) => {
+          setWebInputValue(e.target.value);
+          if (e.target.value && /^\d{4}-\d{2}-\d{2}$/.test(e.target.value)) {
+            onChange(e.target.value);
+          }
+        }}
+        style={{
+          width: '100%',
+          height: 56,
+          fontSize: 15,
+          paddingLeft: 16,
+          paddingRight: 16,
+          borderWidth: 1.5,
+          border: `1.5px solid ${colors.cardAlt}`,
+          borderRadius: '12px',
+          outline: 'none',
+          fontFamily: 'inherit',
+          cursor: 'pointer',
+          backgroundColor: colors.cardAlt,
+          color: colors.text,
+          marginBottom: 14,
+          boxSizing: 'border-box',
+          ...containerStyle,
+        }}
+      />
+    );
+  }
+
+  // Native platforms
   return (
     <View>
       <TouchableOpacity

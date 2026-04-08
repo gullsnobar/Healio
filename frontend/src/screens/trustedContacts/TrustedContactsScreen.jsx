@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
 import TrustedContactList from '../../components/trustedContacts/TrustedContactList';
 import { fetchContacts, deleteContact } from '../../redux/slices/trustedContactSlice';
+import Tooltip from '../../components/common/Tooltip';
 
 const TrustedContactsScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -23,9 +24,11 @@ const TrustedContactsScreen = ({ navigation }) => {
       </View>
       <TrustedContactList contacts={contacts} loading={loading}
         onItemPress={(c) => {}} onDelete={(c) => dispatch(deleteContact(c._id))} />
-      <TouchableOpacity style={[s.fab, { backgroundColor: colors.primary }]} onPress={() => navigation.navigate('AddContact')}>
-        <Ionicons name="person-add" size={24} color="#FFF" />
-      </TouchableOpacity>
+      <Tooltip text="Add contact">
+        <TouchableOpacity style={[s.fab, { backgroundColor: colors.primary }]} onPress={() => navigation.navigate('AddContact')}>
+          <Ionicons name="person-add" size={24} color="#FFF" />
+        </TouchableOpacity>
+      </Tooltip>
     </View>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
+import Dropdown from '../common/Dropdown';
 
 const MEAL_ICONS = { breakfast: 'sunny-outline', lunch: 'restaurant-outline', dinner: 'moon-outline', snack: 'cafe-outline' };
 
@@ -10,7 +11,13 @@ const DietLogger = ({ onSubmit }) => {
   const [meal, setMeal] = useState({ type: 'breakfast', name: '', calories: '', notes: '' });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
+
+  const mealTypeOptions = [
+    { label: 'Breakfast', value: 'breakfast', icon: 'sunny-outline' },
+    { label: 'Lunch', value: 'lunch', icon: 'restaurant-outline' },
+    { label: 'Dinner', value: 'dinner', icon: 'moon-outline' },
+    { label: 'Snack', value: 'snack', icon: 'cafe-outline' },
+  ];
 
   const validate = () => {
     const errs = {};
@@ -50,21 +57,15 @@ const DietLogger = ({ onSubmit }) => {
       <Text style={[s.subtitle, { color: colors.textSecondary }]}>What did you eat today?</Text>
 
       {/* Meal type selector */}
-      <View style={s.typeRow}>
-        {mealTypes.map((t) => {
-          const active = meal.type === t;
-          return (
-            <TouchableOpacity
-              key={t}
-              style={[s.typeBtn, { borderColor: active ? colors.primary : inputBorder, backgroundColor: active ? colors.primary : inputBg }]}
-              onPress={() => setMeal({ ...meal, type: t })}
-              activeOpacity={0.8}
-            >
-              <Ionicons name={MEAL_ICONS[t]} size={18} color={active ? '#FFF' : colors.textTertiary} />
-              <Text style={[s.typeText, { color: active ? '#FFF' : colors.textSecondary }]}>{t}</Text>
-            </TouchableOpacity>
-          );
-        })}
+      <View style={s.fieldWrap}>
+        <Text style={[s.label, { color: colors.textSecondary }]}>Meal Type</Text>
+        <Dropdown
+          options={mealTypeOptions}
+          value={meal.type}
+          onChange={(value) => setMeal({ ...meal, type: value })}
+          placeholder="Select meal type"
+          required
+        />
       </View>
 
       {/* Meal name */}
@@ -134,16 +135,6 @@ const s = StyleSheet.create({
   container: { padding: 20 },
   title: { fontSize: 22, fontWeight: '800', marginBottom: 4 },
   subtitle: { fontSize: 14, marginBottom: 20 },
-  typeRow: { flexDirection: 'row', gap: 8, marginBottom: 20 },
-  typeBtn: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: 'center',
-    gap: 4,
-  },
-  typeText: { fontWeight: '600', textTransform: 'capitalize', fontSize: 12 },
   fieldWrap: { marginBottom: 16 },
   label: { fontSize: 13, fontWeight: '600', marginBottom: 6, marginLeft: 2 },
   inputWrap: {

@@ -18,6 +18,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { logoutUser } from '../../redux/slices/authSlice';
 import { useAppTheme } from '../../styles/ThemeContext';
 import Button from '../../components/common/Button';
+import Tooltip from '../../components/common/Tooltip';
+import Dropdown from '../../components/common/Dropdown';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 const IS_SMALL = SCREEN_W < 400;
@@ -63,26 +65,57 @@ const ProfileScreen = ({ navigation }) => {
 
   const initials = (user?.name || user?.fullName || 'U').charAt(0).toUpperCase();
 
-  const renderField = (key, label, placeholder, extra = {}) => (
-    <View key={key} style={{ marginBottom: 14 }}>
-      <Text style={[s.fieldLabel, { color: colors.textSecondary }]}>{label}</Text>
-      <View style={[s.inputWrap, { backgroundColor: colors.cardAlt, borderColor: colors.cardAlt },
-        focusedField === key && { borderColor: colors.primary, backgroundColor: colors.card }]}>
-        <TextInput
-          style={[s.input, { color: colors.text }]}
-          placeholder={placeholder}
-          placeholderTextColor={colors.textTertiary}
+  const renderField = (key, label, placeholder, extra = {}) => {
+    // Special handling for dropdown fields
+    if (key === 'gender') {
+      return (
+        <Dropdown
+          key={key}
+          label={label}
           value={form[key]}
-          onChangeText={(v) => update(key, v)}
-          autoCapitalize={extra.autoCapitalize ?? 'none'}
-          keyboardType={extra.keyboardType ?? 'default'}
-          secureTextEntry={extra.secure}
-          onFocus={() => setFocusedField(key)}
-          onBlur={() => setFocusedField(null)}
+          options={['Male', 'Female', 'Other', 'Prefer not to say']}
+          placeholder={placeholder}
+          onSelect={(value) => update(key, value)}
+          required
         />
+      );
+    }
+
+    if (key === 'dateOfBirth') {
+      return (
+        <Dropdown
+          key={key}
+          label={label}
+          value={form[key]}
+          placeholder={placeholder}
+          mode="date"
+          onChange={(value) => update(key, value)}
+        />
+      );
+    }
+
+    // Regular text input for other fields
+    return (
+      <View key={key} style={{ marginBottom: 14 }}>
+        <Text style={[s.fieldLabel, { color: colors.textSecondary }]}>{label}</Text>
+        <View style={[s.inputWrap, { backgroundColor: colors.cardAlt, borderColor: colors.cardAlt },
+          focusedField === key && { borderColor: colors.primary, backgroundColor: colors.card }]}>
+          <TextInput
+            style={[s.input, { color: colors.text }]}
+            placeholder={placeholder}
+            placeholderTextColor={colors.textTertiary}
+            value={form[key]}
+            onChangeText={(v) => update(key, v)}
+            autoCapitalize={extra.autoCapitalize ?? 'none'}
+            keyboardType={extra.keyboardType ?? 'default'}
+            secureTextEntry={extra.secure}
+            onFocus={() => setFocusedField(key)}
+            onBlur={() => setFocusedField(null)}
+          />
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <ScrollView style={[s.c, { backgroundColor: colors.background }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
@@ -120,32 +153,36 @@ const ProfileScreen = ({ navigation }) => {
 
       {/* Save button */}
       <View style={s.formSection}>
-        <Button
-          variant="primary"
-          size="large"
-          icon="checkmark-circle-outline"
-          onPress={handleSave}
-          colors={colors}
-        >
-          Save Profile
-        </Button>
-        <Text style={s.buttonDesc}>Update your personal information and preferences</Text>
+        <Tooltip text="Save changes">
+          <Button
+            variant="primary"
+            size="large"
+            icon="checkmark-circle-outline"
+            onPress={handleSave}
+            colors={colors}
+          >
+            Save Profile
+          </Button>
+        </Tooltip>
+        <Text style={[s.buttonDesc, { color: colors.textSecondary }]}>Update your personal information and preferences</Text>
       </View>
 
       {/* Dark mode toggle */}
 
       {/* Sign out */}
       <View style={{ paddingHorizontal: IS_SMALL ? 20 : 24, marginTop: 16 }}>
-        <Button
-          variant="danger"
-          size="large"
-          icon="log-out-outline"
-          onPress={handleLogout}
-          colors={colors}
-        >
-          Sign Out
-        </Button>
-        <Text style={s.buttonDesc}>Sign out of your HEALIO account</Text>
+        <Tooltip text="Logout">
+          <Button
+            variant="danger"
+            size="large"
+            icon="log-out-outline"
+            onPress={handleLogout}
+            colors={colors}
+          >
+            Sign Out
+          </Button>
+        </Tooltip>
+        <Text style={[s.buttonDesc, { color: colors.textSecondary }]}>Sign out of your HEALIO account</Text>
       </View>
     </ScrollView>
   );
@@ -230,7 +267,7 @@ const s = StyleSheet.create({
     marginTop: 16,
   },
   signOutText: { fontSize: 15, fontWeight: '700' },
-  buttonDesc: { fontSize: IS_SMALL ? 11 : 12, color: colors.textSecondary, textAlign: 'center', marginTop: 8, lineHeight: IS_SMALL ? 16 : 18 },
+ buttonDesc: { fontSize: IS_SMALL ? 11 : 12, textAlign: 'center', marginTop: 8, lineHeight: IS_SMALL ? 16 : 18 },
 });
 
 export default ProfileScreen;

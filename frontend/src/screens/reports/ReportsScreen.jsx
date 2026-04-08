@@ -2,6 +2,7 @@
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
+import Tooltip from '../../components/common/Tooltip';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 const IS_SMALL = SCREEN_W < 400;
@@ -19,11 +20,13 @@ const ReportsScreen = ({ navigation }) => {
       <View style={s.headerSpacer} />
     </View>
     {[['Weekly Report','WeeklyReport','analytics-outline','Your weekly health summary'],['Monthly Report','MonthlyReport','calendar-outline','Monthly health overview']].map(([t,r,i,d])=>(
-      <TouchableOpacity key={r} style={[s.card, { backgroundColor: colors.card }]} onPress={() => navigation.navigate(r)}>
-        <Ionicons name={i} size={32} color={colors.primary} />
-        <View style={s.info}><Text style={[s.t, { color: colors.text }]}>{t}</Text><Text style={[s.d, { color: colors.textSecondary }]}>{d}</Text></View>
-        <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
-      </TouchableOpacity>
+      <Tooltip key={r} text={t}>
+        <TouchableOpacity style={[s.card, { backgroundColor: colors.card }]} onPress={() => navigation.navigate(r)}>
+          <Ionicons name={i} size={32} color={colors.primary} />
+          <View style={s.info}><Text style={[s.t, { color: colors.text }]}>{t}</Text><Text style={[s.d, { color: colors.textSecondary }]}>{d}</Text></View>
+          <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
+        </TouchableOpacity>
+      </Tooltip>
     ))}
   </ScrollView>
   );

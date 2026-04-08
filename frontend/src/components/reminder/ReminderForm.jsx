@@ -4,9 +4,9 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAppTheme } from '../../styles/ThemeContext';
 import Button from '../common/Button';
+import Dropdown from '../common/Dropdown';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 const IS_SMALL = SCREEN_W < 400;
@@ -119,47 +119,34 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
         <InputField label="Title" value={title} onChangeText={setTitle} placeholder="e.g. Morning medication" />
 
         {/* Date */}
-        <View style={s.fieldGroup}>
-          <Text style={[s.fieldLabel, { color: isDark ? '#94A3B8' : '#475569' }]}>Date</Text>
-          <TouchableOpacity style={[s.dateBtn, { backgroundColor: inputBg }]} onPress={() => setShowDatePicker(true)}>
-            <Ionicons name="calendar-outline" size={18} color={colors.primary} />
-            <Text style={[s.dateBtnText, { color: textColor }]}>{date.toLocaleDateString()}</Text>
-          </TouchableOpacity>
-        </View>
+        <Dropdown
+          label="Date"
+          value={date.toISOString().split('T')[0]}
+          placeholder="Select date"
+          mode="date"
+          onChange={(dateString) => setDate(new Date(dateString + 'T00:00:00'))}
+          required
+        />
 
         {/* Time */}
-        <View style={s.fieldGroup}>
-          <Text style={[s.fieldLabel, { color: isDark ? '#94A3B8' : '#475569' }]}>Time</Text>
-          <TouchableOpacity style={[s.dateBtn, { backgroundColor: inputBg }]} onPress={() => setShowTimePicker(true)}>
-            <Ionicons name="time-outline" size={18} color={colors.primary} />
-            <Text style={[s.dateBtnText, { color: textColor }]}>{time}</Text>
-          </TouchableOpacity>
-        </View>
+        <Dropdown
+          label="Time"
+          value={time}
+          placeholder="Select time"
+          mode="time"
+          onChange={setTime}
+          required
+        />
 
-        <ChipSelect label="Repeat" options={REPEAT_OPTIONS} value={repeat} onChange={setRepeat} />
+        <Dropdown
+          label="Repeat"
+          value={repeat}
+          options={REPEAT_OPTIONS}
+          placeholder="Select repeat frequency"
+          onSelect={setRepeat}
+        />
         <InputField label="Notes" value={notes} onChangeText={setNotes} placeholder="Optional notes…" multiline />
       </View>
-
-      {showDatePicker && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={(e, d) => { setShowDatePicker(false); if (d) setDate(d); }}
-          minimumDate={new Date()}
-        />
-      )}
-      {showTimePicker && (
-        <DateTimePicker
-          value={(() => { const [h, m] = time.split(':'); const d = new Date(); d.setHours(+h, +m); return d; })()}
-          mode="time"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={(e, d) => {
-            setShowTimePicker(false);
-            if (d) setTime(`${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`);
-          }}
-        />
-      )}
 
       {/* Medication-specific */}
       {reminderType === 'medication' && (
@@ -172,11 +159,23 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
             <View style={{ flex: 1, marginRight: 8 }}>
               <InputField label="Dosage" value={dosage} onChangeText={setDosage} placeholder="500" keyboardType="numeric" />
             </View>
-            <View style={{ width: 100 }}>
-              <ChipSelect label="Unit" options={['mg', 'ml', 'g', 'IU']} value={dosageUnit} onChange={setDosageUnit} />
+            <View style={{ flex: 0.4 }}>
+              <Dropdown
+                label="Unit"
+                value={dosageUnit}
+                options={['mg', 'ml', 'g', 'IU']}
+                placeholder="Unit"
+                onSelect={setDosageUnit}
+              />
             </View>
           </View>
-          <ChipSelect label="Frequency" options={FREQUENCY_OPTIONS} value={frequency} onChange={setFrequency} />
+          <Dropdown
+            label="Frequency"
+            value={frequency}
+            options={FREQUENCY_OPTIONS}
+            placeholder="Select frequency"
+            onSelect={setFrequency}
+          />
           <InputField label="Instructions" value={instructions} onChangeText={setInstructions} placeholder="Take with food…" multiline />
         </View>
       )}
@@ -190,7 +189,13 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
           <InputField label="Doctor Name *" value={doctorName} onChangeText={setDoctorName} placeholder="e.g. Dr. Smith" />
           <InputField label="Specialty" value={specialty} onChangeText={setSpecialty} placeholder="e.g. Cardiology" />
           <InputField label="Location" value={location} onChangeText={setLocation} placeholder="e.g. City Hospital" />
-          <ChipSelect label="Type" options={APPOINTMENT_TYPES} value={appointmentType} onChange={setAppointmentType} />
+          <Dropdown
+            label="Appointment Type"
+            value={appointmentType}
+            options={APPOINTMENT_TYPES}
+            placeholder="Select type"
+            onSelect={setAppointmentType}
+          />
         </View>
       )}
 
@@ -201,7 +206,13 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
             <Ionicons name="flask-outline" size={16} /> Lab Report Details
           </Text>
           <InputField label="Lab Name" value={labName} onChangeText={setLabName} placeholder="e.g. HealthLab" />
-          <ChipSelect label="Report Type" options={REPORT_TYPES} value={reportType} onChange={setReportType} />
+          <Dropdown
+            label="Report Type"
+            value={reportType}
+            options={REPORT_TYPES}
+            placeholder="Select report type"
+            onSelect={setReportType}
+          />
           <InputField label="Test Name" value={testName} onChangeText={setTestName} placeholder="e.g. Complete Blood Count" />
           <InputField label="Ordered By" value={orderedBy} onChangeText={setOrderedBy} placeholder="Doctor who ordered" />
         </View>
@@ -220,7 +231,7 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
         >
           {loading ? 'Saving...' : 'Save Reminder'}
         </Button>
-        <Text style={s.buttonDesc}>
+        <Text style={[s.buttonDesc, { color: colors.textSecondary }]}> 
           {reminderType === 'medication' ? 'Set up medication reminders to stay on track with your treatment' :
            reminderType === 'appointment' ? 'Schedule appointment reminders to never miss important visits' :
            'Create lab report reminders to track your health tests'}
@@ -244,7 +255,7 @@ const s = StyleSheet.create({
   chipText: { fontSize: IS_SMALL ? 11 : 12, fontWeight: '500' },
   row: { flexDirection: 'row', alignItems: 'flex-start' },
   submitWrapper: { marginTop: 16, marginBottom: 32 },
-  buttonDesc: { fontSize: IS_SMALL ? 11 : 12, color: colors.textSecondary, textAlign: 'center', marginTop: 8, lineHeight: IS_SMALL ? 16 : 18 },
+  buttonDesc: { fontSize: IS_SMALL ? 11 : 12, textAlign: 'center', marginTop: 8, lineHeight: IS_SMALL ? 16 : 18 },
 });
 
 export default ReminderForm;

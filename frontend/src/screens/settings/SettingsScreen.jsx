@@ -2,6 +2,7 @@
 import { ScrollView, TouchableOpacity, Text, View, StyleSheet, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
+import Tooltip from '../../components/common/Tooltip';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 const IS_SMALL = SCREEN_W < 400;
@@ -18,13 +19,15 @@ const SettingsScreen = ({ navigation }) => {
         <Text style={[s.headerTitle, { color: colors.text }]}>Settings</Text>
         <View style={s.headerSpacer} />
       </View>
-      {[['alarm-outline','Reminders','Reminders'],['notifications-outline','Notification Settings','NotificationSettings'],['color-palette-outline','Appearance','Appearance'],['lock-closed-outline','Privacy Settings','PrivacySettings'],['people-outline','Trusted Contacts','TrustedContacts'],['information-circle-outline','About HEALIO','About']].map(([icon,label,route])=>(
-        <TouchableOpacity key={route} style={[s.item, { backgroundColor: colors.card }]} onPress={() => navigation.navigate(route)}>
-          <Ionicons name={icon} size={22} color={colors.primary} />
-          <Text style={[s.label, { color: colors.text }]}>{label}</Text>
-          <Ionicons name="chevron-forward" size={18} color={colors.textTertiary} />
-        </TouchableOpacity>
-      ))}
+      {[['alarm-outline','Reminders','Reminders','Manage'],['notifications-outline','Notification Settings','NotificationSettings','Configure'],['color-palette-outline','Appearance','Appearance','Theme'],['lock-closed-outline','Privacy Settings','PrivacySettings','Privacy'],['people-outline','Trusted Contacts','TrustedContacts','Contacts'],['information-circle-outline','About HEALIO','About','About']].map(([icon,label,route,tooltip])=>(
+        <Tooltip key={route} text={tooltip}>
+          <TouchableOpacity style={[s.item, { backgroundColor: colors.card }]} onPress={() => navigation.navigate(route)}>
+            <Ionicons name={icon} size={22} color={colors.primary} />
+            <Text style={[s.label, { color: colors.text }]}>{label}</Text>
+            <Ionicons name="chevron-forward" size={18} color={colors.textTertiary} />
+          </TouchableOpacity>
+        </Tooltip>
+      ))}}
     </ScrollView>
   );
 };
