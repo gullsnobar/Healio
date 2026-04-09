@@ -22,7 +22,7 @@ const SEVERITY_MAP = {
 };
 
 const CATEGORY_ICONS = {
-  fitness:    'footsteps',
+  fitness:    'walk',
   diet:       'restaurant',
   hydration:  'water',
   sleep:      'moon',
@@ -75,7 +75,7 @@ const AIInsightsScreen = ({ navigation }) => {
             <Text style={[s.section, { color: colors.text }]}>Daily Health Summary</Text>
             <View style={[s.summaryCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
               <View style={s.summaryRow}>
-                <SummaryPill icon="footsteps" label="Steps" value={dailySummary.steps?.value?.toLocaleString() ?? '0'} status={dailySummary.steps?.status} colors={colors} />
+                <SummaryPill icon="walk" label="Steps" value={dailySummary.steps?.value?.toLocaleString() ?? '0'} status={dailySummary.steps?.status} colors={colors} />
                 <SummaryPill icon="water" label="Water" value={`${dailySummary.water?.value ?? 0}ml`} status={dailySummary.water?.status} colors={colors} />
                 <SummaryPill icon="moon" label="Sleep" value={`${dailySummary.sleep?.value ?? 0}h`} status={dailySummary.sleep?.status} colors={colors} />
               </View>

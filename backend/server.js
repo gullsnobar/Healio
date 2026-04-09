@@ -1,7 +1,13 @@
-﻿require('dotenv').config();
+﻿const dotenv = require('dotenv');
+const path = require('path');
 
-// Fix Node.js c-ares DNS resolver not finding system DNS servers (Node 24+)
+// Load .env from the backend directory
+dotenv.config({ path: path.join(__dirname, '.env') });
+
 const dns = require('dns');
+const fs = require('fs');
+
+// Fix Node.js DNS resolver issue (Node 24+)
 try {
   const servers = dns.getServers();
   if (!servers.length || servers.every(s => s === '127.0.0.1' || s === '::1')) {
@@ -11,44 +17,90 @@ try {
   dns.setServers(['8.8.8.8', '8.8.4.4']);
 }
 
-const admin = require('firebase-admin');
-const serviceAccount = require('./config/healio-e75ef-firebase-adminsdk-fbsvc-2b167d9c17.json');
+console.log('Starting server...');
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
+// ---------------- Firebase Setup ----------------
+let firebaseInitialized = false;
+let admin;
 
-console.log('Firebase configured successfully!');
+try {
+  admin = require('firebase-admin');
+  const defaultServiceAccountPath = path.join(__dirname, 'config', 'healio-bba24-firebase-adminsdk-fbsvc-b272baeefc.json');
+  const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH || defaultServiceAccountPath;
 
+  if (fs.existsSync(serviceAccountPath)) {
+    const serviceAccount = require(serviceAccountPath);
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
+    console.log('Firebase initialized successfully!');
+    firebaseInitialized = true;
+  } else {
+    console.warn(`⚠ Firebase config missing at ${serviceAccountPath}. Skipping Firebase.`);
+  }
+} catch (err) {
+  console.warn('⚠ Firebase initialization failed:', err.message);
+}
+
+// ---------------- App & Services ----------------
 const app = require('./src/app');
 const connectDB = require('./src/database/connection');
 const { startAllJobs } = require('./src/jobs/jobScheduler');
 const logger = require('./src/utils/logger');
 
+// ---------------- Server Start ----------------
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
+    // Connect to MongoDB
     await connectDB();
     logger.info('MongoDB connected successfully');
 
-    // Verify email configuration (non-blocking — server runs even without email)
-    const { verifyEmailConnection } = require('./src/services/email/emailService');
-    const emailOk = await verifyEmailConnection();
-    if (!emailOk) {
-      logger.warn('⚠ Email service unavailable — OTP emails will not be sent');
+    // Verify Email Service (optional)
+    try {
+      const { verifyEmailConnection } = require('./src/services/email/emailService');
+      const emailOk = await verifyEmailConnection();
+      if (!emailOk) logger.warn('⚠ Email service unavailable — OTP emails will not be sent');
+    } catch (emailErr) {
+      logger.warn('⚠ Email service check failed:', emailErr.message);
     }
 
-    startAllJobs();
-    logger.info('Cron jobs started');
+    // Start cron jobs
+    try {
+      startAllJobs();
+      logger.info('Cron jobs started');
+    } catch (jobErr) {
+      logger.warn('⚠ Failed to start cron jobs:', jobErr.message);
+    }
 
-    app.listen(PORT, () => {
-      logger.info('Server running on port ' + PORT + ' in ' + process.env.NODE_ENV + ' mode');
+    // Start Express server
+    const server = app.listen(PORT, () => {
+      logger.info(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
+      if (!firebaseInitialized) {
+        logger.warn('⚠ Firebase is not running (missing config)');
+      }
     });
-  } catch (error) {
-    logger.error('Server startup failed:', error);
+
+    // Handle port conflict errors
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        logger.error(`Port ${PORT} is already in use. Attempting to retry...`);
+        setTimeout(() => {
+          server.close();
+          server.listen(PORT);
+        }, 1000);
+      } else {
+        logger.error('Server error:', err);
+        process.exit(1);
+      }
+    });
+  } catch (err) {
+    logger.error('Server startup failed:', err);
     process.exit(1);
   }
 };
 
+
+// Run server
 startServer();

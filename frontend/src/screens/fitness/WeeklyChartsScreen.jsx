@@ -42,7 +42,7 @@ const WeeklyChartsScreen = () => {
   const labels = chartData.labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   const tabs = [
-    { key: 'steps', label: 'Steps', icon: 'footsteps', color: colors.fitnessSteps, bg: colors.fitnessStepsBg },
+    { key: 'steps', label: 'Steps', icon: 'walk', color: colors.fitnessSteps, bg: colors.fitnessStepsBg },
     { key: 'calories', label: 'Calories', icon: 'flame', color: colors.fitnessCal, bg: colors.fitnessCalBg },
     { key: 'sleep', label: 'Sleep', icon: 'moon', color: colors.fitnessSleep, bg: colors.fitnessSleepBg },
   ];

@@ -15,7 +15,7 @@ const StepCounter = ({ steps = 0, goal = 10000, dark }) => {
   return (
     <View style={sc.container}>
       <View style={sc.row}>
-        <Ionicons name="footsteps" size={40} color={onGrad ? '#FFFFFF' : (isDark ? '#fff' : '#38BDF8')} />
+        <Ionicons name="walk" size={40} color={onGrad ? '#FFFFFF' : (isDark ? '#fff' : '#38BDF8')} />
         <View style={sc.textWrap}>
           <Text style={[sc.count, { color: mainColor }]}>{steps.toLocaleString()}</Text>
           <Text style={[sc.label, { color: subColor }]}>of {goal.toLocaleString()} steps</Text>

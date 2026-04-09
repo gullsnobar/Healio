@@ -11,7 +11,7 @@ export const useOfflineSync = () => {
     return () => unsubscribe();
   }, []);
 
-  const queueAction = async (action) => { const queue = [...pendingActions, action]; setPendingActions(queue); await storage.set('offline_queue', queue); };
-  const syncPending = async () => { const queue = await storage.get('offline_queue') || []; /* process queue */ setPendingActions([]); await storage.remove('offline_queue'); };
+  const queueAction = async (action) => { const updatedQueue = [...pendingActions, action]; setPendingActions(updatedQueue); await storage.set('offline_queue', updatedQueue); };
+  const syncPending = async () => { const storedQueue = await storage.get('offline_queue') || []; if (storedQueue.length > 0) { /* process queue */ } setPendingActions([]); await storage.remove('offline_queue'); };
   return { isOnline, pendingActions, queueAction };
 };

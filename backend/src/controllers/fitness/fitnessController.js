@@ -1,5 +1,14 @@
 ﻿const FitnessData = require('../../models/FitnessData');
-const { syncFromGoogleFit } = require('../../services/googleFit/syncService');
+const { syncFromGoogleFit, connectGoogleFit } = require('../../services/googleFit/syncService');
+
+exports.connectGoogleFitHandler = async (req, res, next) => {
+  try {
+    const { code } = req.body;
+    if (!code) return res.status(400).json({ success: false, message: 'Authorization code required' });
+    const result = await connectGoogleFit(req.userId, code);
+    res.json({ success: true, data: result, message: 'Google Fit connected successfully' });
+  } catch (error) { next(error); }
+};
 
 exports.getFitnessData = async (req, res, next) => {
   try {

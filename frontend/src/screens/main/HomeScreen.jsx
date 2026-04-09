@@ -150,7 +150,7 @@ const HomeScreen = ({ navigation }) => {
       <View style={st.statsSection}>
         <Text style={[st.sectionTitle, { color: colors.text }]}>Today's Overview</Text>
         <View style={st.statsGrid}>
-          <QuickStatCard icon="footsteps-outline" label="Steps" value={(fitness.steps || 0).toLocaleString()} unit="" color="#3B82F6" bg={colors.fitnessStepsBg} colors={colors} />
+          <QuickStatCard icon="walk" label="Steps" value={(fitness.steps || 0).toLocaleString()} unit="" color="#3B82F6" bg={colors.fitnessStepsBg} colors={colors} />
           <QuickStatCard icon="water-outline" label="Water" value={fitness.water || 0} unit="ml" color="#06B6D4" bg={colors.fitnessWaterBg} colors={colors} />
           <QuickStatCard icon="moon-outline" label="Sleep" value={fitness.sleep || 0} unit="hrs" color="#6366F1" bg={colors.fitnessSleepBg} colors={colors} />
           <QuickStatCard icon="flame-outline" label="Calories" value={fitness.calories || 0} unit="kcal" color="#FB923C" bg={colors.fitnessCalBg} colors={colors} />

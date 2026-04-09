@@ -3,11 +3,35 @@ import { initializeApp } from "firebase/app";
 import {
   getAuth,
   initializeAuth,
-  getReactNativePersistence,
   GoogleAuthProvider,
 } from "firebase/auth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
+
+let AsyncStorage;
+let getReactNativePersistence;
+
+// Only import AsyncStorage on native platforms (avoid webpack resolution warnings)
+// Check for browser environment - if window exists, we're in a browser
+if (typeof window === "undefined") {
+  try {
+    // eslint-disable-next-line global-require
+    AsyncStorage = require("@react-native-async-storage/async-storage").default;
+    // Dynamically require to avoid webpack warnings
+    if (typeof require !== "undefined") {
+      try {
+        // eslint-disable-next-line global-require
+        const firebaseAuthRN = require("firebase/auth/react-native");
+        getReactNativePersistence = firebaseAuthRN.getReactNativePersistence;
+      } catch (innerError) {
+        // React Native auth module not available in this environment
+        console.debug("Firebase React Native auth not available");
+      }
+    }
+  } catch (e) {
+    // Fallback for web or if native modules aren't available
+    console.debug("Native async storage not available");
+  }
+}
 
 // Firebase configuration
 const firebaseConfig = {
@@ -31,15 +55,18 @@ let _authInitialized = false;
 const getFirebaseAuth = () => {
   if (!_authInitialized) {
     try {
-      _auth =
-        Platform.OS === "web"
-          ? getAuth(app)
-          : initializeAuth(app, {
-              persistence: getReactNativePersistence(AsyncStorage),
-            });
+      if (Platform.OS === "web") {
+        _auth = getAuth(app);
+      } else if (getReactNativePersistence && AsyncStorage) {
+        _auth = initializeAuth(app, {
+          persistence: getReactNativePersistence(AsyncStorage),
+        });
+      } else {
+        _auth = getAuth(app);
+      }
     } catch (e) {
       console.warn("Firebase Auth init failed:", e.message);
-      _auth = null;
+      _auth = getAuth(app);
     }
     _authInitialized = true;
   }

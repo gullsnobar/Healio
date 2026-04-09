@@ -11,8 +11,8 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (b) => {
     b.addCase(fetchContacts.fulfilled, (s, a) => { s.contacts = a.payload; })
-     .addCase(addContact.fulfilled, (s, a) => { s.contacts.push(a.payload); })
-     .addCase(deleteContact.fulfilled, (s, a) => { s.contacts = s.contacts.filter(c => c._id !== a.payload); });
+      .addCase(addContact.fulfilled, (s, a) => { s.contacts.push(a.payload); })
+      .addCase(deleteContact.fulfilled, (s, a) => { s.contacts = s.contacts.filter(c => c._id !== a.payload); });
   },
 });
 export default slice.reducer;

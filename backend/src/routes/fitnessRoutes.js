@@ -1,10 +1,11 @@
 ﻿const router = require('express').Router();
-const { getFitnessData, syncGoogleFit, addManualEntry, getWeeklyStats, getMonthlyStats, logExercise, updateFitnessGoals, getWeeklyChartData } = require('../controllers/fitness/fitnessController');
+const { connectGoogleFitHandler, getFitnessData, syncGoogleFit, addManualEntry, getWeeklyStats, getMonthlyStats, logExercise, updateFitnessGoals, getWeeklyChartData } = require('../controllers/fitness/fitnessController');
 const { getWaterIntake, addWaterEntry, updateWaterGoal } = require('../controllers/fitness/waterController');
 const { getDietLogs, addDietEntry, getMealHistory, deleteMealEntry } = require('../controllers/fitness/dietController');
 const { authenticate } = require('../middleware/authentication');
 
 router.use(authenticate);
+router.post('/googleFit/connect', connectGoogleFitHandler);
 router.get('/', getFitnessData);
 router.post('/sync', syncGoogleFit);
 router.post('/manual', addManualEntry);

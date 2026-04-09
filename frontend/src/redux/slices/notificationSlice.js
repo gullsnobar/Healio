@@ -23,10 +23,10 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (b) => {
     b.addCase(fetchNotifications.pending, (s) => { s.loading = true; })
-     .addCase(fetchNotifications.fulfilled, (s, a) => { s.loading = false; s.notifications = a.payload.notifications; s.unreadCount = a.payload.unreadCount; })
-     .addCase(fetchNotifications.rejected, (s) => { s.loading = false; })
-     .addCase(markAsRead.fulfilled, (s, a) => { const n = s.notifications.find(n => n._id === a.payload); if (n) { n.isRead = true; s.unreadCount = Math.max(0, s.unreadCount - 1); } })
-     .addCase(markAllRead.fulfilled, (s) => { s.notifications.forEach(n => { n.isRead = true; }); s.unreadCount = 0; });
+      .addCase(fetchNotifications.fulfilled, (s, a) => { s.loading = false; s.notifications = a.payload.notifications; s.unreadCount = a.payload.unreadCount; })
+      .addCase(fetchNotifications.rejected, (s) => { s.loading = false; })
+      .addCase(markAsRead.fulfilled, (s, a) => { const n = s.notifications.find(n => n._id === a.payload); if (n) { n.isRead = true; s.unreadCount = Math.max(0, s.unreadCount - 1); } })
+      .addCase(markAllRead.fulfilled, (s) => { s.notifications.forEach(n => { n.isRead = true; }); s.unreadCount = 0; });
   },
 });
 export default slice.reducer;

@@ -125,7 +125,7 @@ const HealthInsightsScreen = () => {
           <>
             <Text style={[s.sectionTitle, { color: colors.text }]}>This Week's Summary</Text>
             <View style={s.summaryGrid}>
-              <SummaryCard label="Avg Steps" value={summary.avgSteps?.toLocaleString() || '0'} icon="footsteps" color={colors.fitnessSteps} bg={colors.fitnessStepsBg} colors={colors} />
+              <SummaryCard label="Avg Steps" value={summary.avgSteps?.toLocaleString() || '0'} icon="walk" color={colors.fitnessSteps} bg={colors.fitnessStepsBg} colors={colors} />
               <SummaryCard label="Avg Sleep" value={`${summary.avgSleep || 0}h`} icon="moon" color={colors.fitnessSleep} bg={colors.fitnessSleepBg} colors={colors} />
               <SummaryCard label="Avg Water" value={`${summary.avgWater || 0}ml`} icon="water" color={colors.fitnessWater} bg={colors.fitnessWaterBg} colors={colors} />
               <SummaryCard label="Adherence" value={`${summary.adherenceRate || 0}%`} icon="medkit" color={colors.primary} bg={colors.primaryLight} colors={colors} />

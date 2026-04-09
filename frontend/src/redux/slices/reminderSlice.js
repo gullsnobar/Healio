@@ -8,7 +8,7 @@ export const fetchReminders = createAsyncThunk(
   async (params, { rejectWithValue }) => {
     try { const res = await reminderAPI.getAll(params); return res.data; }
     catch (err) { return rejectWithValue(err.response?.data?.message || 'Failed to fetch reminders'); }
-  }
+  },
 );
 
 export const fetchUpcomingReminders = createAsyncThunk(
@@ -16,7 +16,7 @@ export const fetchUpcomingReminders = createAsyncThunk(
   async (hours = 24, { rejectWithValue }) => {
     try { const res = await reminderAPI.getUpcoming(hours); return res.data; }
     catch (err) { return rejectWithValue(err.response?.data?.message || 'Failed to fetch upcoming reminders'); }
-  }
+  },
 );
 
 export const addReminder = createAsyncThunk(
@@ -24,7 +24,7 @@ export const addReminder = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try { const res = await reminderAPI.create(data); return res.data; }
     catch (err) { return rejectWithValue(err.response?.data?.message || 'Failed to create reminder'); }
-  }
+  },
 );
 
 export const updateReminder = createAsyncThunk(
@@ -32,7 +32,7 @@ export const updateReminder = createAsyncThunk(
   async ({ id, data }, { rejectWithValue }) => {
     try { const res = await reminderAPI.update(id, data); return res.data; }
     catch (err) { return rejectWithValue(err.response?.data?.message || 'Failed to update reminder'); }
-  }
+  },
 );
 
 export const deleteReminder = createAsyncThunk(
@@ -40,7 +40,7 @@ export const deleteReminder = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try { await reminderAPI.delete(id); return id; }
     catch (err) { return rejectWithValue(err.response?.data?.message || 'Failed to delete reminder'); }
-  }
+  },
 );
 
 export const completeReminder = createAsyncThunk(
@@ -48,7 +48,7 @@ export const completeReminder = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try { const res = await reminderAPI.complete(id); return res.data; }
     catch (err) { return rejectWithValue(err.response?.data?.message || 'Failed to complete reminder'); }
-  }
+  },
 );
 
 export const snoozeReminder = createAsyncThunk(
@@ -56,7 +56,7 @@ export const snoozeReminder = createAsyncThunk(
   async ({ id, minutes }, { rejectWithValue }) => {
     try { const res = await reminderAPI.snooze(id, minutes); return res.data; }
     catch (err) { return rejectWithValue(err.response?.data?.message || 'Failed to snooze reminder'); }
-  }
+  },
 );
 
 /* ── Slice ──────────────────────────────────────────── */

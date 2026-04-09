@@ -9,7 +9,7 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (b) => {
     b.addCase(fetchRecommendations.pending, (s) => { s.loading = true; })
-     .addCase(fetchRecommendations.fulfilled, (s, a) => { s.loading = false; s.recommendations = a.payload.recommendations || []; s.insights = a.payload.insights; s.tips = a.payload.tips || []; });
+      .addCase(fetchRecommendations.fulfilled, (s, a) => { s.loading = false; s.recommendations = a.payload.recommendations || []; s.insights = a.payload.insights; s.tips = a.payload.tips || []; });
   },
 });
 export default slice.reducer;

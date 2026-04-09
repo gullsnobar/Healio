@@ -10,7 +10,7 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (b) => {
     b.addCase(fetchWeeklyReport.fulfilled, (s, a) => { s.weeklyReport = a.payload; })
-     .addCase(fetchMonthlyReport.fulfilled, (s, a) => { s.monthlyReport = a.payload; });
+      .addCase(fetchMonthlyReport.fulfilled, (s, a) => { s.monthlyReport = a.payload; });
   },
 });
 export default slice.reducer;

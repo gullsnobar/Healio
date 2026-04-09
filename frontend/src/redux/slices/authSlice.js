@@ -54,9 +54,18 @@ export const logoutUser = createAsyncThunk('auth/logout', async () => {
 
 export const googleSignIn = createAsyncThunk('auth/googleSignIn', async (_, { rejectWithValue }) => {
   try {
-    // Step 1: Firebase popup sign-in
-    const { token, profile } = await firebaseAuth.signInWithGoogle();
-    // Step 2: Send to backend
+    // Step 1: Firebase sign-in (web redirects, native returns result)
+    const result = await firebaseAuth.signInWithGoogle();
+    
+    // If web platform, signInWithGoogle redirects - will return null
+    // The redirect result will be handled by the login screen's useEffect
+    if (result === null) {
+      // Web redirect flow - just return, let useEffect handle redirect result
+      return null;
+    }
+    
+    // Step 2: Send to backend (native flow)
+    const { token, profile } = result;
     const res = await authAPI.googleAuth(token, profile);
     const { user, accessToken, refreshToken } = res.data.data;
     await secureStorage.setToken(accessToken);

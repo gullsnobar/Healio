@@ -57,7 +57,7 @@ const DashboardScreen = ({ navigation }) => {
         <View style={ds.statsGrid}>
           <StatCard icon="checkmark-circle" label="Taken"   value={taken}   color={colors.success}      bg={colors.successLight}     colors={colors} />
           <StatCard icon="close-circle"     label="Missed"  value={missed}  color={colors.error}        bg={colors.errorLight}       colors={colors} />
-          <StatCard icon="footsteps-outline" label="Steps"  value={(fit.steps   ?? 0).toLocaleString()} color={colors.fitnessSteps} bg={colors.fitnessStepsBg}  colors={colors} />
+          <StatCard icon="walk" label="Steps"  value={(fit.steps   ?? 0).toLocaleString()} color={colors.fitnessSteps} bg={colors.fitnessStepsBg}  colors={colors} />
           <StatCard icon="water-outline"    label="Water"  value={`${fit.water ?? 0}ml`}              color={colors.fitnessWater} bg={colors.fitnessWaterBg}  colors={colors} />
         </View>
 

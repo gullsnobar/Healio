@@ -43,8 +43,7 @@
       "expo-notifications",
       "expo-location",
       "expo-image-picker",
-      "expo-document-picker",
-      "expo-font"
+      "expo-document-picker"
     ],
     "extra": {
       "eas": {

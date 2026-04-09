@@ -8,13 +8,20 @@ import { sendMessage, fetchSuggestions } from '../../redux/slices/chatbotSlice';
 const ChatbotScreen = () => {
   const { colors } = useAppTheme();
   const dispatch = useDispatch();
-  const { messages, suggestions, loading } = useSelector((state) => state.chatbot);
-  useEffect(() => { dispatch(fetchSuggestions()); }, []);
+  const { messages, suggestions, loading, sessionId } = useSelector((state) => state.chatbot);
+  
+  useEffect(() => { 
+    dispatch(fetchSuggestions()); 
+  }, []);
+
+  const handleSendMessage = (text) => {
+    dispatch(sendMessage({ message: text, sessionId, context: 'general' }));
+  };
 
   return (
     <View style={[s.c, { backgroundColor: colors.background }]}>
       <ChatInterface messages={messages} suggestions={suggestions} loading={loading}
-        onSend={(text) => dispatch(sendMessage(text))} />
+        onSend={handleSendMessage} />
     </View>
   );
 };

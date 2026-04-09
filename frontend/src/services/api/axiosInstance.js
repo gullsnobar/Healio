@@ -13,7 +13,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // Handle 401 responses by refreshing the token
@@ -33,12 +33,13 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status !== 401 || originalRequest._retry) {
+    // Don't retry if: not 401, already retried, or url doesn't exist
+    if (error.response?.status !== 401 || originalRequest._retry || !originalRequest.url) {
       return Promise.reject(error);
     }
 
-    // Don't try to refresh if this was already a refresh or auth request
-    if (originalRequest.url?.includes('/auth/')) {
+    // Don't try to refresh if this was already a refresh request (avoid infinite loop)
+    if (originalRequest.url.includes('/auth/refresh-token') || originalRequest.url.includes('/auth/logout')) {
       return Promise.reject(error);
     }
 
@@ -64,7 +65,7 @@ api.interceptors.response.use(
       const res = await axios.post(
         apiConfig.baseURL + '/auth/refresh-token',
         { refreshToken },
-        { headers: { 'Content-Type': 'application/json' } }
+        { headers: { 'Content-Type': 'application/json' } },
       );
 
       const { accessToken, refreshToken: newRefreshToken } = res.data.data;
@@ -84,7 +85,7 @@ api.interceptors.response.use(
     } finally {
       isRefreshing = false;
     }
-  }
+  },
 );
 
 export default api;
