@@ -8,7 +8,8 @@ import DateInput from './DateInput';
 import TimeInput from './TimeInput';
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
-const IS_SMALL = SCREEN_W < 400;
+const IS_SMALL = SCREEN_W <= 480;
+const IS_TABLET = SCREEN_W >= 768;
 
 /**
  * Reusable Dropdown Component
@@ -170,29 +171,31 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: IS_SMALL ? 12 : 14,
-    paddingVertical: IS_SMALL ? 10 : 12,
-    borderRadius: 10,
+    paddingHorizontal: IS_SMALL ? 16 : 18,
+    paddingVertical: IS_SMALL ? 14 : 16,
+    borderRadius: 12,
     borderWidth: 1,
-    minHeight: IS_SMALL ? 44 : 48,
+    minHeight: 48,
+    width: '100%',
   },
-  placeholder: { fontSize: IS_SMALL ? 14 : 16, flex: 1 },
-  value: { fontSize: IS_SMALL ? 14 : 16, flex: 1 },
+  placeholder: { fontSize: IS_SMALL ? 15 : 16, flex: 1 },
+  value: { fontSize: IS_SMALL ? 15 : 16, flex: 1 },
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
+    justifyContent: IS_SMALL ? 'flex-end' : 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: IS_SMALL ? 12 : 20,
   },
   modal: {
-    width: SCREEN_W - 40,
-    borderRadius: 12,
+    width: IS_SMALL ? SCREEN_W - 24 : Math.min(SCREEN_W - 80, 420),
+    borderRadius: 14,
     elevation: 5,
     shadowColor: '#000',
     shadowOpacity: 0.3,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
+    marginHorizontal: 12,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -208,12 +211,12 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 18,
+    paddingVertical: IS_SMALL ? 14 : 16,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'rgba(0,0,0,0.1)',
   },
-  optionText: { fontSize: 16 },
+  optionText: { fontSize: IS_SMALL ? 16 : 17 },
 });
 
 export default Dropdown;

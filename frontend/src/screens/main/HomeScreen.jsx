@@ -12,10 +12,11 @@ import ThemeToggle from '../../components/common/ThemeToggle';
 import DashboardOverview from '../../components/dashboard/DashboardOverview';
 import { fetchDashboardData } from '../../redux/slices/userSlice';
 
-const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
+const { width: SCREEN_W } = Dimensions.get('window');
 const IS_SMALL = SCREEN_W < 400;
-const IS_TABLET = SCREEN_W >= 768;
-const CARD_W = IS_TABLET ? (SCREEN_W - 60) / 3 : (SCREEN_W - (IS_SMALL ? 44 : 52)) / 2;
+const IS_MOBILE = SCREEN_W < 768;
+const IS_TABLET = SCREEN_W >= 768 && SCREEN_W < 1024;
+const IS_DESKTOP = SCREEN_W >= 1024;
 
 /* ─── date helpers ─── */
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -61,12 +62,46 @@ const HomeScreen = ({ navigation }) => {
   const { user } = useSelector((state) => state.auth);
   const firstName = user?.name?.split(' ')[0] || 'there';
   const [selectedDay, setSelectedDay] = useState(3);
+  const [isDesktop, setIsDesktop] = useState(() => {
+    if (typeof window !== 'undefined' && window.innerWidth) {
+      return window.innerWidth >= 1024;
+    }
+    return SCREEN_W >= 1024;
+  });
 
   const days = useMemo(() => getDays(), []);
   const today = new Date();
   const greeting = useMemo(() => getGreeting(), []);
 
   useEffect(() => { dispatch(fetchDashboardData()); }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window !== 'undefined') {
+        setIsDesktop(window.innerWidth >= 1024);
+      } else {
+        const { width } = Dimensions.get('window');
+        setIsDesktop(width >= 1024);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleResize);
+    }
+
+    const dims = Dimensions.addEventListener?.('change', handleResize);
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', handleResize);
+      }
+      if (dims?.remove) {
+        dims.remove();
+      }
+    };
+  }, []);
+
+  const IS_DESKTOP = isDesktop;
 
   const medsTaken = dashboardData?.medications?.taken || 0;
   const medsTotal = (dashboardData?.medications?.taken || 0) + (dashboardData?.medications?.missed || 0) + (dashboardData?.medications?.pending || 0) || 0;
@@ -88,7 +123,7 @@ const HomeScreen = ({ navigation }) => {
   }, [selectedDay, colors]);
 
   return (
-    <ScrollView style={[st.c, { backgroundColor: colors.background }]} contentContainerStyle={st.content}
+    <ScrollView style={[st.c, { backgroundColor: colors.background }]} contentContainerStyle={[st.content, { paddingBottom: IS_SMALL ? 110 : 90 }]}
       showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={loading} onRefresh={() => dispatch(fetchDashboardData())} tintColor={colors.primary} />}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
@@ -168,8 +203,17 @@ const HomeScreen = ({ navigation }) => {
       <View style={st.dateSection}>
         <Text style={[st.sectionTitle, { color: colors.text }]}>{MONTH_NAMES[today.getMonth()]} {today.getFullYear()}</Text>
       </View>
-      <FlatList data={days} renderItem={renderDayItem} horizontal showsHorizontalScrollIndicator={false}
-        contentContainerStyle={st.dayList} keyExtractor={(item) => item.key} />
+      <FlatList
+        data={days}
+        renderItem={renderDayItem}
+        horizontal={false}
+        key={`flatlist-${IS_DESKTOP ? 7 : IS_TABLET ? 4 : 3}`}
+        numColumns={IS_DESKTOP ? 7 : IS_TABLET ? 4 : 3}
+        columnWrapperStyle={(IS_TABLET || IS_MOBILE) ? st.dayListWrap : undefined}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={st.dayList}
+        keyExtractor={(item) => item.key}
+      />
 
       {/* Medication Progress */}
       <View style={st.medSection}>
@@ -282,8 +326,8 @@ const st = StyleSheet.create({
 
   /* Hero card */
   heroCard: { marginHorizontal: IS_SMALL ? 16 : 20, borderRadius: 20, padding: IS_SMALL ? 16 : 20, marginBottom: 20, overflow: 'hidden' },
-  heroRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  heroLeft: { flex: 1, marginRight: 12 },
+  heroRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' },
+  heroLeft: { flex: 1, minWidth: 180, marginRight: 12 },
   heroLabel: { fontSize: IS_SMALL ? 12 : 14, fontWeight: '600', color: 'rgba(255,255,255,0.7)', marginBottom: 4 },
   heroScore: { fontSize: IS_SMALL ? 36 : 44, fontWeight: '900', color: '#FFF' },
   heroMax: { fontSize: IS_SMALL ? 14 : 18, fontWeight: '600', color: 'rgba(255,255,255,0.5)' },
@@ -298,8 +342,8 @@ const st = StyleSheet.create({
   /* Stats grid */
   statsSection: { paddingHorizontal: IS_SMALL ? 16 : 20, marginBottom: 8 },
   sectionTitle: { fontSize: IS_SMALL ? 15 : 17, fontWeight: '700', marginBottom: 12 },
-  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: IS_SMALL ? 8 : 12 },
-  statCard: { width: CARD_W, borderRadius: 16, padding: IS_SMALL ? 10 : 14 },
+  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: IS_SMALL ? 8 : 12 },
+  statCard: { flexBasis: IS_SMALL ? '100%' : IS_TABLET ? '23%' : '48%', maxWidth: IS_SMALL ? '100%' : IS_TABLET ? '23%' : '48%', borderRadius: 16, padding: IS_SMALL ? 12 : 14, marginBottom: IS_SMALL ? 8 : 0 },
   statIconWrap: { width: IS_SMALL ? 34 : 40, height: IS_SMALL ? 34 : 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: IS_SMALL ? 8 : 10 },
   statValue: { fontSize: IS_SMALL ? 17 : 20, fontWeight: '800' },
   statUnit: { fontSize: 12, fontWeight: '600' },
@@ -307,9 +351,10 @@ const st = StyleSheet.create({
 
   /* Date */
   dateSection: { paddingHorizontal: IS_SMALL ? 16 : 20, marginTop: 8 },
-  dayList: { paddingHorizontal: IS_SMALL ? 12 : 16, paddingBottom: 16, gap: 8 },
-  dayItem: { width: IS_SMALL ? 48 : 52, height: IS_SMALL ? 68 : 72, borderRadius: 16, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
-  dayName: { fontSize: 11, fontWeight: '600', marginBottom: 4 },
+  dayList: { paddingHorizontal: 16, paddingBottom: 16 },
+  dayListWrap: { justifyContent: 'space-between', marginBottom: 12 },
+  dayItem: { flex: 1, minWidth: 52, minHeight: 52, maxWidth: 84, borderRadius: 16, alignItems: 'center', justifyContent: 'center', borderWidth: 1, marginBottom: 10, paddingHorizontal: 10 },
+  dayName: { fontSize: IS_SMALL ? 12 : 13, fontWeight: '600', marginBottom: 4 },
   dayNameActive: { color: 'rgba(255,255,255,0.8)' },
   dayDate: { fontSize: IS_SMALL ? 16 : 18, fontWeight: '800' },
   dayDateActive: { color: '#FFF' },
@@ -317,12 +362,12 @@ const st = StyleSheet.create({
 
   /* Med progress */
   medSection: { paddingHorizontal: IS_SMALL ? 16 : 20, marginBottom: 8, marginTop: 8 },
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
+  sectionHeader: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, gap: 10 },
   seeAllContainer: { alignItems: 'flex-end' },
   seeAll: { fontSize: 13, fontWeight: '600' },
   seeAllDesc: { fontSize: 11, marginTop: 2 },
   medCard: { borderRadius: 20, padding: IS_SMALL ? 16 : 20 },
-  medRow: { flexDirection: 'row', alignItems: 'center', gap: IS_SMALL ? 16 : 20 },
+  medRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: IS_SMALL ? 12 : 20 },
   medRingWrap: { alignItems: 'center', justifyContent: 'center' },
   medRingCenter: { position: 'absolute', alignItems: 'center' },
   medRingNum: { fontSize: IS_SMALL ? 20 : 22, fontWeight: '800' },

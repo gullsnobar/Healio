@@ -23,23 +23,26 @@ const TABS = [
 const TabNavigator = () => {
   const { colors, isDark } = useAppTheme();
   const screenWidth = Dimensions.get('window').width;
-  const isSmall = screenWidth < 400;
+  const isMobile = screenWidth < 768;
 
-  const tabBarHeight = Platform.select({ ios: 88, android: 64, default: isSmall ? 60 : 68 });
-  const tabBarPaddingBottom = Platform.select({ ios: 28, android: 8, default: isSmall ? 6 : 10 });
+  const tabBarHeight = Platform.select({ ios: 88, android: 64, default: isMobile ? 60 : 68 });
+  const tabBarPaddingBottom = Platform.select({ ios: 28, android: 8, default: isMobile ? 6 : 10 });
 
   return (
     <Tab.Navigator
+      sceneContainerStyle={{ paddingBottom: tabBarHeight + 16, backgroundColor: colors.background }}
       screenOptions={({ route }) => ({
         headerStyle: { backgroundColor: colors.primary, elevation: 0, shadowOpacity: 0 },
         headerTintColor: '#fff',
         headerTitleStyle: { fontWeight: '700', fontSize: 17 },
         tabBarStyle: {
+          position: 'relative',
           height: tabBarHeight,
           paddingBottom: tabBarPaddingBottom,
-          paddingTop: 6,
+          paddingTop: isMobile ? 8 : 10,
+          paddingHorizontal: isMobile ? 8 : 12,
           backgroundColor: colors.card,
-          borderTopWidth: 1,
+          borderTopWidth: StyleSheet.hairlineWidth,
           borderTopColor: colors.border,
           ...Platform.select({
             ios: { shadowColor: colors.shadow, shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.06, shadowRadius: 8 },
@@ -47,15 +50,17 @@ const TabNavigator = () => {
             default: { shadowColor: colors.shadow, shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.06, shadowRadius: 8 },
           }),
         },
+        tabBarShowLabel: true,
         tabBarActiveTintColor: colors.tabActive,
         tabBarInactiveTintColor: colors.tabInactive,
-        tabBarLabelStyle: { fontSize: isSmall ? 10 : 11, fontWeight: '600', marginTop: 1 },
-        tabBarIconStyle: { marginBottom: -2 },
+        tabBarLabelStyle: { fontSize: isMobile ? 12 : 14, fontWeight: '600', marginTop: 0 },
+        tabBarIconStyle: { marginBottom: 6 },
+        tabBarItemStyle: { paddingVertical: isMobile ? 8 : 10, paddingHorizontal: isMobile ? 6 : 8 },
         tabBarIcon: ({ focused, color }) => {
           const tab = TABS.find((t) => t.name === route.name);
           return (
-            <View style={[ts.iconWrap, isSmall && ts.iconWrapSmall, focused && { backgroundColor: colors.tabActiveBg }]}>
-              <Ionicons name={focused ? tab.icon : `${tab.icon}-outline`} size={isSmall ? 20 : 24} color={color} />
+            <View style={[ts.iconWrap, isMobile && ts.iconWrapSmall, focused && { backgroundColor: colors.tabActiveBg }]}>
+              <Ionicons name={focused ? tab.icon : `${tab.icon}-outline`} size={isMobile ? 20 : 24} color={color} />
             </View>
           );
         },
@@ -79,11 +84,16 @@ const TabNavigator = () => {
 
 const ts = StyleSheet.create({
   iconWrap: {
-    width: 48, height: 34, borderRadius: 17,
-    alignItems: 'center', justifyContent: 'center',
+    width: 50,
+    height: 48,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   iconWrapSmall: {
-    width: 38, height: 28, borderRadius: 14,
+    width: 44,
+    height: 44,
+    borderRadius: 14,
   },
 });
 

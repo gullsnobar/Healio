@@ -112,7 +112,7 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
   );
 
   return (
-    <ScrollView style={[s.container, { backgroundColor: isDark ? '#0F172A' : '#F8FAFC' }]} contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+    <ScrollView style={[s.container, { backgroundColor: isDark ? '#0F172A' : '#F8FAFC' }]} contentContainerStyle={{ padding: 16, paddingBottom: 92 }}>
       {/* Common fields */}
       <View style={[s.section, { backgroundColor: bg }]}>
         <Text style={[s.sectionTitle, { color: colors.primary }]}>Basic Info</Text>
@@ -156,10 +156,10 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
           </Text>
           <InputField label="Medication Name *" value={medicationName} onChangeText={setMedicationName} placeholder="e.g. Metformin" />
           <View style={s.row}>
-            <View style={{ flex: 1, marginRight: 8 }}>
+            <View style={[s.rowItem, { flex: 1, marginRight: IS_SMALL ? 0 : 8 }]}> 
               <InputField label="Dosage" value={dosage} onChangeText={setDosage} placeholder="500" keyboardType="numeric" />
             </View>
-            <View style={{ flex: 0.4 }}>
+            <View style={[s.rowItem, { flex: IS_SMALL ? 1 : 0.4, marginTop: IS_SMALL ? 10 : 0 }]}> 
               <Dropdown
                 label="Unit"
                 value={dosageUnit}
@@ -246,14 +246,15 @@ const s = StyleSheet.create({
   section: { borderRadius: 14, padding: IS_SMALL ? 12 : 16, marginBottom: 16, elevation: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4 },
   sectionTitle: { fontSize: IS_SMALL ? 14 : 15, fontWeight: '700', marginBottom: 14 },
   fieldGroup: { marginBottom: 14 },
-  fieldLabel: { fontSize: IS_SMALL ? 11 : 12, fontWeight: '600', marginBottom: 6 },
-  input: { borderRadius: 10, paddingHorizontal: IS_SMALL ? 12 : 14, paddingVertical: IS_SMALL ? 10 : 12, fontSize: IS_SMALL ? 13 : 14 },
-  dateBtn: { flexDirection: 'row', alignItems: 'center', borderRadius: 10, paddingHorizontal: IS_SMALL ? 12 : 14, paddingVertical: IS_SMALL ? 10 : 12 },
+  fieldLabel: { fontSize: IS_SMALL ? 12 : 13, fontWeight: '600', marginBottom: 6 },
+  input: { borderRadius: 10, paddingHorizontal: IS_SMALL ? 12 : 14, paddingVertical: IS_SMALL ? 12 : 14, fontSize: IS_SMALL ? 14 : 15, minHeight: 50 },
+  dateBtn: { flexDirection: 'row', alignItems: 'center', borderRadius: 10, paddingHorizontal: IS_SMALL ? 12 : 14, paddingVertical: IS_SMALL ? 12 : 14 },
+  row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start' },
+  rowItem: { minWidth: 120, flexBasis: '48%' },
   dateBtnText: { fontSize: IS_SMALL ? 13 : 14, marginLeft: 8 },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: IS_SMALL ? 4 : 6 },
   chip: { paddingHorizontal: IS_SMALL ? 10 : 12, paddingVertical: IS_SMALL ? 6 : 7, borderRadius: 20, borderWidth: 1.5 },
   chipText: { fontSize: IS_SMALL ? 11 : 12, fontWeight: '500' },
-  row: { flexDirection: 'row', alignItems: 'flex-start' },
   submitWrapper: { marginTop: 16, marginBottom: 32 },
   buttonDesc: { fontSize: IS_SMALL ? 11 : 12, textAlign: 'center', marginTop: 8, lineHeight: IS_SMALL ? 16 : 18 },
 });

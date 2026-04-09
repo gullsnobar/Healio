@@ -154,16 +154,22 @@ const createStyles = (colors, isDark) => StyleSheet.create({
 
   // ── Sizes ──
   size_small: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    minHeight: 48,
+    minWidth: 48,
   },
   size_medium: {
     paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingVertical: 14,
+    minHeight: 48,
+    minWidth: 48,
   },
   size_large: {
     paddingHorizontal: 24,
     paddingVertical: 16,
+    minHeight: 52,
+    minWidth: 48,
   },
 
   // ── Text Styles ──

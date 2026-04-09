@@ -45,16 +45,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    height: 56,
-    paddingHorizontal: 12,
+    minHeight: 56,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   left: {
-    width: 40,
+    width: 48,
     alignItems: 'flex-start',
   },
   right: {
-    width: 40,
+    width: 48,
     alignItems: 'flex-end',
   },
   title: {
@@ -62,12 +63,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 18,
     fontWeight: '700',
+    flexShrink: 1,
   },
   iconBtn: {
-    padding: 4,
+    minWidth: 48,
+    minHeight: 48,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   iconPlaceholder: {
-    width: 32,
+    width: 48,
   },
 });
 
