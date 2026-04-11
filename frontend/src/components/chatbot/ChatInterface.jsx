@@ -12,8 +12,9 @@ const ChatInterface = ({ messages = [], onSend, suggestions = [], loading = fals
   // Generate stable key for messages
   const getMessageKey = (item, index) => {
     if (item._id) return item._id;
-    // Fallback: use combination of role, content, and index for stable key
-    return `${item.role}-${item.content?.substring(0, 20) || 'empty'}-${index}`;
+    // Fallback: use combination of role, timestamp, and index for stable key
+    const timestamp = item.timestamp || '';
+    return `${item.role}-${timestamp}-${index}`;
   };
   
   return (

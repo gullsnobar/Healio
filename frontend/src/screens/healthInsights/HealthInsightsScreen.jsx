@@ -31,6 +31,7 @@ const SummaryCard = ({ label, value, icon, color, bg, colors }) => (
     Platform.select({
       ios: { shadowColor: colors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
       android: { elevation: 1 },
+      web: { boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.06)' },
     })]}>
     <Ionicons name={icon} size={20} color={color} />
     <Text style={[s.summaryVal, { color }]}>{value}</Text>
@@ -47,6 +48,7 @@ const InsightCard = ({ insight, colors, onDismiss, onCompleteAction }) => {
       Platform.select({
         ios: { shadowColor: colors.shadow, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8 },
         android: { elevation: 3 },
+        web: { boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)' },
       })]}>
       <View style={s.insightHeader}>
         <View style={[s.insightIcon, { backgroundColor: sev.color + '20' }]}>

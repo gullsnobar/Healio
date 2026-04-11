@@ -83,6 +83,7 @@ const WeeklyChartsScreen = () => {
             Platform.select({
               ios: { shadowColor: colors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
               android: { elevation: 1 },
+              web: { boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.06)' },
             })]}>
             <Text style={[s.statLabel, { color: colors.textSecondary }]}>Average</Text>
             <Text style={[s.statVal, { color: activeConfig.color }]}>
@@ -93,6 +94,7 @@ const WeeklyChartsScreen = () => {
             Platform.select({
               ios: { shadowColor: colors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
               android: { elevation: 1 },
+              web: { boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.06)' },
             })]}>
             <Text style={[s.statLabel, { color: colors.textSecondary }]}>Total</Text>
             <Text style={[s.statVal, { color: activeConfig.color }]}>
@@ -103,6 +105,7 @@ const WeeklyChartsScreen = () => {
             Platform.select({
               ios: { shadowColor: colors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
               android: { elevation: 1 },
+              web: { boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.06)' },
             })]}>
             <Text style={[s.statLabel, { color: colors.textSecondary }]}>Best</Text>
             <Text style={[s.statVal, { color: activeConfig.color }]}>
@@ -116,6 +119,7 @@ const WeeklyChartsScreen = () => {
           Platform.select({
             ios: { shadowColor: colors.shadow, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 10 },
             android: { elevation: 4 },
+            web: { boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.08)' },
           })]}>
           <BarChart
             labels={labels}

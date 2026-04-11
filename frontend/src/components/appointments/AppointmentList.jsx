@@ -40,7 +40,7 @@ const AppointmentList = ({ appointments = [], onItemPress, loading = false, onRe
   return (
     <FlatList
       data={appointments}
-      keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
+      keyExtractor={(item, index) => item.id?.toString() || item._id?.toString() || `appointment-${index}`}
       renderItem={({ item }) => (
         <AppointmentCard appointment={item} onPress={onItemPress} />
       )}
