@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAppTheme } from '../../styles/ThemeContext';
+import CustomTimePicker from './CustomTimePicker';
 
 /**
  * TimeInput Component
@@ -20,6 +21,7 @@ const TimeInput = ({
 }) => {
   const { colors, isDark } = useAppTheme();
   const [showPicker, setShowPicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
   const [webInputValue, setWebInputValue] = useState('');
 
   const parseTimeValue = (input) => {
@@ -66,7 +68,7 @@ const TimeInput = ({
     }
   };
 
-  // Web platform: return HTML time input
+  // Web platform: return custom time picker trigger
   if (Platform.OS === 'web') {
     return (
       <View style={[styles.container, style]}>
@@ -75,35 +77,43 @@ const TimeInput = ({
             {label}{required && <Text style={{ color: colors.error }}> *</Text>}
           </Text>
         )}
-        <input
-          type="time"
-          value={webInputValue || formatTimeForISO(normalizedValue)}
-          onChange={(e) => {
-            setWebInputValue(e.target.value);
-            if (e.target.value && /^[0-2][0-9]:[0-5][0-9]$/.test(e.target.value)) {
-              const parsed = new Date(`1970-01-01T${e.target.value}:00`);
-              if (!Number.isNaN(parsed.getTime())) {
-                onChange(parsed);
-              }
-            }
-          }}
+        <TouchableOpacity
+          onPress={() => setShowTimePicker(true)}
           style={{
-            width: '100%',
-            height: 48,
-            fontSize: 15,
-            paddingLeft: 16,
-            paddingRight: 16,
-            borderWidth: 1,
-            border: `1.5px solid ${isDark ? '#475569' : '#E2E8F0'}`,
-            borderRadius: '12px',
-            outline: 'none',
-            fontFamily: 'inherit',
-            cursor: 'pointer',
-            backgroundColor: isDark ? '#334155' : '#F1F5F9',
-            color: colors.text,
-            marginBottom: 16,
-            boxSizing: 'border-box',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: '#1E293B',
+            borderRadius: 12,
+            borderWidth: 1.5,
+            borderColor: '#334155',
+            paddingHorizontal: 16,
+            height: 52,
           }}
+        >
+          <Text style={{ color: '#F8FAFC', fontSize: 15 }}>
+            {value || 'Select time'}
+          </Text>
+          <Ionicons name="time-outline" size={20} color="#14B8A6" />
+        </TouchableOpacity>
+        <CustomTimePicker
+          visible={showTimePicker}
+          value={displayValue}
+          onConfirm={(timeString) => {
+            const match = timeString.match(/(\d+):(\d+)\s*(AM|PM)/i);
+            if (match) {
+              let hour = parseInt(match[1]);
+              const minute = parseInt(match[2]);
+              const ampm = match[3].toUpperCase();
+              if (ampm === 'PM' && hour !== 12) hour += 12;
+              if (ampm === 'AM' && hour === 12) hour = 0;
+              const date = new Date();
+              date.setHours(hour, minute, 0, 0);
+              onChange(date);
+            }
+            setShowTimePicker(false);
+          }}
+          onCancel={() => setShowTimePicker(false)}
         />
       </View>
     );

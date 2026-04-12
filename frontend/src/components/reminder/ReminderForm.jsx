@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
 import Button from '../common/Button';
 import Dropdown from '../common/Dropdown';
+import CustomDatePicker from '../common/CustomDatePicker';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 const IS_SMALL = SCREEN_W < 400;
@@ -21,6 +22,7 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
 
   const [title, setTitle] = useState(initialValues.title || '');
   const [date, setDate] = useState(initialValues.date ? new Date(initialValues.date) : new Date());
+  const [dateValue, setDateValue] = useState(initialValues.date ? initialValues.date.split('T')[0] : '');
   const [time, setTime] = useState(initialValues.time || '09:00');
   const [notes, setNotes] = useState(initialValues.notes || '');
   const [repeat, setRepeat] = useState(initialValues.repeat || 'none');
@@ -71,10 +73,10 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
     onSubmit(payload);
   };
 
-  const bg = isDark ? '#1E293B' : '#FFF';
-  const inputBg = isDark ? '#334155' : '#F1F5F9';
-  const textColor = isDark ? '#E2E8F0' : '#1F2937';
-  const placeholderColor = isDark ? '#64748B' : '#94A3B8';
+  const bg = '#1E293B';
+  const inputBg = '#1E293B';
+  const textColor = '#F8FAFC';
+  const placeholderColor = '#64748B';
 
   const InputField = ({ label, value, onChangeText, placeholder, multiline, ...rest }) => (
     <View style={s.fieldGroup}>
@@ -112,20 +114,46 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
   );
 
   return (
-    <ScrollView style={[s.container, { backgroundColor: isDark ? '#0F172A' : '#F8FAFC' }]} contentContainerStyle={{ padding: 16, paddingBottom: 92 }}>
+    <ScrollView style={[s.container, { backgroundColor: '#0F172A' }]} contentContainerStyle={{ padding: 16, paddingBottom: 92 }}>
       {/* Common fields */}
       <View style={[s.section, { backgroundColor: bg }]}>
         <Text style={[s.sectionTitle, { color: colors.primary }]}>Basic Info</Text>
         <InputField label="Title" value={title} onChangeText={setTitle} placeholder="e.g. Morning medication" />
 
         {/* Date */}
-        <Dropdown
-          label="Date"
-          value={date.toISOString().split('T')[0]}
-          placeholder="Select date"
-          mode="date"
-          onChange={(dateString) => setDate(new Date(dateString + 'T00:00:00'))}
-          required
+        <View style={s.fieldGroup}>
+          <Text style={[s.fieldLabel, { color: isDark ? '#94A3B8' : '#475569' }]}>Date</Text>
+          <TouchableOpacity
+            onPress={() => setShowDatePicker(true)}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              borderRadius: 12,
+              borderWidth: 1.5,
+              borderColor: '#334155',
+              backgroundColor: '#1E293B',
+              paddingHorizontal: 16,
+              height: 52,
+            }}
+          >
+      <Text style={{ color: textColor, fontSize: 15 }}>
+        {dateValue
+          ? new Date(dateValue + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+          : 'Select date'}
+      </Text>
+            <Ionicons name="calendar-outline" size={20} color="#14B8A6" />
+          </TouchableOpacity>
+        </View>
+        <CustomDatePicker
+          visible={showDatePicker}
+          value={dateValue}
+          onConfirm={(date) => {
+            setDateValue(date);
+            setDate(new Date(date + 'T00:00:00'));
+            setShowDatePicker(false);
+          }}
+          onCancel={() => setShowDatePicker(false)}
         />
 
         {/* Time */}
@@ -247,7 +275,7 @@ const s = StyleSheet.create({
   sectionTitle: { fontSize: IS_SMALL ? 14 : 15, fontWeight: '700', marginBottom: 14 },
   fieldGroup: { marginBottom: 14 },
   fieldLabel: { fontSize: IS_SMALL ? 12 : 13, fontWeight: '600', marginBottom: 6 },
-  input: { borderRadius: 10, paddingHorizontal: IS_SMALL ? 12 : 14, paddingVertical: IS_SMALL ? 12 : 14, fontSize: IS_SMALL ? 14 : 15, minHeight: 50 },
+  input: { borderRadius: 12, paddingHorizontal: 16, paddingVertical: IS_SMALL ? 12 : 14, fontSize: 15, minHeight: 52, borderColor: '#334155', borderWidth: 1.5 },
   dateBtn: { flexDirection: 'row', alignItems: 'center', borderRadius: 10, paddingHorizontal: IS_SMALL ? 12 : 14, paddingVertical: IS_SMALL ? 12 : 14 },
   row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start' },
   rowItem: { minWidth: 120, flexBasis: '48%' },

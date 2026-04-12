@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useLayoutEffect } from 'react';
 import {
   View, Text, FlatList, TouchableOpacity, StyleSheet, StatusBar, RefreshControl, ActivityIndicator,
 } from 'react-native';
@@ -27,6 +27,14 @@ const RemindersScreen = ({ navigation }) => {
   const { colors, isDark } = useAppTheme();
   const { reminders, loading, selectedType } = useSelector((s) => s.reminder);
   const [refreshing, setRefreshing] = useState(false);
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerStyle: { backgroundColor: '#0F766E' },
+      headerTintColor: '#FFFFFF',
+      headerTitleStyle: { fontWeight: '700', fontSize: 20 },
+    });
+  }, [navigation]);
 
   const load = useCallback(() => {
     dispatch(fetchReminders(selectedType ? { type: selectedType } : {}));
@@ -94,20 +102,20 @@ const RemindersScreen = ({ navigation }) => {
 
   return (
     <View style={[s.container, { backgroundColor: isDark ? '#0F172A' : '#F8FAFC' }]}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.primaryDark} />
+      <StatusBar barStyle="light-content" backgroundColor="#0F766E" />
 
       {/* Type Tabs */}
-      <View style={[s.tabBar, { backgroundColor: isDark ? '#1E293B' : '#FFF' }]}>
+      <View style={s.tabBar}>
         {TYPE_TABS.map((tab) => {
           const active = selectedType === tab.key;
           return (
             <TouchableOpacity
               key={tab.label}
-              style={[s.tab, active && { backgroundColor: colors.primary + '18' }]}
+              style={[s.tab, active && s.tabActive]}
               onPress={() => dispatch(setSelectedType(tab.key))}
             >
-              <Ionicons name={tab.icon} size={18} color={active ? colors.primary : '#94A3B8'} />
-              <Text style={[s.tabLabel, { color: active ? colors.primary : '#94A3B8' }]}>{tab.label}</Text>
+              <Ionicons name={tab.icon} size={20} color={active ? '#14B8A6' : '#94A3B8'} />
+              <Text style={[s.tabLabel, { color: active ? '#14B8A6' : '#94A3B8' }]}>{tab.label}</Text>
             </TouchableOpacity>
           );
         })}
@@ -154,14 +162,33 @@ const RemindersScreen = ({ navigation }) => {
 const s = StyleSheet.create({
   container: { flex: 1 },
   tabBar: {
-    flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8,
-    elevation: 2, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 4,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    backgroundColor: 'transparent',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
   },
   tab: {
-    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    paddingVertical: 8, borderRadius: 8, marginHorizontal: 2,
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginHorizontal: 4,
   },
-  tabLabel: { fontSize: 11, fontWeight: '600', marginLeft: 4 },
+  tabActive: {
+    backgroundColor: '#14B8A6' + '18',
+  },
+  tabLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    marginTop: 4,
+  },
   card: {
     flexDirection: 'row', borderRadius: 12, marginBottom: 10, overflow: 'hidden',
     elevation: 2, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6,

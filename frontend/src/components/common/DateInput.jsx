@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAppTheme } from '../../styles/ThemeContext';
+import CustomDatePicker from './CustomDatePicker';
 
 /**
  * DateInput Component
@@ -65,7 +66,7 @@ const DateInput = ({
     }
   };
 
-  // Web platform: return HTML date input
+  // Web platform: return custom date picker trigger
   if (Platform.OS === 'web') {
     return (
       <View style={[styles.container, style]}>
@@ -74,35 +75,29 @@ const DateInput = ({
             {label}{required && <Text style={{ color: colors.error }}> *</Text>}
           </Text>
         )}
-        <input
-          type="date"
-          value={webInputValue || formatDateForISO(normalizedValue)}
-          onChange={(e) => {
-            setWebInputValue(e.target.value);
-            if (e.target.value && /^\d{4}-\d{2}-\d{2}$/.test(e.target.value)) {
-              const parsed = new Date(e.target.value + 'T00:00:00');
-              if (!Number.isNaN(parsed.getTime())) {
-                onChange(parsed);
-              }
-            }
-          }}
-          style={{
-            width: '100%',
-            height: 48,
-            fontSize: 15,
-            paddingLeft: 16,
-            paddingRight: 16,
-            borderWidth: 1,
-            border: `1.5px solid ${isDark ? '#475569' : '#E2E8F0'}`,
-            borderRadius: '12px',
-            outline: 'none',
-            fontFamily: 'inherit',
-            cursor: 'pointer',
-            backgroundColor: isDark ? '#334155' : '#F1F5F9',
-            color: colors.text,
-            marginBottom: 16,
-            boxSizing: 'border-box',
-          }}
+        <TouchableOpacity
+          onPress={() => setShowPicker(true)}
+          activeOpacity={0.7}
+          style={[styles.input, {
+            backgroundColor: '#1E293B',
+            borderColor: '#334155',
+            borderWidth: 1.5,
+            borderRadius: 12,
+            height: 52,
+          }]}
+        >
+          <Text style={{ color: '#F8FAFC', fontSize: 15 }}>
+            {value
+              ? new Date(value + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+              : 'Select date'}
+          </Text>
+          <Ionicons name="calendar-outline" size={20} color="#14B8A6" />
+        </TouchableOpacity>
+        <CustomDatePicker
+          visible={showPicker}
+          value={value}
+          onConfirm={(date) => { onChange(date); setShowPicker(false); }}
+          onCancel={() => setShowPicker(false)}
         />
       </View>
     );
@@ -119,8 +114,11 @@ const DateInput = ({
 
       <TouchableOpacity
         style={[styles.input, {
-          backgroundColor: isDark ? '#334155' : '#F1F5F9',
-          borderColor: colors.border
+          backgroundColor: '#1E293B',
+          borderColor: '#334155',
+          borderWidth: 1.5,
+          borderRadius: 12,
+          height: 52,
         }]}
         onPress={() => setShowPicker(true)}
         activeOpacity={0.7}
@@ -132,7 +130,7 @@ const DateInput = ({
           style={styles.icon}
         />
         <Text style={[styles.text, {
-          color: displayValue ? colors.text : colors.textTertiary
+          color: '#F8FAFC'
         }]}>
           {displayValue || placeholder}
         </Text>

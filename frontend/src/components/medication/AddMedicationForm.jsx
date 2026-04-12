@@ -19,6 +19,7 @@ import DatePickerField from '../common/DatePickerField';
 import Button from '../common/Button';
 import Dropdown from '../common/Dropdown';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import CustomTimePicker from '../common/CustomTimePicker';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 const IS_SMALL = SCREEN_W < 400;
@@ -35,6 +36,7 @@ const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
  */
 const MedicationTimeInput = ({ value, onChange, colors, style }) => {
   const [showPicker, setShowPicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
   const [webInputValue, setWebInputValue] = useState('');
 
   // Parse time value
@@ -44,6 +46,18 @@ const MedicationTimeInput = ({ value, onChange, colors, style }) => {
     if (typeof input === 'string' && /^[0-9]{2}:[0-9]{2}/.test(input)) {
       const parsed = new Date(`1970-01-01T${input}:00`);
       return Number.isNaN(parsed.getTime()) ? undefined : parsed;
+    }
+    // Handle "HH:MM AM/PM" format
+    if (typeof input === 'string' && /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.test(input)) {
+      const match = input.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+      let hour = parseInt(match[1]);
+      const minute = parseInt(match[2]);
+      const ampm = match[3].toUpperCase();
+      if (ampm === 'PM' && hour !== 12) hour += 12;
+      if (ampm === 'AM' && hour === 12) hour = 0;
+      const parsed = new Date();
+      parsed.setHours(hour, minute, 0, 0);
+      return parsed;
     }
     const parsed = new Date(input);
     return Number.isNaN(parsed.getTime()) ? undefined : parsed;
@@ -78,47 +92,41 @@ const MedicationTimeInput = ({ value, onChange, colors, style }) => {
       return;
     }
     if (selectedTime) {
-      const hours = selectedTime.getHours();
-      const minutes = selectedTime.getMinutes();
-      const time24 = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-      const ampmValue = hours >= 12 ? 'PM' : 'AM';
-      const time12 = formatTimeForDisplay(time24, ampmValue);
-      onChange(time12);
+      onChange(selectedTime);
     }
   };
 
-  // Web platform: HTML time input
+  // Web platform: custom time picker
   if (Platform.OS === 'web') {
     return (
       <View style={[s.timeInputContainer, style]}>
-        <input
-          type="time"
-          value={webInputValue || formatTimeForISO(normalizedValue)}
-          onChange={(e) => {
-            setWebInputValue(e.target.value);
-            if (e.target.value && /^[0-2][0-9]:[0-5][0-9]$/.test(e.target.value)) {
-              const parsed = new Date(`1970-01-01T${e.target.value}:00`);
-              if (!Number.isNaN(parsed.getTime())) {
-                onChange(parsed);
-              }
-            }
-          }}
+        <TouchableOpacity
+          onPress={() => setShowTimePicker(true)}
           style={{
-            width: '100%',
-            height: 48,
-            fontSize: 15,
-            paddingLeft: 16,
-            paddingRight: 16,
-            borderWidth: 1,
-            border: `1.5px solid ${colors.border}`,
-            borderRadius: '12px',
-            outline: 'none',
-            fontFamily: 'inherit',
-            cursor: 'pointer',
-            backgroundColor: colors.cardAlt,
-            color: colors.text,
-            boxSizing: 'border-box',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: '#1E293B',
+            borderRadius: 12,
+            borderWidth: 1.5,
+            borderColor: '#334155',
+            paddingHorizontal: 16,
+            height: 52,
           }}
+        >
+          <Text style={{ color: '#F8FAFC', fontSize: 15 }}>
+            {value || 'Select time'}
+          </Text>
+          <Ionicons name="time-outline" size={20} color="#14B8A6" />
+        </TouchableOpacity>
+        <CustomTimePicker
+          visible={showTimePicker}
+          value={displayValue}
+          onConfirm={(timeString) => {
+            onChange(timeString);
+            setShowTimePicker(false);
+          }}
+          onCancel={() => setShowTimePicker(false)}
         />
       </View>
     );
@@ -129,8 +137,8 @@ const MedicationTimeInput = ({ value, onChange, colors, style }) => {
     <View style={[s.timeInputContainer, style]}>
       <TouchableOpacity
         style={[s.nativeTimeInput, {
-          backgroundColor: colors.cardAlt,
-          borderColor: colors.border
+          backgroundColor: '#1E293B',
+          borderColor: '#334155'
         }]}
         onPress={() => setShowPicker(true)}
         activeOpacity={0.7}
@@ -142,7 +150,7 @@ const MedicationTimeInput = ({ value, onChange, colors, style }) => {
           style={{ marginRight: 8 }}
         />
         <Text style={[s.nativeTimeText, {
-          color: displayValue ? colors.text : colors.textTertiary
+          color: displayValue ? '#F8FAFC' : '#64748B'
         }]}>
           {displayValue || 'Select Time'}
         </Text>
@@ -252,11 +260,11 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
       <Text style={[s.sectionLabel, { color: colors.textTertiary }]}>Medication Info</Text>
 
       {/* Name */}
-      <View style={[s.inputWrap, { backgroundColor: colors.cardAlt, borderColor: focusedField === 'name' ? colors.primary : colors.cardAlt }]}>
+      <View style={[s.inputWrap, { backgroundColor: '#1E293B', borderColor: '#334155' }]}>
         <TextInput
-          style={[s.input, { color: colors.text }]}
+          style={[s.input, { color: '#F8FAFC' }]}
           placeholder="Medicine Name *"
-          placeholderTextColor={colors.textTertiary}
+          placeholderTextColor="#64748B"
           value={form.name}
           onChangeText={(v) => update('name', v)}
           onFocus={() => setFocusedField('name')}
@@ -276,11 +284,11 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
 
       {/* Dose + Unit */}
       <View style={s.rowGap}>
-        <View style={[s.inputWrap, { flex: 1, backgroundColor: colors.cardAlt, borderColor: focusedField === 'dosage' ? colors.primary : colors.cardAlt }]}>
+        <View style={[s.inputWrap, { flex: 1, backgroundColor: '#1E293B', borderColor: '#334155' }]}>
           <TextInput
-            style={[s.input, { color: colors.text }]}
+            style={[s.input, { color: '#F8FAFC' }]}
             placeholder="Dose *"
-            placeholderTextColor={colors.textTertiary}
+            placeholderTextColor="#64748B"
             keyboardType="numeric"
             value={form.dosage}
             onChangeText={(v) => update('dosage', v)}
@@ -300,11 +308,11 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
       </View>
 
       {/* Amount */}
-      <View style={[s.inputWrap, { backgroundColor: colors.cardAlt, borderColor: focusedField === 'amount' ? colors.primary : colors.cardAlt }]}>
+      <View style={[s.inputWrap, { backgroundColor: '#1E293B', borderColor: '#334155' }]}>
         <TextInput
-          style={[s.input, { color: colors.text }]}
+          style={[s.input, { color: '#F8FAFC' }]}
           placeholder="Amount (e.g. 1 pill)"
-          placeholderTextColor={colors.textTertiary}
+          placeholderTextColor="#64748B"
           value={form.amount}
           onChangeText={(v) => update('amount', v)}
           onFocus={() => setFocusedField('amount')}
@@ -348,7 +356,7 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
           />
           {form.times.length > 1 && (
             <TouchableOpacity onPress={() => removeTime(i)} style={s.removeTimeBtn}>
-              <Ionicons name="close-circle" size={22} color="#EF4444" />
+              <Ionicons name="close-circle" size={22} color="#99F6E4" />
             </TouchableOpacity>
           )}
         </View>
@@ -359,7 +367,7 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
       </TouchableOpacity>
 
       {/* Alarm toggle */}
-      <View style={[s.alarmRow, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <View style={[s.alarmRow, { backgroundColor: colors.cardAlt, borderColor: colors.border }]}>
         <View>
           <Text style={[s.alarmTitle, { color: colors.text }]}>Turn on Alarm</Text>
           <Text style={[s.alarmSub, { color: colors.textTertiary }]}>Get notified at scheduled times</Text>
@@ -375,11 +383,11 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
       {/* Section: Additional (collapsed by default – always visible) */}
       <Text style={[s.sectionLabel, { marginTop: 8, color: colors.textTertiary }]}>Additional</Text>
 
-      <View style={[s.inputWrap, { backgroundColor: colors.cardAlt, borderColor: focusedField === 'doctor' ? colors.primary : colors.cardAlt }]}>
+      <View style={[s.inputWrap, { backgroundColor: '#1E293B', borderColor: '#334155' }]}>
         <TextInput
-          style={[s.input, { color: colors.text }]}
+          style={[s.input, { color: '#F8FAFC' }]}
           placeholder="Doctor Name"
-          placeholderTextColor={colors.textTertiary}
+          placeholderTextColor="#64748B"
           value={form.doctorName}
           onChangeText={(v) => update('doctorName', v)}
           onFocus={() => setFocusedField('doctor')}
@@ -387,11 +395,11 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
         />
       </View>
 
-      <View style={[s.inputWrap, { minHeight: 80, alignItems: 'flex-start', backgroundColor: colors.cardAlt, borderColor: focusedField === 'notes' ? colors.primary : colors.cardAlt }]}>
+      <View style={[s.inputWrap, { minHeight: 80, alignItems: 'flex-start', backgroundColor: '#1E293B', borderColor: '#334155' }]}>
         <TextInput
-          style={[s.input, { textAlignVertical: 'top', paddingTop: 14, color: colors.text }]}
+          style={[s.input, { textAlignVertical: 'top', paddingTop: 14, color: '#F8FAFC' }]}
           placeholder="Notes"
-          placeholderTextColor={colors.textTertiary}
+          placeholderTextColor="#64748B"
           multiline
           numberOfLines={3}
           value={form.notes}
@@ -402,18 +410,27 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
       </View>
 
       {/* Save button */}
-      <Button
-        variant={disabled ? 'outline' : 'primary'}
-        size="large"
-        icon="checkmark-circle-outline"
+      <TouchableOpacity
         onPress={handleSubmit}
-        loading={loading}
-        disabled={disabled}
-        colors={colors}
-        style={{ marginTop: 16 }}
+        disabled={disabled || loading}
+        activeOpacity={0.8}
+        style={{
+          backgroundColor: 'rgb(15, 118, 110)',
+          borderRadius: 14,
+          paddingVertical: 16,
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'row',
+          gap: 8,
+          marginTop: 8,
+          opacity: (disabled || loading) ? 0.6 : 1,
+        }}
       >
-        {initialData ? 'Update Medicine' : 'Save Medicine'}
-      </Button>
+        <Ionicons name="checkmark-circle-outline" size={20} color="#FFFFFF" />
+        <Text style={{ color: '#FFFFFF', fontSize: 16, fontWeight: '700', }}>
+          {initialData ? 'Update Medicine' : 'Save Medicine'}
+        </Text>
+      </TouchableOpacity>
       <Text style={[s.buttonDesc, { color: colors.textTertiary }]}>
         {initialData ? 'Update your medication details and schedule' : 'Add this medicine to your daily routine'}
       </Text>
@@ -422,7 +439,7 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
 };
 
 const s = StyleSheet.create({
-  container: { padding: IS_SMALL ? 16 : 24, paddingBottom: 48 },
+  container: { padding: IS_SMALL ? 16 : 24, paddingBottom: 48, backgroundColor: '#0F172A' },
   sectionLabel: {
     fontSize: IS_SMALL ? 13 : 14,
     fontWeight: '700',
@@ -434,14 +451,14 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 12,
-    paddingHorizontal: IS_SMALL ? 12 : 16,
+    paddingHorizontal: 16,
     marginBottom: 14,
     borderWidth: 1.5,
-    height: IS_SMALL ? 52 : 56,
+    height: 52,
   },
   input: {
     flex: 1,
-    fontSize: IS_SMALL ? 14 : 15,
+    fontSize: 15,
     letterSpacing: 0.2,
     height: '100%',
     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
@@ -506,7 +523,7 @@ const s = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 12,
     borderWidth: 1.5,
-    height: IS_SMALL ? 52 : 56,
+    height: 52,
     marginBottom: 14,
   },
   ampmContainer: {

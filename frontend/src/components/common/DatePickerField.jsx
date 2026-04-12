@@ -5,6 +5,7 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
+import CustomDatePicker from './CustomDatePicker';
 
 const pad = (n) => String(n).padStart(2, '0');
 const toYMD = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
@@ -21,37 +22,27 @@ const DatePickerField = ({ value, onChange, placeholder = 'Select Date', contain
     if (selectedDate) onChange(toYMD(selectedDate));
   };
 
-  // Web platform: return HTML date input
+  // Web platform: return custom date picker trigger
   if (Platform.OS === 'web') {
     return (
-      <input
-        type="date"
-        value={webInputValue}
-        onChange={(e) => {
-          setWebInputValue(e.target.value);
-          if (e.target.value && /^\d{4}-\d{2}-\d{2}$/.test(e.target.value)) {
-            onChange(e.target.value);
-          }
-        }}
-        style={{
-          width: '100%',
-          height: 56,
-          fontSize: 15,
-          paddingLeft: 16,
-          paddingRight: 16,
-          borderWidth: 1.5,
-          border: `1.5px solid ${colors.cardAlt}`,
-          borderRadius: '12px',
-          outline: 'none',
-          fontFamily: 'inherit',
-          cursor: 'pointer',
-          backgroundColor: colors.cardAlt,
-          color: colors.text,
-          marginBottom: 14,
-          boxSizing: 'border-box',
-          ...containerStyle,
-        }}
-      />
+      <View style={[{ marginBottom: 14 }, containerStyle]}>
+        <TouchableOpacity
+          onPress={() => setShow(true)}
+          activeOpacity={0.7}
+          style={[styles.wrap, { backgroundColor: '#F1F5F9', borderColor: '#334155' }]}
+        >
+          <Text style={{ color: value ? '#1F2937' : '#94A3B8', fontSize: 15, flex: 1 }}>
+            {value ? new Date(value + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : placeholder}
+          </Text>
+          <Ionicons name="calendar-outline" size={20} color="#14B8A6" />
+        </TouchableOpacity>
+        <CustomDatePicker
+          visible={show}
+          value={value}
+          onConfirm={(date) => { onChange(date); setShow(false); }}
+          onCancel={() => setShow(false)}
+        />
+      </View>
     );
   }
 
