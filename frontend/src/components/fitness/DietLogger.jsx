@@ -62,7 +62,7 @@ const DietLogger = ({ onSubmit }) => {
         <Dropdown
           options={mealTypeOptions}
           value={meal.type}
-          onChange={(value) => setMeal({ ...meal, type: value })}
+          onChange={(value) => setMeal({ ...meal, type: typeof value === 'object' ? value.value : value })}
           placeholder="Select meal type"
           required
         />

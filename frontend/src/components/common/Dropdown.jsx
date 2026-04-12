@@ -93,30 +93,33 @@ const Dropdown = ({
       return <Text style={[s.value, { color: textColor }]}>{value.join(', ')}</Text>;
     }
 
-    return <Text style={[s.value, { color: textColor }]}>{value}</Text>;
+   const matchedOption = options.find(o => (typeof o === 'object' ? o.value : o) === value);
+   const displayText = matchedOption ? (typeof matchedOption === 'object' ? matchedOption.label : matchedOption) : value;
+  return <Text style={[s.value, { color: textColor }]}>{displayText}</Text>;
   };
 
-  const renderOptions = () => {
-    // Regular text options
-    return options.map((option) => {
-      const isSelected = multiple
-        ? (Array.isArray(value) && value.includes(option))
-        : value === option;
+ const renderOptions = () => {
+  return options.map((option) => {
+    const optionValue = typeof option === 'object' ? option.value : option;
+    const optionLabel = typeof option === 'object' ? option.label : option;
+    const isSelected = multiple
+      ? (Array.isArray(value) && value.includes(optionValue))
+      : value === optionValue;
 
-      return (
-        <TouchableOpacity
-          key={option}
-          style={[s.option, isSelected && { backgroundColor: colors.primary + '20' }]}
-          onPress={() => handleSelect(option)}
-        >
-          <Text style={[s.optionText, { color: textColor }, isSelected && { color: colors.primary, fontWeight: '600' }]}>
-            {option}
-          </Text>
-          {isSelected && <Ionicons name="checkmark" size={18} color={colors.primary} />}
-        </TouchableOpacity>
-      );
-    });
-  };
+    return (
+      <TouchableOpacity
+        key={optionValue}
+        style={[s.option, isSelected && { backgroundColor: colors.primary + '20' }]}
+        onPress={() => handleSelect(optionValue)}
+      >
+        <Text style={[s.optionText, { color: textColor }, isSelected && { color: colors.primary, fontWeight: '600' }]}>
+          {optionLabel}
+        </Text>
+        {isSelected && <Ionicons name="checkmark" size={18} color={colors.primary} />}
+      </TouchableOpacity>
+    );
+  });
+};
 
   return (
     <>

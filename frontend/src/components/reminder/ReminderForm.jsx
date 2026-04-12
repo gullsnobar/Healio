@@ -138,10 +138,8 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
             }}
           >
       <Text style={{ color: textColor, fontSize: 15 }}>
-        {dateValue
-          ? new Date(dateValue + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
-          : 'Select date'}
-      </Text>
+              {dateValue || 'Select date'}
+            </Text>
             <Ionicons name="calendar-outline" size={20} color="#14B8A6" />
           </TouchableOpacity>
         </View>

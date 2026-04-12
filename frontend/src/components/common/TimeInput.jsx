@@ -92,7 +92,7 @@ const TimeInput = ({
           }}
         >
           <Text style={{ color: '#F8FAFC', fontSize: 15 }}>
-            {value || 'Select time'}
+            {displayValue || placeholder}
           </Text>
           <Ionicons name="time-outline" size={20} color="#14B8A6" />
         </TouchableOpacity>

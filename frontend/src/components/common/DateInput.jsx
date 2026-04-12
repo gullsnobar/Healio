@@ -86,10 +86,8 @@ const DateInput = ({
             height: 52,
           }]}
         >
-          <Text style={{ color: '#F8FAFC', fontSize: 15 }}>
-            {value
-              ? new Date(value + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
-              : 'Select date'}
+          <Text style={[styles.text, { color: '#F8FAFC' }]}> 
+            {displayValue || placeholder}
           </Text>
           <Ionicons name="calendar-outline" size={20} color="#14B8A6" />
         </TouchableOpacity>
