@@ -14,8 +14,8 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (b) => {
     b.addCase(fetchLabReports.pending, (s) => { s.loading = true; })
-     .addCase(fetchLabReports.fulfilled, (s, a) => { s.loading = false; s.reports = a.payload; })
-     .addCase(uploadLabReport.fulfilled, (s, a) => { s.reports.push(a.payload); });
+      .addCase(fetchLabReports.fulfilled, (s, a) => { s.loading = false; s.reports = a.payload; })
+      .addCase(uploadLabReport.fulfilled, (s, a) => { s.reports.push(a.payload); });
   },
 });
 export default slice.reducer;

@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
 
 const CATEGORY_ICONS = {
-  fitness: 'footsteps', diet: 'restaurant', hydration: 'water',
+  fitness: 'walk', diet: 'restaurant', hydration: 'water',
   sleep: 'moon', medication: 'medkit', general: 'heart',
 };
 

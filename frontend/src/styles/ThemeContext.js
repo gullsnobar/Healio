@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useColorScheme, LayoutAnimation, Platform, UIManager } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { light, dark } from './colors';
@@ -53,7 +54,7 @@ export const ThemeProvider = ({ children, initialMode = 'system' }) => {
   // Animate layout changes when theme switches
   const animateTransition = useCallback(() => {
     LayoutAnimation.configureNext(
-      LayoutAnimation.create(250, LayoutAnimation.Types.easeInEaseOut, LayoutAnimation.Properties.opacity)
+      LayoutAnimation.create(250, LayoutAnimation.Types.easeInEaseOut, LayoutAnimation.Properties.opacity),
     );
   }, []);
 
@@ -90,6 +91,16 @@ export const ThemeProvider = ({ children, initialMode = 'system' }) => {
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+};
+
+ThemeProvider.propTypes = {
+  children: PropTypes.node,
+  initialMode: PropTypes.oneOf(['system', 'light', 'dark']),
+};
+
+ThemeProvider.defaultProps = {
+  children: undefined,
+  initialMode: 'system',
 };
 
 /**

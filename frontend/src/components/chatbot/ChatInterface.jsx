@@ -8,9 +8,18 @@ import ChatSuggestions from './ChatSuggestions';
 const ChatInterface = ({ messages = [], onSend, suggestions = [], loading = false }) => {
   const { colors } = useAppTheme();
   const listRef = useRef(null);
+  
+  // Generate stable key for messages
+  const getMessageKey = (item, index) => {
+    if (item._id) return item._id;
+    // Fallback: use combination of role, timestamp, and index for stable key
+    const timestamp = item.timestamp || '';
+    return `${item.role}-${timestamp}-${index}`;
+  };
+  
   return (
     <KeyboardAvoidingView style={[s.c, { backgroundColor: colors.background }]} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <FlatList ref={listRef} data={messages} keyExtractor={(item) => item._id || String(Math.random())}
+      <FlatList ref={listRef} data={messages} keyExtractor={getMessageKey}
         renderItem={({ item }) => <ChatMessage message={item} />}
         onContentSizeChange={() => listRef.current?.scrollToEnd()} contentContainerStyle={s.list} />
       {suggestions.length > 0 && <ChatSuggestions suggestions={suggestions} onSelect={onSend} />}

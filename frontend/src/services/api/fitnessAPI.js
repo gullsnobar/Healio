@@ -6,6 +6,7 @@ export const fitnessAPI = {
   getWeeklyStats: () => api.get('/fitness/stats/weekly'),
   getWeeklyChart: () => api.get('/fitness/stats/weekly-chart'),
   getMonthly: () => api.get('/fitness/stats/monthly'),
+  connectGoogleFit: (code) => api.post('/fitness/googleFit/connect', { code }),
   syncGoogleFit: (data) => api.post('/fitness/sync', data),
   logManual: (data) => api.post('/fitness/manual', data),
   logWater: (data) => api.post('/fitness/water', data),
@@ -16,3 +17,4 @@ export const fitnessAPI = {
   getMealHistory: (params) => api.get('/fitness/diet/history', { params }),
   deleteMeal: (mealId) => api.delete(`/fitness/diet/${mealId}`),
 };
+

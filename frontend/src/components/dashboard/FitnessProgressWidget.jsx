@@ -7,7 +7,7 @@ const { width: SCREEN_W } = Dimensions.get('window');
 const isSmall = SCREEN_W < 400;
 
 const METRICS = [
-  { key: 'steps', icon: 'footsteps-outline', label: 'Steps',    color: '#38BDF8', goal: 10000, fmt: (v) => (v || 0).toLocaleString() },
+  { key: 'steps', icon: 'walk', label: 'Steps',    color: '#38BDF8', goal: 10000, fmt: (v) => (v || 0).toLocaleString() },
   { key: 'sleep', icon: 'moon-outline',       label: 'Sleep',    color: '#6366F1', goal: 8,     fmt: (v) => `${(v || 0).toFixed(1)}h` },
   { key: 'water', icon: 'water-outline',      label: 'Water',    color: '#22D3EE', goal: 2500,  fmt: (v) => `${v || 0}ml` },
 ];

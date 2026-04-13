@@ -1,4 +1,4 @@
-﻿import React, { useCallback } from 'react';
+﻿import React, { useCallback, useEffect } from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
@@ -8,6 +8,9 @@ import Loading from '../../components/common/Loading';
 import Alert from '../../components/common/Alert';
 import { loginUser, googleSignIn, clearError } from '../../redux/slices/authSlice';
 import { useAppTheme } from '../../styles/ThemeContext';
+import { firebaseAuth } from '../../services/firebase/firebaseAuth';
+import { authAPI } from '../../services/api/authAPI';
+import { secureStorage } from '../../services/storage/secureStorage';
 
 const LoginScreen = ({ navigation }) => {
   const { colors, isDark } = useAppTheme();
@@ -19,6 +22,32 @@ const LoginScreen = ({ navigation }) => {
       dispatch(clearError());
     }, [dispatch])
   );
+
+  // ✅ Handle Firebase redirect result (web Google auth)
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const handleRedirect = async () => {
+        try {
+          const result = await firebaseAuth.handleRedirectResult();
+          if (result) {
+            // Got auth result from redirect - send to backend
+            const { token, profile } = result;
+            const res = await authAPI.googleAuth(token, profile);
+            const { user, accessToken, refreshToken } = res.data.data;
+            await secureStorage.setToken(accessToken);
+            await secureStorage.setRefreshToken(refreshToken);
+            // Navigation will happen automatically based on auth state
+            navigation.replace('Main');
+          }
+        } catch (err) {
+          console.error('Firebase redirect error:', err);
+          dispatch(clearError());
+        }
+      };
+      
+      handleRedirect();
+    }
+  }, []);
 
   const handleLogin = async (credentials) => {
     dispatch(loginUser(credentials));

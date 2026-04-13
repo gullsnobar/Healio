@@ -20,10 +20,10 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (b) => {
     b.addCase(fetchAppointments.pending, (s) => { s.loading = true; })
-     .addCase(fetchAppointments.fulfilled, (s, a) => { s.loading = false; s.appointments = a.payload; })
-     .addCase(fetchAppointments.rejected, (s, a) => { s.loading = false; s.error = a.payload; })
-     .addCase(addAppointment.fulfilled, (s, a) => { s.appointments.push(a.payload); })
-     .addCase(deleteAppointment.fulfilled, (s, a) => { s.appointments = s.appointments.filter(i => i._id !== a.payload); });
+      .addCase(fetchAppointments.fulfilled, (s, a) => { s.loading = false; s.appointments = a.payload; })
+      .addCase(fetchAppointments.rejected, (s, a) => { s.loading = false; s.error = a.payload; })
+      .addCase(addAppointment.fulfilled, (s, a) => { s.appointments.push(a.payload); })
+      .addCase(deleteAppointment.fulfilled, (s, a) => { s.appointments = s.appointments.filter(i => i._id !== a.payload); });
   },
 });
 export default slice.reducer;

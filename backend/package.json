@@ -4,7 +4,8 @@
   "description": "HEALIO Backend API - Health Management Platform",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "dev": "npx kill-port 5000 && nodemon server.js",
     "test": "jest --forceExit --detectOpenHandles",
     "seed": "node src/database/seeds/testDataSeeder.js",
     "lint": "eslint src/"
@@ -13,7 +14,9 @@
     "axios": "^1.13.5",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.1",
+    "dotenv": "^16.6.1",
+    "expo-auth-session": "^55.0.12",
+    "expo-random": "^14.0.1",
     "express": "^4.18.2",
     "express-rate-limit": "^7.1.5",
     "express-validator": "^7.0.1",
@@ -21,18 +24,20 @@
     "googleapis": "^131.0.0",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongodb": "^7.1.1",
     "mongoose": "^8.1.1",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "node-cron": "^3.0.3",
+    "node-fetch": "^3.3.2",
     "nodemailer": "^6.9.8",
+    "openai": "^6.33.0",
     "uuid": "^9.0.0",
     "winston": "^3.11.0"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
     "jest": "^29.7.0",
+    "kill-port": "^2.0.1",
     "nodemon": "^3.0.3",
     "supertest": "^6.3.4"
   }

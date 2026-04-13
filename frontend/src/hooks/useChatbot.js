@@ -4,5 +4,10 @@ import { sendMessage, fetchSuggestions, clearChat } from '../redux/slices/chatbo
 export const useChatbot = () => {
   const dispatch = useDispatch();
   const state = useSelector((s) => s.chatbot);
-  return { ...state, send: (msg) => dispatch(sendMessage(msg)), getSuggestions: () => dispatch(fetchSuggestions()), clear: () => dispatch(clearChat()) };
+  return { 
+    ...state, 
+    send: (message, sessionId, context = 'general') => dispatch(sendMessage({ message, sessionId, context })), 
+    getSuggestions: (healthData) => dispatch(fetchSuggestions(healthData)), 
+    clear: () => dispatch(clearChat()) 
+  };
 };

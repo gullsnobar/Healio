@@ -31,14 +31,14 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (b) => {
     b.addCase(fetchFitnessData.pending, (s) => { s.loading = true; })
-     .addCase(fetchFitnessData.fulfilled, (s, a) => { s.loading = false; s.dailyData = a.payload; })
-     .addCase(fetchFitnessData.rejected, (s, a) => { s.loading = false; s.error = a.payload; })
-     .addCase(fetchWeeklyChart.fulfilled, (s, a) => { s.weeklyChart = a.payload; })
-     .addCase(fetchWeeklyStats.fulfilled, (s, a) => { s.weeklyData = a.payload; })
-     .addCase(logExercise.fulfilled, (s, a) => { s.dailyData = a.payload; })
-     .addCase(updateFitnessGoals.fulfilled, (s, a) => { s.dailyData = a.payload; })
-     .addCase(fetchMealHistory.fulfilled, (s, a) => { s.mealHistory = a.payload; })
-     .addCase(deleteMeal.fulfilled, (s, a) => { s.dailyData = a.payload; });
+      .addCase(fetchFitnessData.fulfilled, (s, a) => { s.loading = false; s.dailyData = a.payload; })
+      .addCase(fetchFitnessData.rejected, (s, a) => { s.loading = false; s.error = a.payload; })
+      .addCase(fetchWeeklyChart.fulfilled, (s, a) => { s.weeklyChart = a.payload; })
+      .addCase(fetchWeeklyStats.fulfilled, (s, a) => { s.weeklyData = a.payload; })
+      .addCase(logExercise.fulfilled, (s, a) => { s.dailyData = a.payload; })
+      .addCase(updateFitnessGoals.fulfilled, (s, a) => { s.dailyData = a.payload; })
+      .addCase(fetchMealHistory.fulfilled, (s, a) => { s.mealHistory = a.payload; })
+      .addCase(deleteMeal.fulfilled, (s, a) => { s.dailyData = a.payload; });
   },
 });
 export default slice.reducer;
