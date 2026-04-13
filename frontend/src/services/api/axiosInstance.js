@@ -4,6 +4,9 @@ import apiConfig from '../../config/apiConfig';
 
 const api = axios.create(apiConfig);
 
+// Log API configuration
+console.log('[API Config] Base URL:', apiConfig.baseURL);
+
 // Attach the auth token on every request
 api.interceptors.request.use(
   async (config) => {
@@ -11,9 +14,13 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = 'Bearer ' + token;
     }
+    console.log('[API Request]', config.method?.toUpperCase(), config.url, 'Token:', token ? '✓ Present' : '✗ Missing');
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => {
+    console.error('[API Request Error]', error);
+    return Promise.reject(error);
+  }
 );
 
 // Handle 401 responses by refreshing the token
@@ -29,8 +36,12 @@ const processQueue = (error, token = null) => {
 };
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('[API Response]', response.config.method?.toUpperCase(), response.config.url, response.status, response.data?.success ? '✓' : '✗');
+    return response;
+  },
   async (error) => {
+    console.error('[API Error]', error.config?.method?.toUpperCase(), error.config?.url, error.response?.status, error.response?.data?.message || error.message);
     const originalRequest = error.config;
 
     // Don't retry if: not 401, already retried, or url doesn't exist

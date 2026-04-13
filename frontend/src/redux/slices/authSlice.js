@@ -23,6 +23,16 @@ export const registerUser = createAsyncThunk('auth/register', async (data, { rej
     console.log('[AUTH] Registering with:', JSON.stringify(data));
     const res = await authAPI.register(data);
     console.log('[AUTH] Registration success:', JSON.stringify(res.data));
+    
+    // Check if dev mode auto-login (tokens returned)
+    if (res.data?.data?.accessToken && res.data?.data?.isDev) {
+      console.log('[AUTH] Dev mode auto-login on registration');
+      const { user, accessToken, refreshToken } = res.data.data;
+      await secureStorage.setToken(accessToken);
+      if (refreshToken) await secureStorage.setRefreshToken(refreshToken);
+      return { user, accessToken, refreshToken, isDev: true };
+    }
+    
     return res.data;
   } catch (err) {
     console.error('[AUTH] Registration error:', err?.message, err?.response?.status, JSON.stringify(err?.response?.data));
@@ -116,7 +126,16 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => { state.loading = false; state.isAuthenticated = true; state.user = action.payload.user; state.token = action.payload.accessToken; })
       .addCase(loginUser.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
       .addCase(registerUser.pending, (state) => { state.loading = true; state.error = null; })
-      .addCase(registerUser.fulfilled, (state) => { state.loading = false; state.error = null; })
+      .addCase(registerUser.fulfilled, (state, action) => { 
+        state.loading = false; 
+        state.error = null;
+        // Dev mode auto-login: if tokens were returned
+        if (action.payload?.accessToken) {
+          state.isAuthenticated = true;
+          state.user = action.payload.user;
+          state.token = action.payload.accessToken;
+        }
+      })
       .addCase(registerUser.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
       .addCase(verifyOTP.pending, (state) => { state.loading = true; state.error = null; })
       .addCase(verifyOTP.fulfilled, (state, action) => {

@@ -1,33 +1,47 @@
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
-// Android emulator uses 10.0.2.2 to reach the host machine's localhost
-const DEV_HOST = Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
-
-const ENV = {
-  development: {
-    apiUrl: `http://${DEV_HOST}:5000/api`,
-    aiEngineUrl: `http://${DEV_HOST}:8000`,
-    enableDebug: true,
-  },
-  staging: {
-    apiUrl: 'https://staging-api.healio.com/api',
-    aiEngineUrl: 'https://staging-ai.healio.com',
-    enableDebug: true,
-  },
-  production: {
-    apiUrl: 'https://api.healio.com/api',
-    aiEngineUrl: 'https://ai.healio.com',
-    enableDebug: false,
-  },
+// Get environment variables from multiple sources
+const getEnvVar = (key, defaultValue = null) => {
+  // Priority 1: app.json extra field (most reliable for Expo)
+  const value = Constants.expoConfig?.extra?.[key];
+  if (value) {
+    console.log(`[ENV] ${key} from app.json:`, value);
+    return value;
+  }
+  
+  // Priority 2: process.env (environment variables / .env file)
+  const envValue = process.env[key];
+  if (envValue) {
+    console.log(`[ENV] ${key} from process.env:`, envValue);
+    return envValue;
+  }
+  
+  // Priority 3: Default value
+  console.log(`[ENV] ${key} not found, using default:`, defaultValue);
+  return defaultValue;
 };
 
-const getEnvVars = () => {
-  // Expo SDK 50+: use expoConfig instead of deprecated manifest
-  const releaseChannel = Constants.expoConfig?.extra?.releaseChannel;
-  if (releaseChannel === 'production') return ENV.production;
-  if (releaseChannel === 'staging') return ENV.staging;
-  return ENV.development;
-};
+// Determine API URL
+const apiUrl = getEnvVar(
+  'EXPO_PUBLIC_API_BASE_URL',
+  Platform.OS === 'android' ? 'http://10.0.2.2:5000/api' : 'http://localhost:5000/api'
+);
 
-export default getEnvVars();
+const aiEngineUrl = getEnvVar(
+  'EXPO_PUBLIC_AI_ENGINE_URL',
+  Platform.OS === 'android' ? 'http://10.0.2.2:8000' : 'http://localhost:8000'
+);
+
+console.log('[ENV] ✅ Final configuration:', { 
+  apiUrl, 
+  aiEngineUrl, 
+  platform: Platform.OS,
+  isDev: process.env.NODE_ENV === 'development'
+});
+
+export default {
+  apiUrl,
+  aiEngineUrl,
+  enableDebug: true,
+};

@@ -25,6 +25,15 @@ const RegisterScreen = ({ navigation }) => {
     if (registerUser.fulfilled.match(result)) {
       dispatch(clearError());
       const regData = result.payload?.data;
+      
+      // Development mode auto-login: if tokens are returned, auto-login the user
+      if (regData?.accessToken && regData?.isDev) {
+        console.log('[RegisterScreen] Dev mode auto-login triggered');
+        // Navigation will happen automatically based on auth state (checkAuth)
+        return;
+      }
+      
+      // Production mode: require OTP verification
       navigation.navigate('OTP', {
         email: data.email,
         otpSent: regData?.otpSent ?? true,
