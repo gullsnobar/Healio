@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
+import Button from '../common/Button';
 
 const MedicationCard = ({ medication, onPress, onMarkTaken }) => {
   const { colors } = useAppTheme();
@@ -65,14 +66,15 @@ const MedicationCard = ({ medication, onPress, onMarkTaken }) => {
       </View>
 
       {status === 'pending' && onMarkTaken && (
-        <TouchableOpacity
-          style={[styles.takeBtn, { backgroundColor: colors.primary }]}
+        <Button
+          variant="primary"
+          size="medium"
+          icon="checkmark-circle-outline"
           onPress={() => onMarkTaken?.(medication)}
-          activeOpacity={0.7}
+          colors={colors}
         >
-          <Ionicons name="checkmark-circle-outline" size={18} color="#fff" />
-          <Text style={styles.takeBtnText}>Mark as Taken</Text>
-        </TouchableOpacity>
+          Mark as Taken
+        </Button>
       )}
     </TouchableOpacity>
   );
@@ -127,20 +129,6 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 14,
-  },
-  takeBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 10,
-    paddingVertical: 10,
-    marginTop: 14,
-    gap: 6,
-  },
-  takeBtnText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
   },
 });
 

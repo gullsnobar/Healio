@@ -11,8 +11,8 @@ try {
   dns.setServers(['8.8.8.8', '8.8.4.4']);
 }
 
-const admin = require('firebase-admin');
-const serviceAccount = require('./config/healio-e75ef-firebase-adminsdk-fbsvc-2b167d9c17.json');
+ const admin = require('firebase-admin');
+const serviceAccount = require('./config/healio-bba24-firebase-adminsdk-fbsvc-b272baeefc.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
@@ -42,8 +42,16 @@ const startServer = async () => {
     startAllJobs();
     logger.info('Cron jobs started');
 
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       logger.info('Server running on port ' + PORT + ' in ' + process.env.NODE_ENV + ' mode');
+    });
+
+    server.on('error', (error) => {
+      if (error.code === 'EADDRINUSE') {
+        logger.error(`Port ${PORT} is already in use. Stop the running server or set a different PORT.`);
+        process.exit(1);
+      }
+      throw error;
     });
   } catch (error) {
     logger.error('Server startup failed:', error);

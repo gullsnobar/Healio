@@ -2,9 +2,9 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-import { useAppTheme } from '../styles/theme';
+import { useAppTheme } from '../styles/ThemeContext';
 
-import TabNavigator from './TabNavigator';
+import DrawerNavigator from './DrawerNavigator';
 
 // Medication Screens
 import AddMedicationScreen from '../screens/medication/AddMedicationScreen';
@@ -83,8 +83,8 @@ const MainNavigator = () => {
       })}
     >
       <Stack.Screen
-        name="MainTabs"
-        component={TabNavigator}
+        name="MainDrawer"
+        component={DrawerNavigator}
         options={{ headerShown: false }}
       />
 

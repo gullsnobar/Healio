@@ -10,12 +10,19 @@ import {
   Alert,
   Platform,
   Image,
+  Dimensions,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { logoutUser } from '../../redux/slices/authSlice';
 import { useAppTheme } from '../../styles/ThemeContext';
+import Button from '../../components/common/Button';
+import Tooltip from '../../components/common/Tooltip';
+import Dropdown from '../../components/common/Dropdown';
+
+const { width: SCREEN_W } = Dimensions.get('window');
+const IS_SMALL = SCREEN_W < 400;
 
 const ProfileScreen = ({ navigation }) => {
   const { colors, isDark } = useAppTheme();
@@ -58,26 +65,57 @@ const ProfileScreen = ({ navigation }) => {
 
   const initials = (user?.name || user?.fullName || 'U').charAt(0).toUpperCase();
 
-  const renderField = (key, label, placeholder, extra = {}) => (
-    <View key={key} style={{ marginBottom: 14 }}>
-      <Text style={[s.fieldLabel, { color: colors.textSecondary }]}>{label}</Text>
-      <View style={[s.inputWrap, { backgroundColor: colors.cardAlt, borderColor: colors.cardAlt },
-        focusedField === key && { borderColor: colors.primary, backgroundColor: colors.card }]}>
-        <TextInput
-          style={[s.input, { color: colors.text }]}
-          placeholder={placeholder}
-          placeholderTextColor={colors.textTertiary}
+  const renderField = (key, label, placeholder, extra = {}) => {
+    // Special handling for dropdown fields
+    if (key === 'gender') {
+      return (
+        <Dropdown
+          key={key}
+          label={label}
           value={form[key]}
-          onChangeText={(v) => update(key, v)}
-          autoCapitalize={extra.autoCapitalize ?? 'none'}
-          keyboardType={extra.keyboardType ?? 'default'}
-          secureTextEntry={extra.secure}
-          onFocus={() => setFocusedField(key)}
-          onBlur={() => setFocusedField(null)}
+          options={['Male', 'Female', 'Other', 'Prefer not to say']}
+          placeholder={placeholder}
+          onSelect={(value) => update(key, value)}
+          required
         />
+      );
+    }
+
+    if (key === 'dateOfBirth') {
+      return (
+        <Dropdown
+          key={key}
+          label={label}
+          value={form[key]}
+          placeholder={placeholder}
+          mode="date"
+          onChange={(value) => update(key, value)}
+        />
+      );
+    }
+
+    // Regular text input for other fields
+    return (
+      <View key={key} style={{ marginBottom: 14 }}>
+        <Text style={[s.fieldLabel, { color: colors.textSecondary }]}>{label}</Text>
+        <View style={[s.inputWrap, { backgroundColor: colors.cardAlt, borderColor: colors.cardAlt },
+          focusedField === key && { borderColor: colors.primary, backgroundColor: colors.card }]}>
+          <TextInput
+            style={[s.input, { color: colors.text }]}
+            placeholder={placeholder}
+            placeholderTextColor={colors.textTertiary}
+            value={form[key]}
+            onChangeText={(v) => update(key, v)}
+            autoCapitalize={extra.autoCapitalize ?? 'none'}
+            keyboardType={extra.keyboardType ?? 'default'}
+            secureTextEntry={extra.secure}
+            onFocus={() => setFocusedField(key)}
+            onBlur={() => setFocusedField(null)}
+          />
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <ScrollView style={[s.c, { backgroundColor: colors.background }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
@@ -115,20 +153,37 @@ const ProfileScreen = ({ navigation }) => {
 
       {/* Save button */}
       <View style={s.formSection}>
-        <TouchableOpacity onPress={handleSave} activeOpacity={0.85}>
-          <LinearGradient colors={colors.primaryGrad} style={s.saveBtn}>
-            <Text style={s.saveBtnText}>Save</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+        <Tooltip text="Save changes">
+          <Button
+            variant="primary"
+            size="large"
+            icon="checkmark-circle-outline"
+            onPress={handleSave}
+            colors={colors}
+          >
+            Save Profile
+          </Button>
+        </Tooltip>
+        <Text style={[s.buttonDesc, { color: colors.textSecondary }]}>Update your personal information and preferences</Text>
       </View>
 
       {/* Dark mode toggle */}
 
       {/* Sign out */}
-      <TouchableOpacity onPress={handleLogout} style={s.signOutBtn} activeOpacity={0.7}>
-        <Ionicons name="log-out-outline" size={20} color={colors.error} />
-        <Text style={[s.signOutText, { color: colors.error }]}>Sign out</Text>
-      </TouchableOpacity>
+      <View style={{ paddingHorizontal: IS_SMALL ? 20 : 24, marginTop: 16 }}>
+        <Tooltip text="Logout">
+          <Button
+            variant="danger"
+            size="large"
+            icon="log-out-outline"
+            onPress={handleLogout}
+            colors={colors}
+          >
+            Sign Out
+          </Button>
+        </Tooltip>
+        <Text style={[s.buttonDesc, { color: colors.textSecondary }]}>Sign out of your HEALIO account</Text>
+      </View>
     </ScrollView>
   );
 };
@@ -142,7 +197,7 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    paddingHorizontal: IS_SMALL ? 16 : 20,
     paddingTop: 12,
     paddingBottom: 8,
   },
@@ -154,17 +209,17 @@ const s = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
   },
-  topTitle: { fontSize: 18, fontWeight: '700' },
+  topTitle: { fontSize: IS_SMALL ? 16 : 18, fontWeight: '700' },
 
   /* Avatar */
   avatarSection: {
     alignItems: 'center',
-    paddingVertical: 24,
+    paddingVertical: IS_SMALL ? 20 : 24,
   },
   avatarCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: IS_SMALL ? 80 : 100,
+    height: IS_SMALL ? 80 : 100,
+    borderRadius: IS_SMALL ? 40 : 50,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 14,
@@ -174,14 +229,14 @@ const s = StyleSheet.create({
     shadowRadius: 12,
     elevation: 6,
   },
-  avatarImg: { width: 100, height: 100, borderRadius: 50 },
-  avatarText: { fontSize: 40, fontWeight: '800', color: '#FFF' },
-  userName: { fontSize: 20, fontWeight: '800', letterSpacing: -0.3 },
+  avatarImg: { width: IS_SMALL ? 80 : 100, height: IS_SMALL ? 80 : 100, borderRadius: IS_SMALL ? 40 : 50 },
+  avatarText: { fontSize: IS_SMALL ? 32 : 40, fontWeight: '800', color: '#FFF' },
+  userName: { fontSize: IS_SMALL ? 18 : 20, fontWeight: '800', letterSpacing: -0.3 },
 
   /* Form */
-  formSection: { paddingHorizontal: 24 },
+  formSection: { paddingHorizontal: IS_SMALL ? 20 : 24 },
   fieldLabel: {
-    fontSize: 13,
+    fontSize: IS_SMALL ? 12 : 13,
     fontWeight: '600',
     marginBottom: 6,
     marginLeft: 4,
@@ -190,34 +245,19 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 12,
-    paddingHorizontal: 16,
+    paddingHorizontal: IS_SMALL ? 14 : 16,
     borderWidth: 1.5,
-    height: 56,
+    height: IS_SMALL ? 50 : 56,
   },
   input: {
     flex: 1,
-    fontSize: 15,
+    fontSize: IS_SMALL ? 14 : 15,
     letterSpacing: 0.2,
     height: '100%',
     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
   },
 
   /* Save */
-  saveBtn: {
-    height: 56,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#14B8A6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 6,
-    marginTop: 8,
-  },
-  saveBtnText: { color: '#FFF', fontSize: 16, fontWeight: '700', letterSpacing: 0.5 },
-
-  /* Sign out */
   signOutBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -227,6 +267,7 @@ const s = StyleSheet.create({
     marginTop: 16,
   },
   signOutText: { fontSize: 15, fontWeight: '700' },
+ buttonDesc: { fontSize: IS_SMALL ? 11 : 12, textAlign: 'center', marginTop: 8, lineHeight: IS_SMALL ? 16 : 18 },
 });
 
 export default ProfileScreen;

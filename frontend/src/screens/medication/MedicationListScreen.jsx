@@ -1,5 +1,5 @@
 ﻿import React, { useCallback } from 'react';
-import { View, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, StatusBar, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector, useDispatch } from 'react-redux';
@@ -7,6 +7,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useAppTheme } from '../../styles/ThemeContext';
 import MedicationList from '../../components/medication/MedicationList';
 import { fetchMedications, markAsTaken } from '../../redux/slices/medicationSlice';
+import Tooltip from '../../components/common/Tooltip';
 
 const MedicationListScreen = ({ navigation }) => {
   const { colors, isDark } = useAppTheme();
@@ -18,7 +19,17 @@ const MedicationListScreen = ({ navigation }) => {
 
   return (
     <View style={[ms.c, { backgroundColor: colors.background }]}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.primaryDark} />
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
+      
+      {/* Header with back button */}
+      <View style={[ms.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={ms.backBtn}>
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
+        </TouchableOpacity>
+        <Text style={[ms.headerTitle, { color: colors.text }]}>Medications</Text>
+        <View style={ms.headerSpacer} />
+      </View>
+
       <MedicationList
         medications={medications}
         loading={loading}
@@ -27,21 +38,27 @@ const MedicationListScreen = ({ navigation }) => {
         onRefresh={() => dispatch(fetchMedications())}
       />
 
-      <TouchableOpacity
-        style={ms.fabWrap}
-        onPress={() => navigation.navigate('AddMedication')}
-        activeOpacity={0.9}
-      >
-        <LinearGradient colors={colors.primaryGrad} style={ms.fab}>
-          <Ionicons name="add" size={30} color="#fff" />
-        </LinearGradient>
-      </TouchableOpacity>
+      <Tooltip text="Add medication">
+        <TouchableOpacity
+          style={ms.fabWrap}
+          onPress={() => navigation.navigate('AddMedication')}
+          activeOpacity={0.9}
+        >
+          <LinearGradient colors={colors.primaryGrad} style={ms.fab}>
+            <Ionicons name="add" size={30} color="#fff" />
+          </LinearGradient>
+        </TouchableOpacity>
+      </Tooltip>
     </View>
   );
 };
 
 const ms = StyleSheet.create({
   c: { flex: 1 },
+  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1 },
+  backBtn: { padding: 4 },
+  headerTitle: { fontSize: 18, fontWeight: '700', flex: 1, textAlign: 'center' },
+  headerSpacer: { width: 32 },
   fabWrap: {
     position: 'absolute', right: 20, bottom: 24,
     shadowColor: '#14B8A6', shadowOffset: { width: 0, height: 4 },

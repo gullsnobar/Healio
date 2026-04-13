@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { useAppTheme } from '../../styles/ThemeContext';
 import { logExercise } from '../../redux/slices/fitnessSlice';
+import Dropdown from '../../components/common/Dropdown';
 
 const EXERCISE_TYPES = [
   { key: 'walking', label: 'Walking', icon: 'walk', cal: 4 },
@@ -25,6 +26,12 @@ const ExerciseLogScreen = ({ navigation }) => {
   const [selected, setSelected] = useState(null);
   const [duration, setDuration] = useState('');
   const [customCal, setCustomCal] = useState('');
+
+  const exerciseOptions = EXERCISE_TYPES.map(ex => ({
+    label: ex.label,
+    value: ex.key,
+    icon: ex.icon
+  }));
 
   const estimated = selected
     ? customCal || Math.round((EXERCISE_TYPES.find((e) => e.key === selected)?.cal || 5) * Number(duration || 0))
@@ -49,21 +56,14 @@ const ExerciseLogScreen = ({ navigation }) => {
   return (
     <ScrollView style={[s.container, { backgroundColor: colors.background }]} contentContainerStyle={s.content}>
       <Text style={[s.sectionTitle, { color: colors.text }]}>Select Exercise</Text>
-      <View style={s.typeGrid}>
-        {EXERCISE_TYPES.map((ex) => (
-          <TouchableOpacity
-            key={ex.key}
-            style={[
-              s.typeCard, { backgroundColor: colors.card, borderColor: colors.border },
-              selected === ex.key && { borderColor: colors.primary, backgroundColor: colors.primaryLight },
-            ]}
-            onPress={() => setSelected(ex.key)}
-          >
-            <Ionicons name={ex.icon} size={24} color={selected === ex.key ? colors.primary : colors.textSecondary} />
-            <Text style={[s.typeLabel, { color: selected === ex.key ? colors.primary : colors.text }]}>{ex.label}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <Dropdown
+        label="Exercise Type"
+        options={exerciseOptions}
+        value={selected}
+        onChange={setSelected}
+        placeholder="Choose exercise type"
+        required
+      />
 
       <Text style={[s.sectionTitle, { color: colors.text }]}>Duration (minutes)</Text>
       <TextInput
@@ -117,9 +117,7 @@ const s = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: 16, paddingBottom: 32 },
   sectionTitle: { fontSize: 15, fontWeight: '700', marginBottom: 10, marginTop: 16 },
-  typeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  typeCard: { width: '22%', flexGrow: 1, alignItems: 'center', paddingVertical: 14, borderRadius: 14, borderWidth: 1.5 },
-  typeLabel: { fontSize: 10, fontWeight: '600', marginTop: 4, textAlign: 'center' },
+
   input: { borderWidth: 1, borderRadius: 10, padding: 14, fontSize: 16, marginBottom: 4 },
   previewCard: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16, borderRadius: 14, marginTop: 16 },
   previewText: { flex: 1 },

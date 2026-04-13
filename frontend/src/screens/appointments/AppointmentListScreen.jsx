@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
 import AppointmentList from '../../components/appointments/AppointmentList';
+import Tooltip from '../../components/common/Tooltip';
 import { fetchAppointments } from '../../redux/slices/appointmentSlice';
 
 const AppointmentListScreen = ({ navigation }) => {
@@ -17,9 +18,11 @@ const AppointmentListScreen = ({ navigation }) => {
       <AppointmentList appointments={appointments} loading={loading}
         onItemPress={(apt) => navigation.navigate('AppointmentDetails', { id: apt._id })}
         onRefresh={() => dispatch(fetchAppointments())} />
-      <TouchableOpacity style={[s.fab, { backgroundColor: colors.primary }]} onPress={() => navigation.navigate('AddAppointment')}>
-        <Ionicons name="add" size={28} color="#FFF" />
-      </TouchableOpacity>
+      <Tooltip text="Add appointment">
+        <TouchableOpacity style={[s.fab, { backgroundColor: colors.primary }]} onPress={() => navigation.navigate('AddAppointment')}>
+          <Ionicons name="add" size={28} color="#FFF" />
+        </TouchableOpacity>
+      </Tooltip>
     </View>
   );
 };

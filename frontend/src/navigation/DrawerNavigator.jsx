@@ -8,6 +8,7 @@ import SettingsScreen from '../screens/settings/SettingsScreen';
 import TrustedContactsScreen from '../screens/trustedContacts/TrustedContactsScreen';
 import ReportsScreen from '../screens/reports/ReportsScreen';
 import RecommendationsScreen from '../screens/recommendations/RecommendationsScreen';
+import MedicationListScreen from '../screens/medication/MedicationListScreen';
 import AboutScreen from '../screens/settings/AboutScreen';
 
 import { useAppTheme } from '../styles/ThemeContext';
@@ -48,6 +49,14 @@ const DrawerNavigator = () => {
         options={{
           title: 'Health Reports',
           drawerIcon: ({ color, size }) => <Ionicons name="document-text-outline" size={size} color={color} />,
+        }}
+      />
+      <Drawer.Screen
+        name="MedicationsDrawer"
+        component={MedicationListScreen}
+        options={{
+          title: 'Medications',
+          drawerIcon: ({ color, size }) => <Ionicons name="medkit-outline" size={size} color={color} />,
         }}
       />
       <Drawer.Screen

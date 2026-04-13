@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import { TextInput, Switch, Menu, Button } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAppTheme } from '../../styles/ThemeContext';
+import Dropdown from '../common/Dropdown';
 
 const PURPOSE_OPTIONS = [
   'General Checkup',
@@ -133,66 +133,39 @@ const AddAppointmentForm = ({ onSubmit }) => {
 
         <Text style={[styles.sectionTitle, { marginTop: 20, color: colors.text }]}>Date & Time</Text>
 
-        <TouchableOpacity style={[styles.pickerButton, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={() => setShowDatePicker(true)}>
-          <Ionicons name="calendar-outline" size={20} color={colors.primary} />
-          <Text style={[styles.pickerText, { color: colors.text }]}>{formatDate(date)}</Text>
-          <Ionicons name="chevron-down" size={18} color={colors.textTertiary} />
-        </TouchableOpacity>
+        <Dropdown
+          label="Date"
+          value={date.toISOString().split('T')[0]}
+          placeholder="Select date"
+          mode="date"
+          onChange={(dateString) => setDate(new Date(dateString + 'T00:00:00'))}
+          required
+        />
 
-        {showDatePicker && (
-          <DateTimePicker
-            value={date}
-            mode="date"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={handleDateChange}
-            minimumDate={new Date()}
-          />
-        )}
-
-        <TouchableOpacity style={[styles.pickerButton, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={() => setShowTimePicker(true)}>
-          <Ionicons name="time-outline" size={20} color={colors.primary} />
-          <Text style={[styles.pickerText, { color: colors.text }]}>{formatTime(time)}</Text>
-          <Ionicons name="chevron-down" size={18} color={colors.textTertiary} />
-        </TouchableOpacity>
-
-        {showTimePicker && (
-          <DateTimePicker
-            value={time}
-            mode="time"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={handleTimeChange}
-          />
-        )}
+        <Dropdown
+          label="Time"
+          value={time.toTimeString().slice(0, 5)}
+          placeholder="Select time"
+          mode="time"
+          onChange={(timeString) => {
+            const [hours, minutes] = timeString.split(':');
+            const newTime = new Date(time);
+            newTime.setHours(parseInt(hours), parseInt(minutes));
+            setTime(newTime);
+          }}
+          required
+        />
 
         <Text style={[styles.sectionTitle, { marginTop: 20, color: colors.text }]}>Details</Text>
 
-        <Menu
-          visible={showPurposeMenu}
-          onDismiss={() => setShowPurposeMenu(false)}
-          anchor={
-            <TouchableOpacity
-              style={[styles.pickerButton, { backgroundColor: colors.card, borderColor: colors.border }]}
-              onPress={() => setShowPurposeMenu(true)}
-            >
-              <Ionicons name="document-text-outline" size={20} color={colors.primary} />
-              <Text style={[styles.pickerText, { color: purpose ? colors.text : colors.textTertiary }]}>
-                {purpose || 'Select Purpose *'}
-              </Text>
-              <Ionicons name="chevron-down" size={18} color={colors.textTertiary} />
-            </TouchableOpacity>
-          }
-        >
-          {PURPOSE_OPTIONS.map((opt) => (
-            <Menu.Item
-              key={opt}
-              title={opt}
-              onPress={() => {
-                setPurpose(opt);
-                setShowPurposeMenu(false);
-              }}
-            />
-          ))}
-        </Menu>
+        <Dropdown
+          label="Purpose"
+          value={purpose}
+          options={PURPOSE_OPTIONS}
+          placeholder="Select purpose"
+          onSelect={setPurpose}
+          required
+        />
 
         {purpose === 'Other' && (
           <TextInput

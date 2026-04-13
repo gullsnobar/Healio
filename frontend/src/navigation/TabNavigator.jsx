@@ -1,61 +1,128 @@
-import React from 'react';
-import { View, Text, StyleSheet, Platform, Dimensions } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useAppTheme } from '../styles/ThemeContext';
+import React from "react";
+import { View, Text, StyleSheet, Platform, Dimensions } from "react-native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useAppTheme } from "../styles/ThemeContext";
 
-import HomeScreen from '../screens/main/HomeScreen';
-import DashboardScreen from '../screens/main/DashboardScreen';
-import MedicationListScreen from '../screens/medication/MedicationListScreen';
-import FitnessOverviewScreen from '../screens/fitness/FitnessOverviewScreen';
-import ChatbotScreen from '../screens/chatbot/ChatbotScreen';
+import HomeScreen from "../screens/main/HomeScreen";
+import DashboardScreen from "../screens/main/DashboardScreen";
+import RemindersScreen from "../screens/reminder/RemindersScreen";
+import FitnessOverviewScreen from "../screens/fitness/FitnessOverviewScreen";
+import ChatbotScreen from "../screens/chatbot/ChatbotScreen";
 
 const Tab = createBottomTabNavigator();
 
 const TABS = [
-  { name: 'Home',        label: 'Home',       icon: 'home',                  component: HomeScreen },
-  { name: 'Dashboard',   label: 'Analytics',  icon: 'stats-chart',           component: DashboardScreen },
-  { name: 'Medications', label: 'Meds',       icon: 'medkit',                component: MedicationListScreen },
-  { name: 'Fitness',     label: 'Fitness',    icon: 'heart-circle',          component: FitnessOverviewScreen },
-  { name: 'AIChat',      label: 'AI Chat',    icon: 'chatbubble-ellipses',   component: ChatbotScreen },
+  { name: "Home", label: "Home", icon: "home", component: HomeScreen },
+  {
+    name: "Dashboard",
+    label: "Analytics",
+    icon: "stats-chart",
+    component: DashboardScreen,
+  },
+  {
+    name: "Reminders",
+    label: "Reminders",
+    icon: "notifications",
+    component: RemindersScreen,
+  },
+  {
+    name: "Fitness",
+    label: "Fitness",
+    icon: "heart-circle",
+    component: FitnessOverviewScreen,
+  },
+  {
+    name: "AI",
+    label: "AI ",
+    icon: "chatbubble-ellipses",
+    component: ChatbotScreen,
+  },
 ];
 
 const TabNavigator = () => {
   const { colors, isDark } = useAppTheme();
-  const screenWidth = Dimensions.get('window').width;
-  const isSmall = screenWidth < 400;
+  const screenWidth = Dimensions.get("window").width;
+  const isMobile = screenWidth < 768;
 
-  const tabBarHeight = Platform.select({ ios: 88, android: 64, default: isSmall ? 60 : 68 });
-  const tabBarPaddingBottom = Platform.select({ ios: 28, android: 8, default: isSmall ? 6 : 10 });
+  const tabBarHeight = Platform.select({
+    ios: 88,
+    android: 64,
+    default: isMobile ? 60 : 68,
+  });
+  const tabBarPaddingBottom = Platform.select({
+    ios: 28,
+    android: 8,
+    default: isMobile ? 6 : 10,
+  });
 
   return (
     <Tab.Navigator
+      sceneContainerStyle={{
+        paddingBottom: tabBarHeight + 16,
+        backgroundColor: colors.background,
+      }}
       screenOptions={({ route }) => ({
-        headerStyle: { backgroundColor: colors.primary, elevation: 0, shadowOpacity: 0 },
-        headerTintColor: '#fff',
-        headerTitleStyle: { fontWeight: '700', fontSize: 17 },
+        headerStyle: {
+          backgroundColor: colors.primary,
+          elevation: 0,
+          shadowOpacity: 0,
+        },
+        headerTintColor: "#fff",
+        headerTitleStyle: { fontWeight: "700", fontSize: 17 },
         tabBarStyle: {
+          position: "relative",
           height: tabBarHeight,
           paddingBottom: tabBarPaddingBottom,
-          paddingTop: 6,
+          paddingTop: isMobile ? 8 : 10,
+          paddingHorizontal: isMobile ? 8 : 12,
           backgroundColor: colors.card,
-          borderTopWidth: 1,
+          borderTopWidth: StyleSheet.hairlineWidth,
           borderTopColor: colors.border,
           ...Platform.select({
-            ios: { shadowColor: colors.shadow, shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.06, shadowRadius: 8 },
+            ios: {
+              shadowColor: colors.shadow,
+              shadowOffset: { width: 0, height: -2 },
+              shadowOpacity: 0.06,
+              shadowRadius: 8,
+            },
             android: { elevation: 8 },
-            default: { shadowColor: colors.shadow, shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.06, shadowRadius: 8 },
+            default: {
+              shadowColor: colors.shadow,
+              shadowOffset: { width: 0, height: -2 },
+              shadowOpacity: 0.06,
+              shadowRadius: 8,
+            },
           }),
         },
+        tabBarShowLabel: true,
         tabBarActiveTintColor: colors.tabActive,
         tabBarInactiveTintColor: colors.tabInactive,
-        tabBarLabelStyle: { fontSize: isSmall ? 10 : 11, fontWeight: '600', marginTop: 1 },
-        tabBarIconStyle: { marginBottom: -2 },
+        tabBarLabelStyle: { fontSize: isMobile ? 9 : 10, fontWeight: '600', marginTop: 2 },
+        tabBarIconStyle: { marginBottom: 2 },
+        tabBarItemStyle: {
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingVertical: isMobile ? 4 : 6,
+          paddingHorizontal: isMobile ? 4 : 6,
+          height: '100%',
+          },
         tabBarIcon: ({ focused, color }) => {
           const tab = TABS.find((t) => t.name === route.name);
           return (
-            <View style={[ts.iconWrap, isSmall && ts.iconWrapSmall, focused && { backgroundColor: colors.tabActiveBg }]}>
-              <Ionicons name={focused ? tab.icon : `${tab.icon}-outline`} size={isSmall ? 20 : 24} color={color} />
+            <View
+              style={[
+                ts.iconWrap,
+                isMobile && ts.iconWrapSmall,
+                focused && { backgroundColor: colors.tabActiveBg },
+              ]}
+            >
+              <Ionicons
+                name={focused ? tab.icon : `${tab.icon}-outline`}
+                size={isMobile ? 20 : 24}
+                color={color}
+              />
             </View>
           );
         },
@@ -68,8 +135,8 @@ const TabNavigator = () => {
           component={component}
           options={{
             title: label,
-            headerTitle: name === 'Home' ? 'HEALIO' : label,
-            headerShown: name === 'Home' ? false : true,
+            headerTitle: name === "Home" ? "HEALIO" : label,
+            headerShown: name === "Home" ? false : true,
           }}
         />
       ))}
@@ -78,13 +145,18 @@ const TabNavigator = () => {
 };
 
 const ts = StyleSheet.create({
-  iconWrap: {
-    width: 48, height: 34, borderRadius: 17,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  iconWrapSmall: {
-    width: 38, height: 28, borderRadius: 14,
-  },
+iconWrap: {
+  width: 36,
+  height: 32,
+  borderRadius: 10,
+  alignItems: "center",
+  justifyContent: "center",
+},
+iconWrapSmall: {
+  width: 30,
+  height: 28,
+  borderRadius: 8,
+},
 });
 
 export default TabNavigator;
