@@ -10,6 +10,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAppTheme } from '../../styles/ThemeContext';
+import Button from '../common/Button';
 import GoogleIcon from '../common/GoogleIcon';
 
 const LoginForm = ({ onSubmit, onForgotPassword, onRegister, onGoogleSignIn }) => {
@@ -105,12 +106,18 @@ const LoginForm = ({ onSubmit, onForgotPassword, onRegister, onGoogleSignIn }) =
       </TouchableOpacity>
 
       {/* Login button */}
-      <TouchableOpacity onPress={handleLogin} disabled={disabled} activeOpacity={0.85} style={{ marginBottom: 24 }}>
-        <LinearGradient colors={disabled ? [colors.textTertiary, colors.textTertiary] : colors.primaryGrad} style={s.primaryBtn}>
-          <Ionicons name="log-in-outline" size={20} color="#FFF" style={{ marginRight: 8 }} />
-          <Text style={s.primaryBtnText}>{loading ? 'Signing in...' : 'Login'}</Text>
-        </LinearGradient>
-      </TouchableOpacity>
+      <Button
+        variant="primary"
+        size="large"
+        icon="log-in-outline"
+        onPress={handleLogin}
+        loading={loading}
+        disabled={disabled}
+        colors={colors}
+        style={{ marginBottom: 24 }}
+      >
+        Login
+      </Button>
 
       {/* Divider */}
       <View style={s.dividerRow}>
@@ -120,10 +127,16 @@ const LoginForm = ({ onSubmit, onForgotPassword, onRegister, onGoogleSignIn }) =
       </View>
 
       {/* Google sign-in */}
-      <TouchableOpacity style={[s.googleBtn, { borderColor: colors.border, backgroundColor: colors.card }]} activeOpacity={0.8} onPress={onGoogleSignIn}>
-        <GoogleIcon size={20} />
-        <Text style={[s.googleText, { color: colors.text }]}>Continue with Google</Text>
-      </TouchableOpacity>
+      <Button
+        variant="outline"
+        size="large"
+        onPress={onGoogleSignIn}
+        colors={colors}
+        style={{ marginBottom: 32 }}
+      >
+        <GoogleIcon size={18} style={{ marginRight: 6 }} />
+        <Text style={[{ color: colors.text, fontSize: 15, fontWeight: '600' }]}>Continue with Google</Text>
+      </Button>
 
       {/* Register link */}
       <View style={s.linkRow}>
@@ -165,24 +178,6 @@ const s = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
   },
-  primaryBtn: {
-    height: 56,
-    borderRadius: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#14B8A6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 6,
-  },
-  primaryBtnText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
   dividerRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -190,20 +185,6 @@ const s = StyleSheet.create({
   },
   dividerLine: { flex: 1, height: 1 },
   dividerText: { marginHorizontal: 16, fontSize: 13, fontWeight: '500' },
-  googleBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 56,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    marginBottom: 32,
-    gap: 10,
-  },
-  googleText: {
-    fontSize: 15,
-    fontWeight: '600',
-  },
   linkRow: { flexDirection: 'row', justifyContent: 'center' },
   linkLabel: { fontSize: 14 },
   linkAction: { fontSize: 14, fontWeight: '700' },

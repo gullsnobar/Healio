@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import { TextInput, Switch, Menu, Button } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAppTheme } from '../../styles/ThemeContext';
+import Dropdown from '../common/Dropdown';
 
 const PURPOSE_OPTIONS = [
   'General Checkup',
@@ -29,10 +29,10 @@ const EditAppointmentForm = ({ initialData = {}, onSubmit, onDelete, onCancel })
   const [specialty, setSpecialty] = useState(initialData.specialty || '');
   const [location, setLocation] = useState(initialData.location || '');
   const [date, setDate] = useState(
-    initialData.date ? new Date(initialData.date) : new Date()
+    initialData.date ? new Date(initialData.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
   );
   const [time, setTime] = useState(
-    initialData.time ? new Date(initialData.time) : new Date()
+    initialData.time ? new Date(initialData.time).toTimeString().slice(0, 5) : new Date().toTimeString().slice(0, 5)
   );
   const [purpose, setPurpose] = useState(
     PURPOSE_OPTIONS.includes(initialData.purpose) ? initialData.purpose : initialData.purpose ? 'Other' : ''
@@ -44,27 +44,9 @@ const EditAppointmentForm = ({ initialData = {}, onSubmit, onDelete, onCancel })
   const [enableReminder, setEnableReminder] = useState(
     initialData.enableReminder ?? true
   );
-
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
-  const [showPurposeMenu, setShowPurposeMenu] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const formatDate = (d) =>
-    d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-  const formatTime = (t) =>
-    t.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
-  const handleDateChange = (event, selectedDate) => {
-    setShowDatePicker(Platform.OS === 'ios');
-    if (selectedDate) setDate(selectedDate);
-  };
-
-  const handleTimeChange = (event, selectedTime) => {
-    setShowTimePicker(Platform.OS === 'ios');
-    if (selectedTime) setTime(selectedTime);
-  };
+  const purposeOptions = PURPOSE_OPTIONS;
 
   const validate = () => {
     if (!doctorName.trim()) {
@@ -86,13 +68,18 @@ const EditAppointmentForm = ({ initialData = {}, onSubmit, onDelete, onCancel })
     if (!validate()) return;
     setSubmitting(true);
     try {
+      const dateObj = new Date(date + 'T00:00:00');
+      const [hours, minutes] = time.split(':');
+      const timeObj = new Date();
+      timeObj.setHours(parseInt(hours), parseInt(minutes));
+      
       await onSubmit?.({
         id: initialData.id,
         doctorName: doctorName.trim(),
         specialty: specialty.trim(),
         location: location.trim(),
-        date: date.toISOString(),
-        time: time.toISOString(),
+        date: dateObj.toISOString(),
+        time: timeObj.toISOString(),
         purpose: purpose === 'Other' ? customPurpose.trim() : purpose,
         notes: notes.trim(),
         enableReminder,
@@ -159,66 +146,34 @@ const EditAppointmentForm = ({ initialData = {}, onSubmit, onDelete, onCancel })
 
         <Text style={[styles.sectionTitle, { marginTop: 20, color: colors.text }]}>Date & Time</Text>
 
-        <TouchableOpacity style={[styles.pickerButton, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={() => setShowDatePicker(true)}>
-          <Ionicons name="calendar-outline" size={20} color={colors.primary} />
-          <Text style={[styles.pickerText, { color: colors.text }]}>{formatDate(date)}</Text>
-          <Ionicons name="chevron-down" size={18} color={colors.textTertiary} />
-        </TouchableOpacity>
+        <Dropdown
+          label="Date"
+          mode="date"
+          value={date}
+          onChange={setDate}
+          placeholder="Select appointment date"
+          required
+        />
 
-        {showDatePicker && (
-          <DateTimePicker
-            value={date}
-            mode="date"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={handleDateChange}
-            minimumDate={new Date()}
-          />
-        )}
-
-        <TouchableOpacity style={[styles.pickerButton, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={() => setShowTimePicker(true)}>
-          <Ionicons name="time-outline" size={20} color={colors.primary} />
-          <Text style={[styles.pickerText, { color: colors.text }]}>{formatTime(time)}</Text>
-          <Ionicons name="chevron-down" size={18} color={colors.textTertiary} />
-        </TouchableOpacity>
-
-        {showTimePicker && (
-          <DateTimePicker
-            value={time}
-            mode="time"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={handleTimeChange}
-          />
-        )}
+        <Dropdown
+          label="Time"
+          mode="time"
+          value={time}
+          onChange={setTime}
+          placeholder="Select appointment time"
+          required
+        />
 
         <Text style={[styles.sectionTitle, { marginTop: 20, color: colors.text }]}>Details</Text>
 
-        <Menu
-          visible={showPurposeMenu}
-          onDismiss={() => setShowPurposeMenu(false)}
-          anchor={
-            <TouchableOpacity
-              style={[styles.pickerButton, { backgroundColor: colors.card, borderColor: colors.border }]}
-              onPress={() => setShowPurposeMenu(true)}
-            >
-              <Ionicons name="document-text-outline" size={20} color={colors.primary} />
-              <Text style={[styles.pickerText, { color: purpose ? colors.text : colors.textTertiary }]}>
-                {purpose || 'Select Purpose *'}
-              </Text>
-              <Ionicons name="chevron-down" size={18} color={colors.textTertiary} />
-            </TouchableOpacity>
-          }
-        >
-          {PURPOSE_OPTIONS.map((opt) => (
-            <Menu.Item
-              key={opt}
-              title={opt}
-              onPress={() => {
-                setPurpose(opt);
-                setShowPurposeMenu(false);
-              }}
-            />
-          ))}
-        </Menu>
+        <Dropdown
+          label="Purpose"
+          options={purposeOptions}
+          value={purpose}
+          onChange={setPurpose}
+          placeholder="Select appointment purpose"
+          required
+        />
 
         {purpose === 'Other' && (
           <TextInput
@@ -313,19 +268,6 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 12,
-  },
-  pickerButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderRadius: 6,
-    padding: 14,
-    marginBottom: 12,
-  },
-  pickerText: {
-    flex: 1,
-    fontSize: 15,
-    marginLeft: 10,
   },
   reminderRow: {
     flexDirection: 'row',

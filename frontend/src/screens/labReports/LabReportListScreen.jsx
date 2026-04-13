@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
 import LabReportList from '../../components/labReports/LabReportList';
+import Tooltip from '../../components/common/Tooltip';
 import { fetchLabReports } from '../../redux/slices/labReportSlice';
 
 const LabReportListScreen = ({ navigation }) => {
@@ -14,9 +15,11 @@ const LabReportListScreen = ({ navigation }) => {
   return (
     <View style={[s.c, { backgroundColor: colors.background }]}>
       <LabReportList reports={reports} loading={loading} onItemPress={(r) => navigation.navigate('ViewLabReport', { id: r._id })} />
-      <TouchableOpacity style={[s.fab, { backgroundColor: colors.primary }]} onPress={() => navigation.navigate('UploadLabReport')}>
-        <Ionicons name="cloud-upload" size={24} color="#FFF" />
-      </TouchableOpacity>
+      <Tooltip text="Upload lab report">
+        <TouchableOpacity style={[s.fab, { backgroundColor: colors.primary }]} onPress={() => navigation.navigate('UploadLabReport')}>
+          <Ionicons name="cloud-upload" size={24} color="#FFF" />
+        </TouchableOpacity>
+      </Tooltip>
     </View>
   );
 };

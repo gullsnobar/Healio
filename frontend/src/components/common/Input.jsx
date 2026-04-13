@@ -85,6 +85,8 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 15,
+    minHeight: 50,
+    paddingVertical: 10,
   },
   error: {
     paddingHorizontal: 0,

@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { authAPI } from '../../services/api/authAPI';
 import { useAppTheme } from '../../styles/ThemeContext';
+import Button from '../../components/common/Button';
 
 const ForgotPasswordScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -75,11 +76,18 @@ const ForgotPasswordScreen = ({ navigation }) => {
         </View>
 
         {/* Send Code button */}
-        <TouchableOpacity onPress={handleSubmit} disabled={disabled} activeOpacity={0.85} style={{ marginBottom: 32 }}>
-          <LinearGradient colors={disabled ? [colors.textTertiary, colors.textTertiary] : colors.primaryGrad} style={s.primaryBtn}>
-            <Text style={s.primaryBtnText}>{loading ? 'Sending...' : 'Send Code'}</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+        <Button
+          variant="primary"
+          size="large"
+          icon="mail-check-outline"
+          onPress={handleSubmit}
+          loading={loading}
+          disabled={disabled}
+          colors={colors}
+          style={{ marginBottom: 32 }}
+        >
+          Send Code
+        </Button>
 
         {/* Back to login */}
         <View style={s.linkRow}>
@@ -139,23 +147,6 @@ const s = StyleSheet.create({
     letterSpacing: 0.2,
     height: '100%',
     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
-  },
-  primaryBtn: {
-    height: 56,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#14B8A6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 6,
-  },
-  primaryBtnText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 0.5,
   },
   linkRow: { flexDirection: 'row', justifyContent: 'center' },
   linkLabel: { fontSize: 14 },

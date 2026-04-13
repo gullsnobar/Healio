@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Platform, Alert, ActivityIndicator,
+  View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Platform, Alert, ActivityIndicator, Dimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAppTheme } from '../../styles/ThemeContext';
+import Button from '../common/Button';
+import Dropdown from '../common/Dropdown';
+import CustomDatePicker from '../common/CustomDatePicker';
+
+const { width: SCREEN_W } = Dimensions.get('window');
+const IS_SMALL = SCREEN_W < 400;
 
 const REPEAT_OPTIONS = ['none', 'daily', 'weekly', 'monthly'];
 const FREQUENCY_OPTIONS = ['Once daily', 'Twice daily', 'Three times daily', 'Every 8 hours', 'As needed'];
@@ -17,6 +22,7 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
 
   const [title, setTitle] = useState(initialValues.title || '');
   const [date, setDate] = useState(initialValues.date ? new Date(initialValues.date) : new Date());
+  const [dateValue, setDateValue] = useState(initialValues.date ? initialValues.date.split('T')[0] : '');
   const [time, setTime] = useState(initialValues.time || '09:00');
   const [notes, setNotes] = useState(initialValues.notes || '');
   const [repeat, setRepeat] = useState(initialValues.repeat || 'none');
@@ -67,10 +73,10 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
     onSubmit(payload);
   };
 
-  const bg = isDark ? '#1E293B' : '#FFF';
-  const inputBg = isDark ? '#334155' : '#F1F5F9';
-  const textColor = isDark ? '#E2E8F0' : '#1F2937';
-  const placeholderColor = isDark ? '#64748B' : '#94A3B8';
+  const bg = '#1E293B';
+  const inputBg = '#1E293B';
+  const textColor = '#F8FAFC';
+  const placeholderColor = '#64748B';
 
   const InputField = ({ label, value, onChangeText, placeholder, multiline, ...rest }) => (
     <View style={s.fieldGroup}>
@@ -108,7 +114,7 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
   );
 
   return (
-    <ScrollView style={[s.container, { backgroundColor: isDark ? '#0F172A' : '#F8FAFC' }]} contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+    <ScrollView style={[s.container, { backgroundColor: '#0F172A' }]} contentContainerStyle={{ padding: 16, paddingBottom: 92 }}>
       {/* Common fields */}
       <View style={[s.section, { backgroundColor: bg }]}>
         <Text style={[s.sectionTitle, { color: colors.primary }]}>Basic Info</Text>
@@ -117,45 +123,56 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
         {/* Date */}
         <View style={s.fieldGroup}>
           <Text style={[s.fieldLabel, { color: isDark ? '#94A3B8' : '#475569' }]}>Date</Text>
-          <TouchableOpacity style={[s.dateBtn, { backgroundColor: inputBg }]} onPress={() => setShowDatePicker(true)}>
-            <Ionicons name="calendar-outline" size={18} color={colors.primary} />
-            <Text style={[s.dateBtnText, { color: textColor }]}>{date.toLocaleDateString()}</Text>
+          <TouchableOpacity
+            onPress={() => setShowDatePicker(true)}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              borderRadius: 12,
+              borderWidth: 1.5,
+              borderColor: '#334155',
+              backgroundColor: '#1E293B',
+              paddingHorizontal: 16,
+              height: 52,
+            }}
+          >
+      <Text style={{ color: textColor, fontSize: 15 }}>
+              {dateValue || 'Select date'}
+            </Text>
+            <Ionicons name="calendar-outline" size={20} color="#14B8A6" />
           </TouchableOpacity>
         </View>
+        <CustomDatePicker
+          visible={showDatePicker}
+          value={dateValue}
+          onConfirm={(date) => {
+            setDateValue(date);
+            setDate(new Date(date + 'T00:00:00'));
+            setShowDatePicker(false);
+          }}
+          onCancel={() => setShowDatePicker(false)}
+        />
 
         {/* Time */}
-        <View style={s.fieldGroup}>
-          <Text style={[s.fieldLabel, { color: isDark ? '#94A3B8' : '#475569' }]}>Time</Text>
-          <TouchableOpacity style={[s.dateBtn, { backgroundColor: inputBg }]} onPress={() => setShowTimePicker(true)}>
-            <Ionicons name="time-outline" size={18} color={colors.primary} />
-            <Text style={[s.dateBtnText, { color: textColor }]}>{time}</Text>
-          </TouchableOpacity>
-        </View>
+        <Dropdown
+          label="Time"
+          value={time}
+          placeholder="Select time"
+          mode="time"
+          onChange={setTime}
+          required
+        />
 
-        <ChipSelect label="Repeat" options={REPEAT_OPTIONS} value={repeat} onChange={setRepeat} />
+        <Dropdown
+          label="Repeat"
+          value={repeat}
+          options={REPEAT_OPTIONS}
+          placeholder="Select repeat frequency"
+          onSelect={setRepeat}
+        />
         <InputField label="Notes" value={notes} onChangeText={setNotes} placeholder="Optional notes…" multiline />
       </View>
-
-      {showDatePicker && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={(e, d) => { setShowDatePicker(false); if (d) setDate(d); }}
-          minimumDate={new Date()}
-        />
-      )}
-      {showTimePicker && (
-        <DateTimePicker
-          value={(() => { const [h, m] = time.split(':'); const d = new Date(); d.setHours(+h, +m); return d; })()}
-          mode="time"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={(e, d) => {
-            setShowTimePicker(false);
-            if (d) setTime(`${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`);
-          }}
-        />
-      )}
 
       {/* Medication-specific */}
       {reminderType === 'medication' && (
@@ -165,14 +182,26 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
           </Text>
           <InputField label="Medication Name *" value={medicationName} onChangeText={setMedicationName} placeholder="e.g. Metformin" />
           <View style={s.row}>
-            <View style={{ flex: 1, marginRight: 8 }}>
+            <View style={[s.rowItem, { flex: 1, marginRight: IS_SMALL ? 0 : 8 }]}> 
               <InputField label="Dosage" value={dosage} onChangeText={setDosage} placeholder="500" keyboardType="numeric" />
             </View>
-            <View style={{ width: 100 }}>
-              <ChipSelect label="Unit" options={['mg', 'ml', 'g', 'IU']} value={dosageUnit} onChange={setDosageUnit} />
+            <View style={[s.rowItem, { flex: IS_SMALL ? 1 : 0.4, marginTop: IS_SMALL ? 10 : 0 }]}> 
+              <Dropdown
+                label="Unit"
+                value={dosageUnit}
+                options={['mg', 'ml', 'g', 'IU']}
+                placeholder="Unit"
+                onSelect={setDosageUnit}
+              />
             </View>
           </View>
-          <ChipSelect label="Frequency" options={FREQUENCY_OPTIONS} value={frequency} onChange={setFrequency} />
+          <Dropdown
+            label="Frequency"
+            value={frequency}
+            options={FREQUENCY_OPTIONS}
+            placeholder="Select frequency"
+            onSelect={setFrequency}
+          />
           <InputField label="Instructions" value={instructions} onChangeText={setInstructions} placeholder="Take with food…" multiline />
         </View>
       )}
@@ -186,7 +215,13 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
           <InputField label="Doctor Name *" value={doctorName} onChangeText={setDoctorName} placeholder="e.g. Dr. Smith" />
           <InputField label="Specialty" value={specialty} onChangeText={setSpecialty} placeholder="e.g. Cardiology" />
           <InputField label="Location" value={location} onChangeText={setLocation} placeholder="e.g. City Hospital" />
-          <ChipSelect label="Type" options={APPOINTMENT_TYPES} value={appointmentType} onChange={setAppointmentType} />
+          <Dropdown
+            label="Appointment Type"
+            value={appointmentType}
+            options={APPOINTMENT_TYPES}
+            placeholder="Select type"
+            onSelect={setAppointmentType}
+          />
         </View>
       )}
 
@@ -197,43 +232,57 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
             <Ionicons name="flask-outline" size={16} /> Lab Report Details
           </Text>
           <InputField label="Lab Name" value={labName} onChangeText={setLabName} placeholder="e.g. HealthLab" />
-          <ChipSelect label="Report Type" options={REPORT_TYPES} value={reportType} onChange={setReportType} />
+          <Dropdown
+            label="Report Type"
+            value={reportType}
+            options={REPORT_TYPES}
+            placeholder="Select report type"
+            onSelect={setReportType}
+          />
           <InputField label="Test Name" value={testName} onChangeText={setTestName} placeholder="e.g. Complete Blood Count" />
           <InputField label="Ordered By" value={orderedBy} onChangeText={setOrderedBy} placeholder="Doctor who ordered" />
         </View>
       )}
 
       {/* Submit */}
-      <TouchableOpacity style={[s.submitBtn, { opacity: loading ? 0.6 : 1 }]} onPress={handleSubmit} disabled={loading} activeOpacity={0.85}>
-        <LinearGradient colors={[colors.primary, colors.primaryDark]} style={s.submitGrad}>
-          {loading ? <ActivityIndicator color="#FFF" /> : (
-            <>
-              <Ionicons name="checkmark-circle-outline" size={20} color="#FFF" />
-              <Text style={s.submitText}>Save Reminder</Text>
-            </>
-          )}
-        </LinearGradient>
-      </TouchableOpacity>
+      <View style={s.submitWrapper}>
+        <Button
+          variant="primary"
+          size="large"
+          onPress={handleSubmit}
+          disabled={loading}
+          loading={loading}
+          icon="checkmark-circle-outline"
+          colors={colors}
+        >
+          {loading ? 'Saving...' : 'Save Reminder'}
+        </Button>
+        <Text style={[s.buttonDesc, { color: colors.textSecondary }]}> 
+          {reminderType === 'medication' ? 'Set up medication reminders to stay on track with your treatment' :
+           reminderType === 'appointment' ? 'Schedule appointment reminders to never miss important visits' :
+           'Create lab report reminders to track your health tests'}
+        </Text>
+      </View>
     </ScrollView>
   );
 };
 
 const s = StyleSheet.create({
   container: { flex: 1 },
-  section: { borderRadius: 14, padding: 16, marginBottom: 16, elevation: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4 },
-  sectionTitle: { fontSize: 15, fontWeight: '700', marginBottom: 14 },
+  section: { borderRadius: 14, padding: IS_SMALL ? 12 : 16, marginBottom: 16, elevation: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4 },
+  sectionTitle: { fontSize: IS_SMALL ? 14 : 15, fontWeight: '700', marginBottom: 14 },
   fieldGroup: { marginBottom: 14 },
-  fieldLabel: { fontSize: 12, fontWeight: '600', marginBottom: 6 },
-  input: { borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14 },
-  dateBtn: { flexDirection: 'row', alignItems: 'center', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12 },
-  dateBtnText: { fontSize: 14, marginLeft: 8 },
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  chip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5 },
-  chipText: { fontSize: 12, fontWeight: '500' },
-  row: { flexDirection: 'row', alignItems: 'flex-start' },
-  submitBtn: { marginTop: 8 },
-  submitGrad: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 16, borderRadius: 12 },
-  submitText: { color: '#FFF', fontSize: 16, fontWeight: '700', marginLeft: 8 },
+  fieldLabel: { fontSize: IS_SMALL ? 12 : 13, fontWeight: '600', marginBottom: 6 },
+  input: { borderRadius: 12, paddingHorizontal: 16, paddingVertical: IS_SMALL ? 12 : 14, fontSize: 15, minHeight: 52, borderColor: '#334155', borderWidth: 1.5 },
+  dateBtn: { flexDirection: 'row', alignItems: 'center', borderRadius: 10, paddingHorizontal: IS_SMALL ? 12 : 14, paddingVertical: IS_SMALL ? 12 : 14 },
+  row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start' },
+  rowItem: { minWidth: 120, flexBasis: '48%' },
+  dateBtnText: { fontSize: IS_SMALL ? 13 : 14, marginLeft: 8 },
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: IS_SMALL ? 4 : 6 },
+  chip: { paddingHorizontal: IS_SMALL ? 10 : 12, paddingVertical: IS_SMALL ? 6 : 7, borderRadius: 20, borderWidth: 1.5 },
+  chipText: { fontSize: IS_SMALL ? 11 : 12, fontWeight: '500' },
+  submitWrapper: { marginTop: 16, marginBottom: 32 },
+  buttonDesc: { fontSize: IS_SMALL ? 11 : 12, textAlign: 'center', marginTop: 8, lineHeight: IS_SMALL ? 16 : 18 },
 });
 
 export default ReminderForm;

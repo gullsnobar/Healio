@@ -1,5 +1,5 @@
 ﻿import React, { useEffect } from 'react';
-import { ScrollView, StyleSheet, View, Text, StatusBar, Platform, TouchableOpacity } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, StatusBar, Platform, TouchableOpacity, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector, useDispatch } from 'react-redux';
@@ -10,6 +10,9 @@ import HealthScoreWidget from '../../components/dashboard/HealthScoreWidget';
 import AIHealthInsightsWidget from '../../components/dashboard/AIHealthInsightsWidget';
 import { fetchDashboardData } from '../../redux/slices/userSlice';
 import { fetchAIHealthInsights } from '../../redux/slices/aiInsightsSlice';
+
+const { width: SCREEN_W } = Dimensions.get('window');
+const IS_SMALL = SCREEN_W < 400;
 
 const StatCard = ({ icon, label, value, color, bg, colors }) => (
   <View style={[ds.statCard, { backgroundColor: bg },
@@ -104,6 +107,7 @@ const DashboardScreen = ({ navigation }) => {
               </View>
               <Ionicons name="chevron-forward" size={18} color={colors.textTertiary} />
             </TouchableOpacity>
+            <Text style={ds.buttonDesc}>View detailed health analysis and recommendations</Text>
           </>
         )}
 
@@ -127,24 +131,25 @@ const DashboardScreen = ({ navigation }) => {
 const ds = StyleSheet.create({
   c: { flex: 1 },
   content: { paddingBottom: 32 },
-  header: { paddingTop: 16, paddingBottom: 28, paddingHorizontal: 20, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
-  headerTitle: { color: '#fff', fontSize: 22, fontWeight: '800', letterSpacing: -0.3 },
-  headerSub: { color: 'rgba(255,255,255,0.75)', fontSize: 13, marginTop: 2 },
-  body: { paddingHorizontal: 16, paddingTop: 20 },
-  sectionTitle: { fontSize: 15, fontWeight: '700', marginBottom: 12, marginTop: 4 },
+  header: { paddingTop: IS_SMALL ? 12 : 16, paddingBottom: IS_SMALL ? 24 : 28, paddingHorizontal: IS_SMALL ? 16 : 20, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
+  headerTitle: { color: '#fff', fontSize: IS_SMALL ? 20 : 22, fontWeight: '800', letterSpacing: -0.3 },
+  headerSub: { color: 'rgba(255,255,255,0.75)', fontSize: IS_SMALL ? 12 : 13, marginTop: 2 },
+  body: { paddingHorizontal: IS_SMALL ? 12 : 16, paddingTop: IS_SMALL ? 16 : 20 },
+  sectionTitle: { fontSize: IS_SMALL ? 14 : 15, fontWeight: '700', marginBottom: 12, marginTop: 4 },
   sectionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  seeAll: { fontSize: 13, fontWeight: '600' },
-  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 },
-  statCard: { flex: 1, minWidth: '44%', alignItems: 'center', paddingVertical: 16, borderRadius: 16 },
-  statVal: { fontSize: 20, fontWeight: '800', marginTop: 6 },
-  statLabel: { fontSize: 11, marginTop: 3, fontWeight: '500' },
-  mealCard: { borderRadius: 16, padding: 16, marginBottom: 20, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 },
+  seeAll: { fontSize: IS_SMALL ? 12 : 13, fontWeight: '600' },
+  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: IS_SMALL ? 8 : 10, marginBottom: 20 },
+  statCard: { flex: 1, minWidth: IS_SMALL ? '46%' : '44%', alignItems: 'center', paddingVertical: IS_SMALL ? 14 : 16, borderRadius: 16 },
+  statVal: { fontSize: IS_SMALL ? 18 : 20, fontWeight: '800', marginTop: 6 },
+  statLabel: { fontSize: IS_SMALL ? 10 : 11, marginTop: 3, fontWeight: '500' },
+  mealCard: { borderRadius: 16, padding: IS_SMALL ? 14 : 16, marginBottom: 20, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 },
   mealRow: { flexDirection: 'row', justifyContent: 'space-around' },
   mealStat: { alignItems: 'center', gap: 4 },
-  mealVal: { fontSize: 18, fontWeight: '800' },
-  mealLabel: { fontSize: 11, fontWeight: '500' },
-  insightCard: { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 14, borderLeftWidth: 4, marginBottom: 20 },
-  insightTitle: { fontSize: 13, fontWeight: '700' },
-  insightDesc: { fontSize: 11, marginTop: 2, lineHeight: 16 },
+  mealVal: { fontSize: IS_SMALL ? 16 : 18, fontWeight: '800' },
+  mealLabel: { fontSize: IS_SMALL ? 10 : 11, fontWeight: '500' },
+  insightCard: { flexDirection: 'row', alignItems: 'center', padding: IS_SMALL ? 12 : 14, borderRadius: 14, borderLeftWidth: 4, marginBottom: 20 },
+  insightTitle: { fontSize: IS_SMALL ? 12 : 13, fontWeight: '700' },
+  insightDesc: { fontSize: IS_SMALL ? 10 : 11, marginTop: 2, lineHeight: IS_SMALL ? 14 : 16 },
+  buttonDesc: { fontSize: IS_SMALL ? 11 : 12, color: '#64748B', textAlign: 'center', marginTop: -16, marginBottom: 20, lineHeight: IS_SMALL ? 16 : 18 },
 });
 export default DashboardScreen;

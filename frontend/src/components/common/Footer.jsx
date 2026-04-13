@@ -17,13 +17,15 @@ const Footer = ({ text, style }) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
     alignItems: 'center',
     justifyContent: 'center',
     borderTopWidth: StyleSheet.hairlineWidth,
   },
   text: {
     fontSize: 13,
+    textAlign: 'center',
   },
 });
 
