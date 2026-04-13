@@ -74,7 +74,6 @@ const startServer = async () => {
       logger.warn('⚠ Failed to start cron jobs:', jobErr.message);
     }
 
-<<<<<<< HEAD
     // Start Express server
     const server = app.listen(PORT, () => {
       logger.info(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
@@ -98,21 +97,6 @@ const startServer = async () => {
     });
   } catch (err) {
     logger.error('Server startup failed:', err);
-=======
-    const server = app.listen(PORT, () => {
-      logger.info('Server running on port ' + PORT + ' in ' + process.env.NODE_ENV + ' mode');
-    });
-
-    server.on('error', (error) => {
-      if (error.code === 'EADDRINUSE') {
-        logger.error(`Port ${PORT} is already in use. Stop the running server or set a different PORT.`);
-        process.exit(1);
-      }
-      throw error;
-    });
-  } catch (error) {
-    logger.error('Server startup failed:', error);
->>>>>>> rabail-dev
     process.exit(1);
   }
 };
