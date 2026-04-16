@@ -70,8 +70,6 @@ const light = {
   primaryDeep:    palette.tealDeep,
   primaryLight:   palette.tealLight,
   primarySoft:    palette.tealSoft,
-  primaryGrad:    [palette.teal, palette.tealDark],
-  brandGrad:      [palette.teal, palette.emerald],
 
   // Accents
   secondary:      palette.emerald,
@@ -114,13 +112,8 @@ const light = {
   fitnessDietBg:  palette.emeraldLight,
   fitnessHeart:   palette.pink,
   fitnessHeartBg: palette.pinkLight,
-  stepsGrad:      [palette.blueDark, palette.blue],
-  sleepGrad:      [palette.indigo, palette.violet],
-  waterGrad:      [palette.aqua, '#67E8F9'],
-  calGrad:        [palette.orange, '#FDBA74'],
 
   // AI chatbot
-  aiGrad:         [palette.teal, palette.blue],
   aiBot:          palette.tealLight,
   aiBotIcon:      palette.tealDark,
 
@@ -136,6 +129,11 @@ const light = {
   midGrey:        palette.slateMid,
   darkGrey:       palette.slateDark,
 
+  // Text colors (theme-based)
+  text:           '#000000',  // Black text for light mode
+  textSecondary:  '#000000',  // Black secondary text for light mode
+  textTertiary:   '#000000',  // Black tertiary text for light mode
+
   // Surfaces
   background:     palette.offWhite,
   card:           palette.white,
@@ -147,31 +145,32 @@ const light = {
   neuDark:        '#D1D9E6',
   neuBg:          '#E8EDF5',
 
-  // Glassmorphism
-  glass:          'rgba(255,255,255,0.7)',
-  glassBorder:    'rgba(255,255,255,0.5)',
+  // Additional UI tokens
+  border:         palette.slateMid,
+  shadow:         'rgba(0, 0, 0, 0.1)',
+  overlay:        'rgba(0, 0, 0, 0.3)',
 
-  // Text
-  text:           palette.deepInk,
-  textSecondary:  palette.slateDark,
-  textTertiary:   palette.slate,
-  textInverse:    palette.white,
+  // Fitness card gradients
+  stepsGrad:      [palette.blue, palette.blueDark],
+  sleepGrad:      [palette.indigo, '#4F46E5'],
+  waterGrad:      [palette.aqua, '#0891B2'],
 
-  // Border
-  border:         '#E2E8F0',
-  borderLight:    '#F1F5F9',
-  inputBorder:    '#CBD5E1',
+  // Primary gradient (used by FAB and buttons)
+  primaryGrad:    [palette.teal, palette.tealDark],
 
-  // Misc
-  overlay:        'rgba(15,23,42,0.5)',
-  shadow:         'rgba(0,0,0,0.08)',
-  shadowStrong:   'rgba(0,0,0,0.15)',
-
-  // Tab & Navigation
-  tabActive:      palette.teal,
-  tabInactive:    palette.slate,
-  tabActiveBg:    palette.tealLight,
-  headerGrad:     [palette.tealDark, palette.teal],
+  // Action button colors (light theme)
+  actionDietText:     palette.amberDark,
+  actionDietBg:       palette.amberLight,
+  actionManualText:   palette.indigo,
+  actionManualBg:     palette.indigoLight,
+  actionExerciseText: palette.violet,
+  actionExerciseBg:   palette.violetLight,
+  actionMealText:     palette.orange,
+  actionMealBg:       palette.orangeLight,
+  actionChartsText:   '#0369A1',
+  actionChartsBg:     palette.blueLight,
+  actionAIText:       palette.emerald,
+  actionAIBg:         palette.emeraldLight,
 };
 
 // ── Dark theme tokens ──
@@ -184,8 +183,6 @@ const dark = {
   primaryDeep:    palette.tealDeep,
   primaryLight:   '#064E3B',
   primarySoft:    '#065F46',
-  primaryGrad:    [palette.tealDark, palette.teal],
-  brandGrad:      [palette.emeraldDark, palette.teal],
 
   // Accents (brighter for dark bg)
   secondary:      palette.emerald,
@@ -221,39 +218,37 @@ const dark = {
   neuDark:        '#0B1120',
   neuBg:          palette.darkCard,
 
-  // Glassmorphism dark
-  glass:          'rgba(30,41,59,0.8)',
-  glassBorder:    'rgba(51,65,85,0.5)',
+  // Text colors (theme-based)
+  text:           '#FFFFFF',  // White text for dark mode
+  textSecondary:  '#FFFFFF',  // White secondary text for dark mode
+  textTertiary:   '#FFFFFF',  // White tertiary text for dark mode
 
-  // Neutrals
-  white:          palette.darkBg,
-  black:          palette.white,
-  grey:           palette.slate,
-  lightGrey:      palette.darkSurface,
-  midGrey:        palette.darkElevated,
-  darkGrey:       palette.slateMid,
-
-  // Text
-  text:           palette.darkText,
-  textSecondary:  palette.slateMid,
-  textTertiary:   '#A8B5C4',            // bumped from #94A3B8 for WCAG AA on dark cards
-  textInverse:    palette.deepInk,
-
-  // Border
+  // Additional UI tokens (dark mode)
   border:         palette.darkSurface,
-  borderLight:    '#1E293B',
-  inputBorder:    '#475569',
+  shadow:         'rgba(0, 0, 0, 0.5)',
+  overlay:        'rgba(0, 0, 0, 0.6)',
 
-  // Misc
-  overlay:        'rgba(0,0,0,0.7)',
-  shadow:         'rgba(0,0,0,0.3)',
-  shadowStrong:   'rgba(0,0,0,0.5)',
+  // Fitness card gradients (dark theme)
+  stepsGrad:      ['#1E3A8A', '#1E40AF'],
+  sleepGrad:      ['#3730A3', '#4F46E5'],
+  waterGrad:      ['#0E7490', '#0891B2'],
 
-  // Tab & Navigation  
-  tabActive:      palette.teal,
-  tabInactive:    palette.slate,
-  tabActiveBg:    '#064E3B',
-  headerGrad:     [palette.deepInk, palette.darkCard],
+  // Primary gradient (dark theme)
+  primaryGrad:    ['#0D6560', '#0F766E'],
+
+  // Action button colors (dark theme)
+  actionDietText:     '#FB923C',
+  actionDietBg:       '#7C2D12',
+  actionManualText:   '#C4B5FD',
+  actionManualBg:     '#3B1F7E',
+  actionExerciseText: '#C4B5FD',
+  actionExerciseBg:   '#3B1F7E',
+  actionMealText:     '#FB923C',
+  actionMealBg:       '#7C2D12',
+  actionChartsText:   '#7DD3FC',
+  actionChartsBg:     '#1E3A5F',
+  actionAIText:       '#6EE7B7',
+  actionAIBg:         '#064E3B',
 
   // AI
   aiBot:          palette.darkSurface,

@@ -59,21 +59,23 @@ const healthInsightSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchInsights.pending, (state) => { state.loading = true; })
+      .addCase(fetchInsights.pending, (state) => { state.loading = true; state.error = null; })
       .addCase(fetchInsights.fulfilled, (state, action) => {
         state.loading = false;
-        state.insights = action.payload.insights;
-        state.summary = action.payload.summary;
+        state.insights = action.payload.insights || [];
+        state.summary = action.payload.summary || state.summary;
         state.pagination = action.payload.pagination;
       })
       .addCase(fetchInsights.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
-      .addCase(generateInsights.pending, (state) => { state.generating = true; })
+      .addCase(generateInsights.pending, (state) => { state.generating = true; state.error = null; })
       .addCase(generateInsights.fulfilled, (state, action) => {
         state.generating = false;
         state.insights = [...action.payload, ...state.insights];
       })
       .addCase(generateInsights.rejected, (state, action) => { state.generating = false; state.error = action.payload; })
-      .addCase(fetchHealthSummary.fulfilled, (state, action) => { state.summary = action.payload; })
+      .addCase(fetchHealthSummary.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(fetchHealthSummary.fulfilled, (state, action) => { state.loading = false; state.summary = action.payload; })
+      .addCase(fetchHealthSummary.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
       .addCase(dismissInsight.fulfilled, (state, action) => {
         state.insights = state.insights.filter((i) => i._id !== action.payload);
       })

@@ -1,8 +1,14 @@
 ﻿const dotenv = require('dotenv');
 const path = require('path');
 
-// Load .env from the backend directory
-dotenv.config({ path: path.join(__dirname, '.env') });
+// Load .env from the backend directory - do not log sensitive data
+const envPath = path.join(__dirname, '.env');
+const result = dotenv.config({ path: envPath });
+if (result.error && result.error.code !== 'ENOENT') {
+  console.warn('⚠️  Warning: Could not load .env file');
+} else if (!result.error) {
+  console.log('✓ Environment variables loaded');
+}
 
 const dns = require('dns');
 const fs = require('fs');

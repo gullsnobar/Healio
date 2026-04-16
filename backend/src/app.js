@@ -44,6 +44,168 @@ app.use('/api', routes);
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'OK', timestamp: new Date().toISOString() }));
 
+// ✅ List available models endpoint
+app.get("/chat/models", (req, res) => {
+  const models = {
+    free: [
+      {
+        id: "meta-llama/llama-3-8b-instruct",
+        name: "Llama 3 8B (Recommended)",
+        description: "Fast, free, and reliable for health queries",
+        type: "free"
+      },
+      {
+        id: "meta-llama/llama-2-7b-chat",
+        name: "Llama 2 7B",
+        description: "Alternative free model",
+        type: "free"
+      },
+    ],
+    premium: [
+      {
+        id: "openai/gpt-4",
+        name: "GPT-4",
+        description: "Most capable model (paid)",
+        type: "premium"
+      },
+      {
+        id: "openai/gpt-3.5-turbo",
+        name: "GPT-3.5 Turbo",
+        description: "Fast and affordable (paid)",
+        type: "premium"
+      },
+    ]
+  };
+  res.json(models);
+});
+
+// ✅ OpenRouter Chat Endpoint (Production Ready)
+// Based on: https://openrouter.ai/docs/quickstart
+app.post("/chat", async (req, res) => {
+  try {
+    const { message, model = "meta-llama/llama-3-8b-instruct" } = req.body;
+
+    // ✅ Validate inputs
+    if (!message || typeof message !== 'string' || message.trim().length === 0) {
+      return res.status(400).json({ 
+        error: "Message is required and must be a non-empty string" 
+      });
+    }
+
+    // ✅ Validate model name (prevent injection)
+    if (!model || typeof model !== 'string' || model.length > 100) {
+      return res.status(400).json({ 
+        error: "Invalid model specified" 
+      });
+    }
+
+    // ✅ Verify API key is configured
+    if (!process.env.OPENROUTER_API_KEY) {
+      console.error('❌ OPENROUTER_API_KEY not configured');
+      return res.status(503).json({ 
+        error: "AI service not configured. Please set OPENROUTER_API_KEY in environment." 
+      });
+    }
+
+    // ✅ OpenRouter API call with best practices from documentation
+    const response = await fetch(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          // Required header
+          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          
+          // ✅ Optional headers for app attribution (helps on OpenRouter leaderboards)
+          "HTTP-Referer": process.env.APP_URL || "http://localhost:3000",
+          "X-OpenRouter-Title": "Healio Health Assistant",
+        },
+        body: JSON.stringify({
+          // ✅ Model: customizable, defaults to free Llama
+          // See: https://openrouter.ai/docs/faq#how-do-i-use-a-free-model
+          model: model,
+          
+          // Messages in OpenAI format
+          messages: [
+            {
+              role: "user",
+              content: message.trim(),
+            },
+          ],
+          
+          // ✅ Optional parameters for better responses
+          temperature: 0.7,  // Balanced creativity and consistency
+          top_p: 0.95,       // Nucleus sampling
+          top_k: 40,         // Top-k sampling
+          max_tokens: 500,   // Reasonable response length for health queries
+        }),
+      }
+    );
+
+    // Parse response
+    const data = await response.json();
+
+    // ✅ Handle API errors with detailed logging
+    if (!response.ok) {
+      console.error("❌ OpenRouter API Error:", {
+        status: response.status,
+        error: data?.error,
+      });
+
+      // Return appropriate error message
+      if (response.status === 401) {
+        return res.status(503).json({ 
+          error: "Invalid API key. Please check your OPENROUTER_API_KEY." 
+        });
+      }
+      
+      if (response.status === 429) {
+        return res.status(429).json({ 
+          error: "Rate limited. Please try again in a moment." 
+        });
+      }
+
+      return res.status(response.status).json({
+        error: data?.error?.message || "OpenRouter API returned an error",
+      });
+    }
+
+    // ✅ Safe extraction using optional chaining (prevents crashes)
+    const reply = data?.choices?.[0]?.message?.content || "I apologize, I couldn't generate a response.";
+    
+    // ✅ Log successful response (useful for debugging)
+    console.log(`✅ Chat response generated (${reply.length} chars)`);
+
+    // Return success response
+    res.json({ 
+      reply,
+      // Optional: Include additional metadata for frontend
+      model: data?.model,
+      usage: data?.usage ? {
+        prompt_tokens: data.usage.prompt_tokens,
+        completion_tokens: data.usage.completion_tokens,
+        total_tokens: data.usage.total_tokens,
+      } : undefined,
+    });
+
+  } catch (error) {
+    console.error("❌ Server Error in /chat endpoint:", error.message);
+    
+    // Check for specific error types
+    if (error instanceof TypeError) {
+      return res.status(500).json({ 
+        error: "Network error. Is the OpenRouter API accessible?" 
+      });
+    }
+
+    res.status(500).json({ 
+      error: "An unexpected error occurred. Please try again.",
+      ...(process.env.NODE_ENV === 'development' && { details: error.message })
+    });
+  }
+});
+
 // OpenAI Test Endpoint
 app.get('/test-openai', async (req, res) => {
   try {

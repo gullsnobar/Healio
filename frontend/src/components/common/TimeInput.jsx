@@ -51,6 +51,9 @@ const TimeInput = ({
     return `${hours}:${minutes}`;
   };
 
+  const inputBg = colors.cardAlt;
+  const textColor = colors.text;
+  const placeholderColor = colors.textSecondary;
   const normalizedValue = parseTimeValue(value);
   const displayValue = normalizedValue ? formatTime(normalizedValue) : '';
 
@@ -83,18 +86,18 @@ const TimeInput = ({
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            backgroundColor: '#1E293B',
+            backgroundColor: inputBg,
             borderRadius: 12,
             borderWidth: 1.5,
-            borderColor: '#334155',
+            borderColor: colors.border,
             paddingHorizontal: 16,
             height: 52,
           }}
         >
-          <Text style={{ color: '#F8FAFC', fontSize: 15 }}>
+          <Text style={{ color: displayValue ? textColor : placeholderColor, fontSize: 15 }}>
             {displayValue || placeholder}
           </Text>
-          <Ionicons name="time-outline" size={20} color="#14B8A6" />
+          <Ionicons name="time-outline" size={20} color={colors.primary} />
         </TouchableOpacity>
         <CustomTimePicker
           visible={showTimePicker}
@@ -130,7 +133,7 @@ const TimeInput = ({
 
       <TouchableOpacity
         style={[styles.input, {
-          backgroundColor: isDark ? '#334155' : '#F1F5F9',
+          backgroundColor: inputBg,
           borderColor: colors.border
         }]}
         onPress={() => setShowPicker(true)}

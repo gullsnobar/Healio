@@ -180,6 +180,7 @@ const s = StyleSheet.create({
     borderWidth: 1,
     minHeight: 48,
     width: '100%',
+    maxWidth: '100%',
   },
   placeholder: { fontSize: IS_SMALL ? 15 : 16, flex: 1 },
   value: { fontSize: IS_SMALL ? 15 : 16, flex: 1 },
@@ -191,7 +192,7 @@ const s = StyleSheet.create({
     padding: IS_SMALL ? 12 : 20,
   },
   modal: {
-    width: IS_SMALL ? SCREEN_W - 24 : Math.min(SCREEN_W - 80, 420),
+    width: IS_SMALL ? SCREEN_W - 48 : Math.min(SCREEN_W - 140, 320),
     borderRadius: 14,
     elevation: 5,
     shadowColor: '#000',

@@ -6,9 +6,10 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 import { useAppTheme } from '../../styles/ThemeContext';
 import {
-  fetchInsights, generateInsights, dismissInsight, completeInsightAction,
+  fetchInsights, fetchHealthSummary, generateInsights, dismissInsight, completeInsightAction,
 } from '../../redux/slices/healthInsightSlice';
 
 const SEVERITY_CONFIG = {
@@ -97,15 +98,28 @@ const InsightCard = ({ insight, colors, onDismiss, onCompleteAction }) => {
 
 const HealthInsightsScreen = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const { colors, isDark } = useAppTheme();
-  const { insights, summary, loading, generating } = useSelector((state) => state.healthInsight);
+  const { insights, summary, loading, generating, error } = useSelector((state) => state.healthInsight);
 
-  const loadData = useCallback(() => { dispatch(fetchInsights()); }, [dispatch]);
+  const loadData = useCallback(() => { 
+    dispatch(fetchInsights()); 
+    dispatch(fetchHealthSummary());
+  }, [dispatch]);
   useEffect(() => { loadData(); }, [loadData]);
 
   const handleGenerate = () => dispatch(generateInsights());
   const handleDismiss = (id) => dispatch(dismissInsight(id));
   const handleCompleteAction = (id, actionIndex) => dispatch(completeInsightAction({ id, actionIndex }));
+  const handleGoBack = () => navigation.goBack();
+
+  // Safe summary with defaults
+  const safeSummary = summary || {
+    avgSteps: 0,
+    avgSleep: 0,
+    avgWater: 0,
+    adherenceRate: 0,
+  };
 
   return (
     <ScrollView
@@ -117,23 +131,32 @@ const HealthInsightsScreen = () => {
         colors={isDark ? ['#1E293B', '#334155'] : [colors.primaryDeep, colors.primaryDark]}
         style={s.header}
       >
-        <Text style={s.headerTitle}>AI Health Insights</Text>
-        <Text style={s.headerSub}>Personalised tips based on your activity</Text>
+        <TouchableOpacity onPress={handleGoBack} style={s.backButton} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          <Ionicons name="chevron-back" size={24} color="#FFF" />
+        </TouchableOpacity>
+        <View style={s.headerText}>
+          <Text style={s.headerTitle}>AI Health Insights</Text>
+          <Text style={s.headerSub}>Personalised tips based on your activity</Text>
+        </View>
       </LinearGradient>
 
       <View style={s.body}>
-        {/* Weekly Summary */}
-        {summary && (
-          <>
-            <Text style={[s.sectionTitle, { color: colors.text }]}>This Week's Summary</Text>
-            <View style={s.summaryGrid}>
-              <SummaryCard label="Avg Steps" value={summary.avgSteps?.toLocaleString() || '0'} icon="walk" color={colors.fitnessSteps} bg={colors.fitnessStepsBg} colors={colors} />
-              <SummaryCard label="Avg Sleep" value={`${summary.avgSleep || 0}h`} icon="moon" color={colors.fitnessSleep} bg={colors.fitnessSleepBg} colors={colors} />
-              <SummaryCard label="Avg Water" value={`${summary.avgWater || 0}ml`} icon="water" color={colors.fitnessWater} bg={colors.fitnessWaterBg} colors={colors} />
-              <SummaryCard label="Adherence" value={`${summary.adherenceRate || 0}%`} icon="medkit" color={colors.primary} bg={colors.primaryLight} colors={colors} />
-            </View>
-          </>
+        {error && (
+          <View style={[s.errorBanner, { backgroundColor: colors.danger + '10', borderColor: colors.danger }]}>
+            <Ionicons name="alert-circle" size={16} color={colors.danger} />
+            <Text style={[s.errorText, { color: colors.danger }]}>Failed to load insights: {error}</Text>
+          </View>
         )}
+
+        {/* Weekly Summary */}
+        <Text style={[s.sectionTitle, { color: colors.text }]}>This Week's Summary</Text>
+        <View style={s.summaryGrid}>
+          <SummaryCard label="Avg Steps" value={safeSummary.avgSteps?.toLocaleString?.() || '0'} icon="walk" color={colors.fitnessSteps} bg={colors.fitnessStepsBg} colors={colors} />
+          <SummaryCard label="Avg Sleep" value={`${safeSummary.avgSleep || 0}h`} icon="moon" color={colors.fitnessSleep} bg={colors.fitnessSleepBg} colors={colors} />
+          <SummaryCard label="Avg Water" value={`${safeSummary.avgWater || 0}ml`} icon="water" color={colors.fitnessWater} bg={colors.fitnessWaterBg} colors={colors} />
+          <SummaryCard label="Adherence" value={`${safeSummary.adherenceRate || 0}%`} icon="medkit" color={colors.primary} bg={colors.primaryLight} colors={colors} />
+        </View>
+        {loading && !summary && <ActivityIndicator size="small" color={colors.primary} style={s.loaderSmall} />}
 
         {/* Generate Button */}
         <TouchableOpacity
@@ -182,10 +205,16 @@ const HealthInsightsScreen = () => {
 const s = StyleSheet.create({
   container: { flex: 1 },
   content: { paddingBottom: 32 },
-  header: { paddingTop: 16, paddingBottom: 28, paddingHorizontal: 20, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
+  header: { paddingTop: 12, paddingBottom: 20, paddingHorizontal: 16, borderBottomLeftRadius: 28, borderBottomRightRadius: 28, flexDirection: 'row', alignItems: 'center' },
+  backButton: { marginRight: 12 },
+  headerText: { flex: 1 },
   headerTitle: { color: '#fff', fontSize: 22, fontWeight: '800', letterSpacing: -0.3 },
   headerSub: { color: 'rgba(255,255,255,0.75)', fontSize: 13, marginTop: 2 },
   body: { paddingHorizontal: 16, paddingTop: 20 },
+  errorBanner: { padding: 12, borderRadius: 12, marginBottom: 16, flexDirection: 'row', alignItems: 'center', borderWidth: 1, gap: 8 },
+  errorText: { fontSize: 12, fontWeight: '500', flex: 1 },
+  loader: { marginVertical: 32 },
+  loaderSmall: { marginVertical: 8 },
   sectionTitle: { fontSize: 15, fontWeight: '700', marginBottom: 12, marginTop: 8 },
   summaryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 16 },
   summaryCard: { flex: 1, minWidth: '44%', alignItems: 'center', paddingVertical: 14, borderRadius: 16 },

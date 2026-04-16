@@ -63,16 +63,17 @@ const aiInsightsSlice = createSlice({
       .addCase(fetchAIHealthInsights.pending, (state) => { state.loading = true; state.error = null; })
       .addCase(fetchAIHealthInsights.fulfilled, (state, action) => {
         state.loading = false;
-        state.recommendations = action.payload.recommendations ?? [];
-        state.dailySummary = action.payload.dailySummary ?? null;
-        state.weeklyFeedback = action.payload.weeklyFeedback ?? [];
-        state.aggregatedData = action.payload.aggregatedData ?? null;
+        const payload = action.payload || {};
+        state.recommendations = payload.recommendations ?? [];
+        state.dailySummary = payload.dailySummary ?? null;
+        state.weeklyFeedback = payload.weeklyFeedback ?? [];
+        state.aggregatedData = payload.aggregatedData ?? null;
       })
       .addCase(fetchAIHealthInsights.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
       // Daily summary only
-      .addCase(fetchDailySummary.fulfilled, (state, action) => { state.dailySummary = action.payload; })
+      .addCase(fetchDailySummary.fulfilled, (state, action) => { state.dailySummary = action.payload ?? null; })
       // Weekly feedback only
-      .addCase(fetchWeeklyFeedback.fulfilled, (state, action) => { state.weeklyFeedback = action.payload.weeklyFeedback ?? []; });
+      .addCase(fetchWeeklyFeedback.fulfilled, (state, action) => { state.weeklyFeedback = (action.payload?.weeklyFeedback) ?? []; });
   },
 });
 

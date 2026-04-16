@@ -22,9 +22,11 @@ const ThemeToggle = ({ variant = 'switch', size = 22, style }) => {
   // ─── Animated pill position for 'switch' variant ───
   const slideAnim = useRef(new Animated.Value(isDark ? 1 : 0)).current;
   useEffect(() => {
+    // ✅ useNativeDriver: false on web (prevented module not found error)
+    // ✅ useNativeDriver: true on native for better performance
     Animated.spring(slideAnim, {
       toValue: isDark ? 1 : 0,
-      useNativeDriver: true,
+      useNativeDriver: Platform.OS !== 'web',
       tension: 60,
       friction: 8,
     }).start();

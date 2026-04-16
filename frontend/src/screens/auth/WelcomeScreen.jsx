@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity, StatusBar, Animated, Dimensions, ScrollView,
+  View, Text, StyleSheet, TouchableOpacity, StatusBar, Animated, Dimensions, ScrollView, Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -79,9 +79,11 @@ const WelcomeScreen = ({ navigation }) => {
   const slideAnim = useRef(new Animated.Value(24)).current;
 
   useEffect(() => {
+    // ✅ useNativeDriver: false on web (prevents "native animated module is missing" error)
+    // ✅ useNativeDriver: true on native platforms for better performance
     Animated.parallel([
-      Animated.timing(fadeAnim,  { toValue: 1, duration: 750, useNativeDriver: true }),
-      Animated.timing(slideAnim, { toValue: 0, duration: 750, useNativeDriver: true }),
+      Animated.timing(fadeAnim,  { toValue: 1, duration: 750, useNativeDriver: Platform.OS !== 'web' }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 750, useNativeDriver: Platform.OS !== 'web' }),
     ]).start();
   }, []);
 

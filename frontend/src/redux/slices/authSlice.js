@@ -82,9 +82,20 @@ export const checkAuth = createAsyncThunk('auth/checkAuth', async (_, { dispatch
     const token = await secureStorage.getToken();
     if (!token) return rejectWithValue('No token');
     
-    // Validate token and get user profile
-    const res = await authAPI.getMe();
-    return { user: res.data.data.user, accessToken: token };
+    // Try to validate token, but don't crash if backend is unreachable
+    try {
+      const res = await authAPI.getMe();
+      return { user: res.data.data.user, accessToken: token };
+    } catch (apiErr) {
+      // If it's a network error, warn but don't block the app
+      if (!apiErr.response) {
+        console.warn('[AUTH] Backend unreachable during checkAuth, proceeding offline');
+        // Return a minimal auth state so app can load
+        return { user: null, accessToken: token };
+      }
+      // If it's an actual API error (401, 403, etc), clear auth
+      throw apiErr;
+    }
   } catch (err) {
     // If validation fails, ensure we clear local state
     await dispatch(logoutUser());
