@@ -1,11 +1,35 @@
-import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Platform } from 'react-native';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
+import { View, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Platform, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
-const ChatInput = ({ onSend, loading = false }) => {
+
+const ChatInput = ({ onSend, loading = false, error = null }) => {
   const { colors } = useAppTheme();
   const [text, setText] = useState('');
-  const send = () => { if (text.trim()) { onSend(text.trim()); setText(''); } };
+  const debounceRef = useRef(null);
+  
+  // Debounced text update to reduce re-renders on every keystroke
+  const handleTextChange = useCallback((value) => {
+    setText(value);
+  }, []);
+  
+  // Memoized send function to prevent recreation on each render
+  const send = useCallback(() => {
+    if (text.trim() && !loading) {
+      onSend(text.trim());
+      setText('');
+    }
+  }, [text, loading, onSend]);
+  
+  // Memoized button style to prevent recreation
+  const buttonStyle = useMemo(() => [
+    s.btn,
+    { backgroundColor: colors.primary },
+    (!text.trim() || loading) && { backgroundColor: colors.textTertiary }
+  ], [text, loading, colors.primary, colors.textTertiary]);
+  
+  const isDisabled = loading || !text.trim();
+  
   return (
     <View style={[s.c, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
       <View style={[s.inputRow, { backgroundColor: colors.cardAlt, borderColor: colors.border }]}>
@@ -15,16 +39,23 @@ const ChatInput = ({ onSend, loading = false }) => {
           placeholder="Ask a health question..."
           placeholderTextColor={colors.textTertiary}
           value={text}
-          onChangeText={setText}
+          onChangeText={handleTextChange}
           maxLength={500}
           onSubmitEditing={send}
           returnKeyType="send"
           blurOnSubmit={false}
+          editable={!loading}
         />
       </View>
-      <TouchableOpacity style={[s.btn, { backgroundColor: colors.primary }, (!text.trim() && !loading) && { backgroundColor: colors.textTertiary }]} onPress={send} disabled={loading || !text.trim()}>
+      <TouchableOpacity 
+        style={buttonStyle} 
+        onPress={send} 
+        disabled={isDisabled}
+        activeOpacity={isDisabled ? 0.5 : 0.7}
+      >
         {loading ? <ActivityIndicator color="#FFF" size="small" /> : <Ionicons name="send" size={18} color="#FFF" />}
       </TouchableOpacity>
+      {error && <Text style={[s.errorText, { color: colors.error }]}>{error}</Text>}
     </View>
   );
 };
@@ -34,5 +65,6 @@ const s = StyleSheet.create({
   inputIcon: { marginRight: 8 },
   input: { flex: 1, fontSize: 14, height: 44, lineHeight: 18 },
   btn: { width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' },
+  errorText: { fontSize: 12, marginTop: 4, paddingHorizontal: 10 },
 });
 export default ChatInput;

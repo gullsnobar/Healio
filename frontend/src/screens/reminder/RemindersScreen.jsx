@@ -2,12 +2,11 @@ import React, { useEffect, useState, useCallback, useLayoutEffect } from 'react'
 import {
   View, Text, FlatList, TouchableOpacity, StyleSheet, StatusBar, RefreshControl, ActivityIndicator,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchReminders, setSelectedType } from '../../redux/slices/reminderSlice';
 import { useAppTheme } from '../../styles/ThemeContext';
-import Tooltip from '../../components/common/Tooltip';
+import FAB from '../../components/common/FloatingActionButton';
 
 const TYPE_TABS = [
   { key: null, label: 'All', icon: 'list-outline' },
@@ -144,17 +143,13 @@ const RemindersScreen = ({ navigation }) => {
       )}
 
       {/* FAB */}
-      <Tooltip text="Add reminder">
-        <TouchableOpacity
-          style={s.fabWrap}
-          onPress={() => navigation.navigate('AddReminder')}
-          activeOpacity={0.9}
-        >
-          <LinearGradient colors={[colors.primary, colors.primaryDark]} style={s.fab}>
-            <Ionicons name="add" size={30} color="#FFF" />
-          </LinearGradient>
-        </TouchableOpacity>
-      </Tooltip>
+      <FAB
+        icon="add"
+        onPress={() => navigation.navigate('AddReminder')}
+        size="medium"
+        position="bottom-right"
+        offsetY={100}
+      />
     </View>
   );
 };

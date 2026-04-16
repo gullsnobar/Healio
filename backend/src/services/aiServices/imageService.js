@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 
 const HF_API_KEY = process.env.HuggingFace_API_KEY;
-const HF_IMAGE_URL = 'https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base';
+const HF_IMAGE_URL = 'https://router.huggingface.co/models/Salesforce/blip-image-captioning-base';
 
 /**
  * Analyze medicine image and generate caption

@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 
 const HF_API_KEY = process.env.HuggingFace_API_KEY;
-const HF_SPEECH_URL = 'https://api-inference.huggingface.co/models/openai/whisper-base';
+const HF_SPEECH_URL = 'https://router.huggingface.co/models/openai/whisper-base';
 
 /**
  * Transcribe audio file to text

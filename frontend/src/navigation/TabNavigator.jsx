@@ -98,15 +98,24 @@ const TabNavigator = () => {
         tabBarShowLabel: true,
         tabBarActiveTintColor: colors.tabActive,
         tabBarInactiveTintColor: colors.tabInactive,
-        tabBarLabelStyle: { fontSize: isMobile ? 9 : 10, fontWeight: '600', marginTop: 2 },
-        tabBarIconStyle: { marginBottom: 2 },
+        tabBarLabelPosition: 'below-icon',
+        tabBarLabelStyle: { 
+          fontSize: isMobile ? 10 : 11, 
+          fontWeight: '600', 
+          marginTop: 2,
+          marginBottom: 4,
+          textTransform: 'capitalize',
+          letterSpacing: 0.2,
+        },
+        tabBarIconStyle: { marginBottom: 4 },
         tabBarItemStyle: {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          paddingVertical: isMobile ? 4 : 6,
-          paddingHorizontal: isMobile ? 4 : 6,
+          paddingVertical: isMobile ? 6 : 8,
+          paddingHorizontal: isMobile ? 6 : 8,
           height: '100%',
+          minHeight: 60,
           },
         tabBarIcon: ({ focused, color }) => {
           const tab = TABS.find((t) => t.name === route.name);
@@ -137,6 +146,8 @@ const TabNavigator = () => {
             title: label,
             headerTitle: name === "Home" ? "HEALIO" : label,
             headerShown: name === "Home" ? false : true,
+            tabBarLabel: label,
+            tabBarAccessibilityLabel: label,
           }}
         />
       ))}

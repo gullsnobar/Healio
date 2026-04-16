@@ -1,6 +1,5 @@
 ﻿import React, { useCallback } from 'react';
 import { View, StyleSheet, TouchableOpacity, StatusBar, Text } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
@@ -8,6 +7,7 @@ import { useAppTheme } from '../../styles/ThemeContext';
 import MedicationList from '../../components/medication/MedicationList';
 import { fetchMedications, markAsTaken } from '../../redux/slices/medicationSlice';
 import Tooltip from '../../components/common/Tooltip';
+import FAB from '../../components/common/FloatingActionButton';
 
 const MedicationListScreen = ({ navigation }) => {
   const { colors, isDark } = useAppTheme();
@@ -38,17 +38,13 @@ const MedicationListScreen = ({ navigation }) => {
         onRefresh={() => dispatch(fetchMedications())}
       />
 
-      <Tooltip text="Add medication">
-        <TouchableOpacity
-          style={ms.fabWrap}
-          onPress={() => navigation.navigate('AddMedication')}
-          activeOpacity={0.9}
-        >
-          <LinearGradient colors={colors.primaryGrad} style={ms.fab}>
-            <Ionicons name="add" size={30} color="#fff" />
-          </LinearGradient>
-        </TouchableOpacity>
-      </Tooltip>
+      <FAB
+        icon="add"
+        onPress={() => navigation.navigate('AddMedication')}
+        size="medium"
+        position="bottom-right"
+        offsetY={100}
+      />
     </View>
   );
 };
@@ -59,11 +55,5 @@ const ms = StyleSheet.create({
   backBtn: { padding: 4 },
   headerTitle: { fontSize: 18, fontWeight: '700', flex: 1, textAlign: 'center' },
   headerSpacer: { width: 32 },
-  fabWrap: {
-    position: 'absolute', right: 20, bottom: 24,
-    shadowColor: '#14B8A6', shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4, shadowRadius: 12, elevation: 10,
-  },
-  fab: { width: 60, height: 60, borderRadius: 30, alignItems: 'center', justifyContent: 'center' },
 });
 export default MedicationListScreen;

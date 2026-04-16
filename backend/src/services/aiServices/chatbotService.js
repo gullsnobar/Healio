@@ -1,22 +1,24 @@
 /**
  * AI CHATBOT SERVICE
- * Uses Hugging Face Mistral-7B for health-related queries
+ * Uses OpenAI GPT-3.5-Turbo for health-related queries
  * Production-ready with error handling and logging
+ * 
+ * NOTE: Switched from Hugging Face to OpenAI because:
+ * - Hugging Face free API deprecated (410 error)
+ * - OpenAI API key already configured in .env
+ * - Faster and more reliable responses
+ * - Easy to switch providers later if needed
  */
 
 const axios = require('axios');
 
-const HF_API_KEY = process.env.HuggingFace_API_KEY;
-const HF_API_URL = 'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2';
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
 // In-memory conversation history (use Redis/MongoDB in production)
 const conversationHistory = {};
 
-/**
- * Format message with health assistant system prompt
- */
-const formatPrompt = (message, history = []) => {
-  const systemPrompt = `You are a helpful health and medication assistant for the HEALIO app.
+const SYSTEM_PROMPT = `You are a helpful health and medication assistant for the HEALIO app.
 Your responsibilities:
 - Provide accurate, safe, and simple health information
 - Give medication reminders and wellness tips
@@ -30,18 +32,6 @@ Guidelines:
 - If unsure, say "I recommend consulting your doctor"
 - Focus on prevention and wellness
 - Be conversational and friendly`;
-
-  const historyText = history
-    .map((msg) => `User: ${msg.user}\nAssistant: ${msg.assistant}`)
-    .join('\n\n');
-
-  const fullPrompt = `${systemPrompt}
-
-${historyText ? `Previous conversation:\n${historyText}\n\n` : ''}User: ${message}
-Assistant:`;
-
-  return fullPrompt;
-};
 
 /**
  * Chat with AI Health Assistant (Single turn)
@@ -64,48 +54,43 @@ const chatWithAI = async (userMessage, userId = 'unknown') => {
       throw new Error('Message too long (max 2000 characters)');
     }
 
-    if (!HF_API_KEY) {
-      throw new Error('Hugging Face API key not configured');
+    if (!OPENAI_API_KEY) {
+      throw new Error('OpenAI API key not configured');
     }
 
     console.log(`📝 [Chatbot] User ${userId} sent message: "${userMessage.substring(0, 50)}..."`);
 
-    const prompt = formatPrompt(userMessage);
-
-    // Call Hugging Face API
+    // Call OpenAI API
     const response = await axios.post(
-      HF_API_URL,
+      OPENAI_API_URL,
       {
-        inputs: prompt,
-        parameters: {
-          max_new_tokens: 250,
-          temperature: 0.7,
-          top_p: 0.9,
-          do_sample: true,
-        },
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content: SYSTEM_PROMPT,
+          },
+          {
+            role: 'user',
+            content: userMessage,
+          },
+        ],
+        max_tokens: 250,
+        temperature: 0.7,
       },
       {
         headers: {
-          Authorization: `Bearer ${HF_API_KEY}`,
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
           'Content-Type': 'application/json',
         },
         timeout: 30000,
       }
     );
 
-    // Extract generated text
+    // Extract response
     let aiResponse = '';
-    if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-      aiResponse = response.data[0].generated_text || '';
-
-      // Extract only the assistant's response (after "Assistant:")
-      const assistantIndex = aiResponse.indexOf('Assistant:');
-      if (assistantIndex !== -1) {
-        aiResponse = aiResponse.substring(assistantIndex + 10).trim();
-      }
-
-      // Remove any leftover prompt text
-      aiResponse = aiResponse.split('User:')[0].trim();
+    if (response.data?.choices?.[0]?.message?.content) {
+      aiResponse = response.data.choices[0].message.content.trim();
     }
 
     if (!aiResponse) {
@@ -117,7 +102,7 @@ const chatWithAI = async (userMessage, userId = 'unknown') => {
     return {
       success: true,
       message: aiResponse,
-      model: 'mistralai/Mistral-7B-Instruct-v0.2',
+      model: 'gpt-3.5-turbo',
     };
   } catch (error) {
     console.error(`❌ [Chatbot] Error for user ${userId}:`, error.message);
@@ -151,34 +136,50 @@ const chatWithContext = async (userId, userMessage) => {
       conversationHistory[userId] = [];
     }
 
-    // Keep only last 5 exchanges for context
-    let history = conversationHistory[userId];
-    if (history.length > 5) {
-      history = history.slice(-5);
-    }
-
-    if (!HF_API_KEY) {
-      throw new Error('Hugging Face API key not configured');
+    if (!OPENAI_API_KEY) {
+      throw new Error('OpenAI API key not configured');
     }
 
     console.log(`📝 [Chatbot Context] User ${userId} message in conversation`);
 
-    const prompt = formatPrompt(userMessage, history);
+    // Build messages array with conversation history
+    const messages = [
+      {
+        role: 'system',
+        content: SYSTEM_PROMPT,
+      },
+    ];
+
+    // Add conversation history (last 5 exchanges)
+    const history = conversationHistory[userId].slice(-5);
+    for (const exchange of history) {
+      messages.push({
+        role: 'user',
+        content: exchange.user,
+      });
+      messages.push({
+        role: 'assistant',
+        content: exchange.assistant,
+      });
+    }
+
+    // Add current user message
+    messages.push({
+      role: 'user',
+      content: userMessage,
+    });
 
     const response = await axios.post(
-      HF_API_URL,
+      OPENAI_API_URL,
       {
-        inputs: prompt,
-        parameters: {
-          max_new_tokens: 250,
-          temperature: 0.7,
-          top_p: 0.9,
-          do_sample: true,
-        },
+        model: 'gpt-3.5-turbo',
+        messages,
+        max_tokens: 250,
+        temperature: 0.7,
       },
       {
         headers: {
-          Authorization: `Bearer ${HF_API_KEY}`,
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
           'Content-Type': 'application/json',
         },
         timeout: 30000,
@@ -186,15 +187,8 @@ const chatWithContext = async (userId, userMessage) => {
     );
 
     let aiResponse = '';
-    if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-      aiResponse = response.data[0].generated_text || '';
-
-      const assistantIndex = aiResponse.indexOf('Assistant:');
-      if (assistantIndex !== -1) {
-        aiResponse = aiResponse.substring(assistantIndex + 10).trim();
-      }
-
-      aiResponse = aiResponse.split('User:')[0].trim();
+    if (response.data?.choices?.[0]?.message?.content) {
+      aiResponse = response.data.choices[0].message.content.trim();
     }
 
     if (!aiResponse) {

@@ -1,10 +1,9 @@
 ﻿import React, { useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
 import AppointmentList from '../../components/appointments/AppointmentList';
-import Tooltip from '../../components/common/Tooltip';
+import FAB from '../../components/common/FloatingActionButton';
 import { fetchAppointments } from '../../redux/slices/appointmentSlice';
 
 const AppointmentListScreen = ({ navigation }) => {
@@ -15,16 +14,21 @@ const AppointmentListScreen = ({ navigation }) => {
 
   return (
     <View style={[s.c, { backgroundColor: colors.background }]}>
-      <AppointmentList appointments={appointments} loading={loading}
+      <AppointmentList
+        appointments={appointments}
+        loading={loading}
         onItemPress={(apt) => navigation.navigate('AppointmentDetails', { id: apt._id })}
-        onRefresh={() => dispatch(fetchAppointments())} />
-      <Tooltip text="Add appointment">
-        <TouchableOpacity style={[s.fab, { backgroundColor: colors.primary }]} onPress={() => navigation.navigate('AddAppointment')}>
-          <Ionicons name="add" size={28} color="#FFF" />
-        </TouchableOpacity>
-      </Tooltip>
+        onRefresh={() => dispatch(fetchAppointments())}
+      />
+      <FAB
+        icon="add"
+        onPress={() => navigation.navigate('AddAppointment')}
+        size="medium"
+        position="bottom-right"
+        offsetY={100}
+      />
     </View>
   );
 };
-const s = StyleSheet.create({c:{flex:1},fab:{position:'absolute',right:20,bottom:20,width:56,height:56,borderRadius:28,alignItems:'center',justifyContent:'center',elevation:4}});
+const s = StyleSheet.create({c:{flex:1}});
 export default AppointmentListScreen;
