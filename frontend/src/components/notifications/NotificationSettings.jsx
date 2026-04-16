@@ -12,8 +12,6 @@ const PREF_ITEMS = [
 const NotificationSettings = ({ preferences, onToggle, loading }) => {
   const { colors, isDark } = useAppTheme();
   const bg = isDark ? '#1E293B' : '#FFF';
-  const textColor = isDark ? '#E2E8F0' : '#1F2937';
-  const subColor = isDark ? '#94A3B8' : '#64748B';
 
   if (loading) {
     return (
@@ -25,12 +23,12 @@ const NotificationSettings = ({ preferences, onToggle, loading }) => {
 
   return (
     <View style={[s.c, { backgroundColor: bg }]}>
-      <Text style={[s.t, { color: textColor }]}>Notification Preferences</Text>
+      <Text style={[s.t, { color: colors.text }]}>Notification Preferences</Text>
       {PREF_ITEMS.map(({ key, label, description }) => (
         <View key={key} style={[s.r, { borderBottomColor: isDark ? '#334155' : '#F0F0F0' }]}>
           <View style={s.labelWrap}>
-            <Text style={[s.l, { color: textColor }]}>{label}</Text>
-            <Text style={[s.desc, { color: subColor }]}>{description}</Text>
+            <Text style={[s.l, { color: colors.text }]}>{label}</Text>
+            <Text style={[s.desc, { color: colors.textSecondary }]}>{description}</Text>
           </View>
           <Switch
             value={!!preferences?.[key]}

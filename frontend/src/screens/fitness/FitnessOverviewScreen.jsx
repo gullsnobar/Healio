@@ -56,22 +56,24 @@ const FitnessOverviewScreen = ({ navigation }) => {
           </FitnessCard>
         </TouchableOpacity>
 
-        <FitnessCard style={{ backgroundColor: colors.card }}>
-          <WaterIntakeLogger intake={data.water || 0} onAdd={() => {}} />
-        </FitnessCard>
+        <TouchableOpacity onPress={nav('WaterIntake')} activeOpacity={0.9}>
+          <FitnessCard gradient={colors.waterGrad}>
+            <WaterIntakeLogger intake={data.water || 0} onAdd={() => {}} dark />
+          </FitnessCard>
+        </TouchableOpacity>
 
         <Text style={[fs.sectionTitle, { color: colors.text }]}>Quick Actions</Text>
         <View style={fs.actionRow}>
-          <ActionBtn icon="restaurant-outline" label="Diet Log"     color={colors.warningDark} bg={colors.warningLight} onPress={nav('DietLog')} />
-          <ActionBtn icon="create-outline"    label="Manual Entry" color={colors.fitnessSleep} bg={colors.fitnessSleepBg} onPress={nav('ManualEntry')} />
+          <ActionBtn icon="restaurant-outline" label="Diet Log"     color={colors.actionDietText} bg={colors.actionDietBg} onPress={nav('DietLog')} />
+          <ActionBtn icon="create-outline"    label="Manual Entry" color={colors.actionManualText} bg={colors.actionManualBg} onPress={nav('ManualEntry')} />
         </View>
         <View style={[fs.actionRow, { marginTop: 10 }]}>
-          <ActionBtn icon="barbell-outline"    label="Exercise"     color={isDark ? '#C4B5FD' : '#7C3AED'} bg={isDark ? '#3B1F7E' : '#EDE9FE'} onPress={nav('ExerciseLog')} />
-          <ActionBtn icon="time-outline"       label="Meal History" color={isDark ? '#FB923C' : '#EA580C'} bg={isDark ? '#7C2D12' : '#FFF7ED'} onPress={nav('MealHistory')} />
+          <ActionBtn icon="barbell-outline"    label="Exercise"     color={colors.actionExerciseText} bg={colors.actionExerciseBg} onPress={nav('ExerciseLog')} />
+          <ActionBtn icon="time-outline"       label="Meal History" color={colors.actionMealText} bg={colors.actionMealBg} onPress={nav('MealHistory')} />
         </View>
         <View style={[fs.actionRow, { marginTop: 10 }]}>
-          <ActionBtn icon="bar-chart-outline"  label="Weekly Charts" color={isDark ? '#7DD3FC' : '#0369A1'} bg={isDark ? '#1E3A5F' : '#E0F2FE'}  onPress={nav('WeeklyCharts')} />
-          <ActionBtn icon="bulb-outline"       label="AI Insights"   color={isDark ? '#6EE7B7' : '#059669'} bg={isDark ? '#064E3B' : '#ECFDF5'}  onPress={nav('HealthInsights')} />
+          <ActionBtn icon="bar-chart-outline"  label="Weekly Charts" color={colors.actionChartsText} bg={colors.actionChartsBg}  onPress={nav('WeeklyCharts')} />
+          <ActionBtn icon="bulb-outline"       label="AI Insights"   color={colors.actionAIText} bg={colors.actionAIBg}  onPress={nav('HealthInsights')} />
         </View>
       </View>
     </ScrollView>
@@ -82,7 +84,7 @@ const fs = StyleSheet.create({
   c: { flex: 1 },
   content: { paddingBottom: 32 },
   header: { paddingTop: 16, paddingBottom: 28, paddingHorizontal: 20, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
-  headerTitle: { color: '#fff', fontSize: 22, fontWeight: '800' },
+  headerTitle: { color: '#fffcfc', fontSize: 22, fontWeight: '800' },
   headerSub: { color: 'rgba(255,255,255,0.75)', fontSize: 13, marginTop: 2 },
   body: { paddingHorizontal: 16, paddingTop: 16 },
   card: { borderRadius: 20, padding: 16, marginBottom: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 10, elevation: 5 },

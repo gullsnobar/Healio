@@ -5,36 +5,42 @@ import { useAppTheme } from '../../styles/ThemeContext';
 
 const SEGMENTS = 8;
 
-const WaterIntakeLogger = ({ intake = 0, goal = 2500, onAdd }) => {
+const WaterIntakeLogger = ({ intake = 0, goal = 2500, onAdd, dark }) => {
   const { colors } = useAppTheme();
   const pct = Math.min(intake / goal, 1);
   const glasses = Math.floor(intake / 250);
   const filled = Math.round(pct * SEGMENTS);
 
+  const mainColor = dark ? '#FFFFFF' : colors.text;
+  const subColor = dark ? 'rgba(255,255,255,0.75)' : colors.textSecondary;
+  const iconColor = dark ? '#FFFFFF' : colors.fitnessWater;
+  const segBgColor = dark ? 'rgba(255,255,255,0.25)' : colors.fitnessWaterBg;
+  const segFillColor = dark ? '#FFFFFF' : colors.fitnessWater;
+
   return (
     <View>
       <View style={wl.row}>
-        <Ionicons name="water" size={40} color={colors.fitnessWater} />
+        <Ionicons name="water" size={40} color={iconColor} />
         <View style={wl.textWrap}>
-          <Text style={[wl.count, { color: colors.text }]}>{intake} <Text style={[wl.unit, { color: colors.textSecondary }]}>ml</Text></Text>
-          <Text style={[wl.label, { color: colors.textSecondary }]}>{glasses} glasses · Goal {goal} ml</Text>
+          <Text style={[wl.count, { color: mainColor }]}>{intake} <Text style={[wl.unit, { color: subColor }]}>ml</Text></Text>
+          <Text style={[wl.label, { color: subColor }]}>{glasses} glasses · Goal {goal} ml</Text>
         </View>
-        <Text style={[wl.pct, { color: colors.fitnessWater }]}>{Math.round(pct * 100)}%</Text>
+        <Text style={[wl.pct, { color: mainColor }]}>{Math.round(pct * 100)}%</Text>
       </View>
 
       {/* Segmented progress */}
       <View style={wl.segments}>
         {Array.from({ length: SEGMENTS }).map((_, i) => (
-          <View key={i} style={[wl.seg, { backgroundColor: colors.fitnessWaterBg }, i < filled && { backgroundColor: colors.fitnessWater }]} />
+          <View key={i} style={[wl.seg, { backgroundColor: segBgColor }, i < filled && { backgroundColor: segFillColor }]} />
         ))}
       </View>
 
       {/* Add buttons */}
       <View style={wl.buttons}>
         {[150, 250, 500].map((ml) => (
-          <TouchableOpacity key={ml} style={[wl.addBtn, { borderColor: colors.fitnessWater, backgroundColor: colors.fitnessWaterBg }]} onPress={() => onAdd?.(ml)} activeOpacity={0.8}>
-            <Ionicons name="add" size={14} color={colors.fitnessWater} />
-            <Text style={[wl.addText, { color: colors.fitnessWater }]}>{ml}ml</Text>
+          <TouchableOpacity key={ml} style={[wl.addBtn, { borderColor: segFillColor, backgroundColor: segBgColor }]} onPress={() => onAdd?.(ml)} activeOpacity={0.8}>
+            <Ionicons name="add" size={14} color={segFillColor} />
+            <Text style={[wl.addText, { color: segFillColor }]}>{ml}ml</Text>
           </TouchableOpacity>
         ))}
       </View>

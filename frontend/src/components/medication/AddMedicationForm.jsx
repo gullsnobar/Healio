@@ -39,6 +39,11 @@ const MedicationTimeInput = ({ value, onChange, colors, style }) => {
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [webInputValue, setWebInputValue] = useState("");
 
+  const inputBg = colors.cardAlt;
+  const textColor = colors.text;
+  const placeholderColor = colors.textSecondary;
+  const borderColor = colors.border;
+
   // Parse time value
   const parseTimeValue = (input) => {
     if (!input) return undefined;
@@ -111,20 +116,20 @@ const MedicationTimeInput = ({ value, onChange, colors, style }) => {
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-between",
-            backgroundColor: "#1E293B",
+            backgroundColor: inputBg,
             borderRadius: 12,
             borderWidth: 1.5,
-            borderColor: "#334155",
+            borderColor,
             paddingHorizontal: 16,
             height: 52,
           }}
         >
-          <Text style={{ color: "#F8FAFC", fontSize: 15 }}>
+          <Text style={{ color: textColor, fontSize: 15 }}>
             {typeof value === "string" && value
               ? value
               : displayValue || "Select Time"}
           </Text>
-          <Ionicons name="time-outline" size={20} color="#14B8A6" />
+          <Ionicons name="time-outline" size={20} color={colors.primary} />
         </TouchableOpacity>
         <CustomTimePicker
           visible={showTimePicker}
@@ -147,8 +152,8 @@ const MedicationTimeInput = ({ value, onChange, colors, style }) => {
           s.nativeTimeInput,
           {
             width: "100%",
-            backgroundColor: "#1E293B",
-            borderColor: "#334155",
+            backgroundColor: inputBg,
+            borderColor,
           },
         ]}
         onPress={() => setShowPicker(true)}
@@ -164,7 +169,7 @@ const MedicationTimeInput = ({ value, onChange, colors, style }) => {
           style={[
             s.nativeTimeText,
             {
-              color: displayValue ? "#F8FAFC" : "#64748B",
+              color: displayValue ? textColor : placeholderColor,
             },
           ]}
         >
@@ -241,6 +246,11 @@ const DropdownModal = ({
 
 const AddMedicationForm = ({ onSubmit, initialData }) => {
   const { colors } = useAppTheme();
+  const sectionBg = colors.card;
+  const inputBg = colors.cardAlt;
+  const textColor = colors.text;
+  const placeholderColor = colors.textSecondary;
+  const borderColor = colors.border;
   const [form, setForm] = useState({
     name: initialData?.name || "",
     type: initialData?.type || "Capsule",
@@ -313,6 +323,7 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
 
   return (
     <ScrollView
+      style={[s.container, { backgroundColor: colors.background }]}
       contentContainerStyle={s.container}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
@@ -326,13 +337,13 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
       <View
         style={[
           s.inputWrap,
-          { backgroundColor: "#1E293B", borderColor: "#334155" },
+          { backgroundColor: inputBg, borderColor },
         ]}
       >
         <TextInput
-          style={[s.input, { color: "#F8FAFC" }]}
+          style={[s.input, { color: textColor }]}
           placeholder="Medicine Name *"
-          placeholderTextColor="#64748B"
+          placeholderTextColor={placeholderColor}
           value={form.name}
           onChangeText={(v) => update("name", v)}
           onFocus={() => setFocusedField("name")}
@@ -355,13 +366,13 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
         <View
           style={[
             s.inputWrap,
-            { flex: 1, backgroundColor: "#1E293B", borderColor: "#334155" },
+            { flex: 1, backgroundColor: inputBg, borderColor },
           ]}
         >
           <TextInput
-            style={[s.input, { color: "#F8FAFC" }]}
+            style={[s.input, { color: textColor }]}
             placeholder="Dose *"
-            placeholderTextColor="#64748B"
+            placeholderTextColor={placeholderColor}
             keyboardType="numeric"
             value={form.dosage}
             onChangeText={(v) => update("dosage", v)}
@@ -384,13 +395,13 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
       <View
         style={[
           s.inputWrap,
-          { backgroundColor: "#1E293B", borderColor: "#334155" },
+          { backgroundColor: inputBg, borderColor },
         ]}
       >
         <TextInput
-          style={[s.input, { color: "#F8FAFC" }]}
+          style={[s.input, { color: textColor }]}
           placeholder="Amount (e.g. 1 pill)"
-          placeholderTextColor="#64748B"
+          placeholderTextColor={placeholderColor}
           value={form.amount}
           onChangeText={(v) => update("amount", v)}
           onFocus={() => setFocusedField("amount")}
@@ -498,13 +509,13 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
       <View
         style={[
           s.inputWrap,
-          { backgroundColor: "#1E293B", borderColor: "#334155" },
+          { backgroundColor: inputBg, borderColor },
         ]}
       >
         <TextInput
-          style={[s.input, { color: "#F8FAFC" }]}
+          style={[s.input, { color: textColor }]}
           placeholder="Doctor Name"
-          placeholderTextColor="#64748B"
+          placeholderTextColor={placeholderColor}
           value={form.doctorName}
           onChangeText={(v) => update("doctorName", v)}
           onFocus={() => setFocusedField("doctor")}
@@ -518,18 +529,18 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
           {
             minHeight: 80,
             alignItems: "flex-start",
-            backgroundColor: "#1E293B",
-            borderColor: "#334155",
+            backgroundColor: inputBg,
+            borderColor,
           },
         ]}
       >
         <TextInput
           style={[
             s.input,
-            { textAlignVertical: "top", paddingTop: 14, color: "#F8FAFC" },
+            { textAlignVertical: "top", paddingTop: 14, color: textColor },
           ]}
           placeholder="Notes"
-          placeholderTextColor="#64748B"
+          placeholderTextColor={placeholderColor}
           multiline
           numberOfLines={3}
           value={form.notes}
@@ -545,7 +556,7 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
         disabled={disabled || loading}
         activeOpacity={0.8}
         style={{
-          backgroundColor: "rgb(15, 118, 110)",
+          backgroundColor: colors.primary,
           borderRadius: 14,
           paddingVertical: 16,
           alignItems: "center",
@@ -574,7 +585,6 @@ const s = StyleSheet.create({
   container: {
     padding: IS_SMALL ? 16 : 24,
     paddingBottom: 48,
-    backgroundColor: "#0F172A",
   },
   sectionLabel: {
     fontSize: IS_SMALL ? 13 : 14,

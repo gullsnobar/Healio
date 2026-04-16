@@ -49,6 +49,10 @@ const DateInput = ({
     return `${year}-${month}-${day}`;
   };
 
+  const inputBg = colors.cardAlt;
+  const textColor = colors.text;
+  const placeholderColor = colors.textSecondary;
+  const borderColor = colors.border;
   const normalizedValue = parseDateValue(value);
   const displayValue = normalizedValue ? formatDate(normalizedValue) : '';
 
@@ -79,17 +83,17 @@ const DateInput = ({
           onPress={() => setShowPicker(true)}
           activeOpacity={0.7}
           style={[styles.input, {
-            backgroundColor: '#1E293B',
-            borderColor: '#334155',
+            backgroundColor: inputBg,
+            borderColor,
             borderWidth: 1.5,
             borderRadius: 12,
             height: 52,
           }]}
         >
-          <Text style={[styles.text, { color: '#F8FAFC' }]}> 
+          <Text style={[styles.text, { color: displayValue ? textColor : placeholderColor }]}> 
             {displayValue || placeholder}
           </Text>
-          <Ionicons name="calendar-outline" size={20} color="#14B8A6" />
+          <Ionicons name="calendar-outline" size={20} color={colors.primary} />
         </TouchableOpacity>
         <CustomDatePicker
           visible={showPicker}
@@ -112,8 +116,8 @@ const DateInput = ({
 
       <TouchableOpacity
         style={[styles.input, {
-          backgroundColor: '#1E293B',
-          borderColor: '#334155',
+          backgroundColor: inputBg,
+          borderColor,
           borderWidth: 1.5,
           borderRadius: 12,
           height: 52,
@@ -128,7 +132,7 @@ const DateInput = ({
           style={styles.icon}
         />
         <Text style={[styles.text, {
-          color: '#F8FAFC'
+          color: displayValue ? textColor : placeholderColor
         }]}>
           {displayValue || placeholder}
         </Text>

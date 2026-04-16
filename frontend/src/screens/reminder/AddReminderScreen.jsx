@@ -29,21 +29,21 @@ const AddReminderScreen = ({ navigation, route }) => {
   // Step 1 — pick type (unless pre-selected)
   if (!selectedType) {
     return (
-      <View style={[s.container, { backgroundColor: isDark ? '#0F172A' : '#F8FAFC' }]}>
-        <StatusBar barStyle="light-content" backgroundColor={colors.primaryDark} />
-        <Text style={[s.heading, { color: isDark ? '#E2E8F0' : '#1F2937' }]}>What type of reminder?</Text>
+      <View style={[s.container, { backgroundColor: colors.background }]}> 
+        <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
+        <Text style={[s.heading, { color: colors.text }]}>What type of reminder?</Text>
         <View style={s.typeGrid}>
           {TYPES.map((t) => (
             <TouchableOpacity
               key={t.key}
-              style={[s.typeCard, { backgroundColor: isDark ? '#1E293B' : '#FFF' }]}
+              style={[s.typeCard, { backgroundColor: colors.card }]}
               onPress={() => setSelectedType(t.key)}
               activeOpacity={0.8}
             >
               <View style={[s.typeIcon, { backgroundColor: t.color + '18' }]}>
                 <Ionicons name={t.icon} size={32} color={t.color} />
               </View>
-              <Text style={[s.typeLabel, { color: isDark ? '#E2E8F0' : '#1F2937' }]}>{t.label}</Text>
+              <Text style={[s.typeLabel, { color: colors.text }]}>{t.label}</Text>
             </TouchableOpacity>
           ))}
         </View>

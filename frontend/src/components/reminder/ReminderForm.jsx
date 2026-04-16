@@ -73,16 +73,16 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
     onSubmit(payload);
   };
 
-  const bg = '#1E293B';
-  const inputBg = '#1E293B';
-  const textColor = '#F8FAFC';
-  const placeholderColor = '#64748B';
+  const bg = colors.card;
+  const inputBg = colors.cardAlt;
+  const textColor = colors.text;
+  const placeholderColor = colors.textSecondary;
 
   const InputField = ({ label, value, onChangeText, placeholder, multiline, ...rest }) => (
     <View style={s.fieldGroup}>
-      <Text style={[s.fieldLabel, { color: isDark ? '#94A3B8' : '#475569' }]}>{label}</Text>
+      <Text style={[s.fieldLabel, { color: colors.textSecondary }]}>{label}</Text>
       <TextInput
-        style={[s.input, { backgroundColor: inputBg, color: textColor }, multiline && { minHeight: 80, textAlignVertical: 'top' }]}
+        style={[s.input, { backgroundColor: inputBg, color: textColor, borderColor: colors.border }, multiline && { minHeight: 80, textAlignVertical: 'top' }]}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
@@ -114,15 +114,16 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
   );
 
   return (
-    <ScrollView style={[s.container, { backgroundColor: '#0F172A' }]} contentContainerStyle={{ padding: 16, paddingBottom: 92 }}>
+    <ScrollView style={[s.container, { backgroundColor: colors.background }]} contentContainerStyle={{ padding: 16, paddingBottom: 92 }}>
       {/* Common fields */}
-      <View style={[s.section, { backgroundColor: bg }]}>
+      <View style={[s.section, { backgroundColor: bg }]}
+      >
         <Text style={[s.sectionTitle, { color: colors.primary }]}>Basic Info</Text>
         <InputField label="Title" value={title} onChangeText={setTitle} placeholder="e.g. Morning medication" />
 
         {/* Date */}
         <View style={s.fieldGroup}>
-          <Text style={[s.fieldLabel, { color: isDark ? '#94A3B8' : '#475569' }]}>Date</Text>
+          <Text style={[s.fieldLabel, { color: colors.textSecondary }]}>Date</Text>
           <TouchableOpacity
             onPress={() => setShowDatePicker(true)}
             style={{
@@ -131,8 +132,8 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
               justifyContent: 'space-between',
               borderRadius: 12,
               borderWidth: 1.5,
-              borderColor: '#334155',
-              backgroundColor: '#1E293B',
+              borderColor: colors.border,
+              backgroundColor: inputBg,
               paddingHorizontal: 16,
               height: 52,
             }}
@@ -140,7 +141,7 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
       <Text style={{ color: textColor, fontSize: 15 }}>
               {dateValue || 'Select date'}
             </Text>
-            <Ionicons name="calendar-outline" size={20} color="#14B8A6" />
+            <Ionicons name="calendar-outline" size={20} color={colors.primary} />
           </TouchableOpacity>
         </View>
         <CustomDatePicker
@@ -209,7 +210,7 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
       {/* Appointment-specific */}
       {reminderType === 'appointment' && (
         <View style={[s.section, { backgroundColor: bg }]}>
-          <Text style={[s.sectionTitle, { color: '#6366F1' }]}>
+          <Text style={[s.sectionTitle, { color: colors.primary }]}>
             <Ionicons name="calendar-outline" size={16} /> Appointment Details
           </Text>
           <InputField label="Doctor Name *" value={doctorName} onChangeText={setDoctorName} placeholder="e.g. Dr. Smith" />
@@ -228,7 +229,7 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
       {/* Lab-specific */}
       {reminderType === 'lab' && (
         <View style={[s.section, { backgroundColor: bg }]}>
-          <Text style={[s.sectionTitle, { color: '#F59E0B' }]}>
+          <Text style={[s.sectionTitle, { color: colors.primary }]}>
             <Ionicons name="flask-outline" size={16} /> Lab Report Details
           </Text>
           <InputField label="Lab Name" value={labName} onChangeText={setLabName} placeholder="e.g. HealthLab" />
@@ -273,7 +274,7 @@ const s = StyleSheet.create({
   sectionTitle: { fontSize: IS_SMALL ? 14 : 15, fontWeight: '700', marginBottom: 14 },
   fieldGroup: { marginBottom: 14 },
   fieldLabel: { fontSize: IS_SMALL ? 12 : 13, fontWeight: '600', marginBottom: 6 },
-  input: { borderRadius: 12, paddingHorizontal: 16, paddingVertical: IS_SMALL ? 12 : 14, fontSize: 15, minHeight: 52, borderColor: '#334155', borderWidth: 1.5 },
+  input: { borderRadius: 12, paddingHorizontal: 16, paddingVertical: IS_SMALL ? 12 : 14, fontSize: 15, minHeight: 52, borderColor: 'transparent', borderWidth: 1.5 },
   dateBtn: { flexDirection: 'row', alignItems: 'center', borderRadius: 10, paddingHorizontal: IS_SMALL ? 12 : 14, paddingVertical: IS_SMALL ? 12 : 14 },
   row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start' },
   rowItem: { minWidth: 120, flexBasis: '48%' },

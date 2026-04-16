@@ -67,7 +67,7 @@ const RemindersScreen = ({ navigation }) => {
         <View style={[s.typeStrip, { backgroundColor: typeColor }]} />
         <View style={s.cardBody}>
           <View style={s.cardTop}>
-            <Text style={[s.cardTitle, { color: isDark ? '#E2E8F0' : '#1F2937' }]} numberOfLines={1}>
+            <Text style={[s.cardTitle, { color: colors.text }]} numberOfLines={1}>
               {item.title}
             </Text>
             {item.isCompleted && (
@@ -76,22 +76,22 @@ const RemindersScreen = ({ navigation }) => {
           </View>
           <View style={s.cardMeta}>
             <Ionicons name="time-outline" size={14} color={colors.primary} />
-            <Text style={[s.cardMetaText, { color: isDark ? '#94A3B8' : '#64748B' }]}>
+            <Text style={[s.cardMetaText, { color: colors.textSecondary }]}>
               {formatDate(item.date)} · {item.time}
             </Text>
           </View>
           {item.reminderType === 'medication' && item.medicationName && (
-            <Text style={[s.subDetail, { color: isDark ? '#94A3B8' : '#64748B' }]}>
+            <Text style={[s.subDetail, { color: colors.textSecondary }]}>
               {item.medicationName} {item.dosage ? `– ${item.dosage}${item.dosageUnit || ''}` : ''}
             </Text>
           )}
           {item.reminderType === 'appointment' && item.doctorName && (
-            <Text style={[s.subDetail, { color: isDark ? '#94A3B8' : '#64748B' }]}>
+            <Text style={[s.subDetail, { color: colors.textSecondary }]}>
               Dr. {item.doctorName}{item.specialty ? ` (${item.specialty})` : ''}
             </Text>
           )}
           {item.reminderType === 'lab' && item.labName && (
-            <Text style={[s.subDetail, { color: isDark ? '#94A3B8' : '#64748B' }]}>
+            <Text style={[s.subDetail, { color: colors.textSecondary }]}>
               {item.labName}{item.testName ? ` – ${item.testName}` : ''}
             </Text>
           )}
@@ -102,55 +102,57 @@ const RemindersScreen = ({ navigation }) => {
 
   return (
     <View style={[s.container, { backgroundColor: isDark ? '#0F172A' : '#F8FAFC' }]}>
-      <StatusBar barStyle="light-content" backgroundColor="#0F766E" />
+      <View style={s.content}>
+        <StatusBar barStyle="light-content" backgroundColor="#0F766E" />
 
-      {/* Type Tabs */}
-      <View style={s.tabBar}>
-        {TYPE_TABS.map((tab) => {
-          const active = selectedType === tab.key;
-          return (
-            <TouchableOpacity
-              key={tab.label}
-              style={[s.tab, active && s.tabActive]}
-              onPress={() => dispatch(setSelectedType(tab.key))}
-            >
-              <Ionicons name={tab.icon} size={20} color={active ? '#14B8A6' : '#94A3B8'} />
-              <Text style={[s.tabLabel, { color: active ? '#14B8A6' : '#94A3B8' }]}>{tab.label}</Text>
-            </TouchableOpacity>
-          );
-        })}
+        {/* Type Tabs */}
+        <View style={s.tabBar}>
+          {TYPE_TABS.map((tab) => {
+            const active = selectedType === tab.key;
+            return (
+              <TouchableOpacity
+                key={tab.label}
+                style={[s.tab, active && s.tabActive]}
+                onPress={() => dispatch(setSelectedType(tab.key))}
+              >
+                <Ionicons name={tab.icon} size={20} color={active ? '#14B8A6' : '#94A3B8'} />
+                <Text style={[s.tabLabel, { color: colors.text }]}>{tab.label}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        {/* List */}
+        {loading && !refreshing ? (
+          <ActivityIndicator size="large" color={colors.primary} style={{ marginTop: 40 }} />
+        ) : (
+          <FlatList
+            data={reminders}
+            keyExtractor={(item) => item._id}
+            renderItem={renderItem}
+            contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />}
+            ListEmptyComponent={
+              <View style={s.empty}>
+                <Ionicons name="notifications-off-outline" size={60} color="#CBD5E1" />
+                <Text style={[s.emptyText, { color: colors.textSecondary }]}>No reminders yet</Text>
+                <Text style={[s.emptyHint, { color: colors.textTertiary }]}>
+                  Tap + to add your first reminder
+                </Text>
+              </View>
+            }
+          />
+        )}
       </View>
-
-      {/* List */}
-      {loading && !refreshing ? (
-        <ActivityIndicator size="large" color={colors.primary} style={{ marginTop: 40 }} />
-      ) : (
-        <FlatList
-          data={reminders}
-          keyExtractor={(item) => item._id}
-          renderItem={renderItem}
-          contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />}
-          ListEmptyComponent={
-            <View style={s.empty}>
-              <Ionicons name="notifications-off-outline" size={60} color="#CBD5E1" />
-              <Text style={[s.emptyText, { color: isDark ? '#94A3B8' : '#64748B' }]}>No reminders yet</Text>
-              <Text style={[s.emptyHint, { color: isDark ? '#64748B' : '#94A3B8' }]}>
-                Tap + to add your first reminder
-              </Text>
-            </View>
-          }
-        />
-      )}
 
       {/* FAB */}
       <Tooltip text="Add reminder">
         <TouchableOpacity
-          style={s.fabWrap}
+          style={s.fab}
           onPress={() => navigation.navigate('AddReminder')}
           activeOpacity={0.9}
         >
-          <LinearGradient colors={[colors.primary, colors.primaryDark]} style={s.fab}>
+          <LinearGradient colors={[colors.primary, colors.primaryDark]} style={s.fabGradient}>
             <Ionicons name="add" size={30} color="#FFF" />
           </LinearGradient>
         </TouchableOpacity>
@@ -203,12 +205,13 @@ const s = StyleSheet.create({
   empty: { alignItems: 'center', marginTop: 80 },
   emptyText: { fontSize: 17, fontWeight: '600', marginTop: 16 },
   emptyHint: { fontSize: 13, marginTop: 6 },
-  fabWrap: {
-    position: 'absolute', right: 20, bottom: 24,
+  content: { flex: 1 },
+  fab: {
+    position: 'absolute', right: 20, bottom: -55, width: 60, height: 60,
     shadowColor: '#14B8A6', shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4, shadowRadius: 12, elevation: 10,
   },
-  fab: { width: 60, height: 60, borderRadius: 30, alignItems: 'center', justifyContent: 'center' },
+  fabGradient: { width: 60, height: 60, borderRadius: 30, alignItems: 'center', justifyContent: 'center' },
 });
 
 export default RemindersScreen;
