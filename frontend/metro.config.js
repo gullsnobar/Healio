@@ -22,19 +22,6 @@ config.resolver.extraNodeModules = nodeStdlibModules.reduce((acc, mod) => {
   return acc;
 }, {});
 
-// Optional: fallback for resolver
-const defaultResolveRequest = config.resolver.resolveRequest;
-config.resolver.resolveRequest = (context, moduleName, platform) => {
-  const normalizedModuleName = normalizeNodeModuleName(moduleName);
-  if (nodeStdlibModules.includes(normalizedModuleName)) {
-    return {
-      type: 'sourceFile',
-      filePath: __dirname + '/emptyModule.js',
-    };
-  }
-  return defaultResolveRequest(context, moduleName, platform);
-};
-
 // Ensure bundle responses have correct MIME type
 config.server = config.server || {};
 config.server.enhanceMiddleware = (middleware) => {
