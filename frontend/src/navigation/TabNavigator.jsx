@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Platform, Dimensions } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAppTheme } from "../styles/ThemeContext";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import HomeScreen from "../screens/main/HomeScreen";
 import DashboardScreen from "../screens/main/DashboardScreen";
@@ -44,22 +45,26 @@ const TabNavigator = () => {
   const { colors, isDark } = useAppTheme();
   const screenWidth = Dimensions.get("window").width;
   const isMobile = screenWidth < 768;
+  const insets = useSafeAreaInsets();
 
-  const tabBarHeight = Platform.select({
-    ios: 88,
-    android: 64,
-    default: isMobile ? 60 : 68,
+  const baseTabBarHeight = Platform.select({
+    ios: 56,
+    android: 52,
+    default: isMobile ? 52 : 56,
   });
-  const tabBarPaddingBottom = Platform.select({
-    ios: 28,
-    android: 8,
-    default: isMobile ? 6 : 10,
+  const baseTabBarPaddingBottom = Platform.select({
+    ios: 6,
+    android: 4,
+    default: isMobile ? 4 : 6,
   });
+
+  const tabBarHeight = baseTabBarHeight + insets.bottom;
+  const tabBarPaddingBottom = baseTabBarPaddingBottom + insets.bottom;
 
   return (
     <Tab.Navigator
       sceneContainerStyle={{
-        paddingBottom: tabBarHeight + 16,
+        paddingBottom: 0,
         backgroundColor: colors.background,
       }}
       screenOptions={({ route }) => ({
@@ -92,11 +97,9 @@ const TabNavigator = () => {
           height: '100%',
         },
         tabBarStyle: {
-          height: 65,
-          backgroundColor: colors.card,
-          borderTopWidth: 1,
-          borderTopColor: colors.border,
-          paddingBottom: 0,
+          height: tabBarHeight,
+          backgroundColor: colors.background,
+          paddingBottom: tabBarPaddingBottom,
           paddingTop: 0,
         },
         tabBarActiveTintColor: colors.tabActive,

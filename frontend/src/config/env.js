@@ -1,8 +1,17 @@
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
-// Android emulator uses 10.0.2.2 to reach the host machine's localhost
-const DEV_HOST = Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
+const getDevHost = () => {
+  const hostUri = Constants.expoConfig?.hostUri;
+  if (hostUri) {
+    const host = hostUri.split(':')[0];
+    if (host) return host;
+  }
+  if (Platform.OS === 'android') return '10.0.2.2';
+  return 'localhost';
+};
+
+const DEV_HOST = getDevHost();
 
 const ENV = {
   development: {
@@ -25,9 +34,18 @@ const ENV = {
 const getEnvVars = () => {
   // Expo SDK 50+: use expoConfig instead of deprecated manifest
   const releaseChannel = Constants.expoConfig?.extra?.releaseChannel;
-  if (releaseChannel === 'production') return ENV.production;
-  if (releaseChannel === 'staging') return ENV.staging;
-  return ENV.development;
+  let env = ENV.development;
+  if (releaseChannel === 'production') env = ENV.production;
+  else if (releaseChannel === 'staging') env = ENV.staging;
+
+  // Prefer explicit EXPO_PUBLIC_* values from .env if provided
+  const explicitApi = process.env.EXPO_PUBLIC_API_BASE_URL;
+  const explicitAi = process.env.EXPO_PUBLIC_AI_ENGINE_URL;
+  return {
+    ...env,
+    apiUrl: explicitApi || env.apiUrl,
+    aiEngineUrl: explicitAi || env.aiEngineUrl,
+  };
 };
 
 export default getEnvVars();

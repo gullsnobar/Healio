@@ -1,5 +1,6 @@
-﻿import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback } from 'react';
 import { View, FlatList, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../styles/ThemeContext';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
@@ -7,18 +8,15 @@ import ChatSuggestions from './ChatSuggestions';
 
 const ChatInterface = ({ messages = [], onSend, suggestions = [], loading = false }) => {
   const { colors } = useAppTheme();
+  const insets = useSafeAreaInsets();
   const listRef = useRef(null);
   
-  // Stable key extractor for FlatList - generates unique, non-duplicate keys
   const getMessageKey = useCallback((item, index) => {
-    // Priority: _id > id > generate stable key from timestamp + index + role
     if (item._id) return `${item._id}`;
     if (item.id) return `${item.id}`;
-    // Fallback: stable key combining timestamp, role, and position
     return `msg_${item.role || 'unknown'}_${item.timestamp || 0}_${index}`;
   }, []);
   
-  // Optimize scrolling to end
   const handleContentSizeChange = useCallback(() => {
     if (listRef.current && messages.length > 0) {
       listRef.current.scrollToEnd({ animated: true });
@@ -27,8 +25,9 @@ const ChatInterface = ({ messages = [], onSend, suggestions = [], loading = fals
   
   return (
     <KeyboardAvoidingView 
-      style={[s.c, { backgroundColor: colors.background }]} 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={[s.c, { backgroundColor: colors.background, paddingBottom: insets.bottom }]} 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
+      keyboardVerticalOffset={Platform.OS === 'android' ? 56 : 0}
     >
       <FlatList 
         ref={listRef} 

@@ -14,7 +14,7 @@ import { useAppTheme } from '../../styles/ThemeContext';
 import Button from '../common/Button';
 import GoogleIcon from '../common/GoogleIcon';
 
-const RegisterForm = ({ onSubmit, onLogin, onGoogleSignIn }) => {
+const RegisterForm = ({ onSubmit, onLogin, onGoogleSignIn, loading: externalLoading }) => {
   const { colors, isDark } = useAppTheme();
 
   // Override Chrome autofill background for dark mode
@@ -48,7 +48,7 @@ const RegisterForm = ({ onSubmit, onLogin, onGoogleSignIn }) => {
   });
   const [securePassword, setSecurePassword] = useState(true);
   const [secureConfirm, setSecureConfirm] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [internalLoading, setInternalLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [focusedField, setFocusedField] = useState(null);
 
@@ -73,7 +73,7 @@ const RegisterForm = ({ onSubmit, onLogin, onGoogleSignIn }) => {
 
   const handleRegister = async () => {
     if (!validate()) return;
-    setLoading(true);
+    setInternalLoading(true);
     try {
       await onSubmit?.({
         name: form.fullName.trim(),
@@ -81,14 +81,15 @@ const RegisterForm = ({ onSubmit, onLogin, onGoogleSignIn }) => {
         phone: form.phone.trim(),
         password: form.password,
       });
-    } catch {
-      Alert.alert('Error', 'Registration failed. Please try again.');
+    } catch (err) {
+      Alert.alert('Error', err?.message || 'Registration failed. Please try again.');
     } finally {
-      setLoading(false);
+      setInternalLoading(false);
     }
   };
 
   const canSubmit = form.fullName && form.email && form.phone && form.password && form.confirmPassword;
+  const loading = externalLoading || internalLoading;
   const disabled = loading || !canSubmit;
 
   const FIELD_ICONS = {

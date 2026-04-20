@@ -122,15 +122,20 @@ const chatWithAI = async (userMessage, userId = 'unknown') => {
   } catch (error) {
     console.error(`❌ [Chatbot] Error for user ${userId}:`, error.message);
 
-    // Friendly error messages
+    // If external API fails (404, 5xx, network), return a graceful fallback
+    let friendlyMessage = "I'm having trouble generating a full response right now. Please try again later.";
     if (error.message.includes('timeout')) {
-      throw new Error('AI model is loading. Please try again in a moment.');
+      friendlyMessage = 'AI model is loading. Please try again in a moment.';
     }
     if (error.message.includes('API key')) {
-      throw new Error('AI service temporarily unavailable. Please try again later.');
+      friendlyMessage = 'AI service is not configured correctly. Please contact support.';
     }
 
-    throw error;
+    return {
+      success: false,
+      message: friendlyMessage,
+      model: 'unavailable',
+    };
   }
 };
 
@@ -237,4 +242,3 @@ module.exports = {
   chatWithContext,
   clearUserHistory,
 };
-

@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import {
   ScrollView, StyleSheet, RefreshControl, View, Text, StatusBar,
   TouchableOpacity, FlatList, Dimensions, Animated, Platform,
@@ -8,6 +8,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle } from 'react-native-svg';
 import { useAppTheme } from '../../styles/ThemeContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ThemeToggle from '../../components/common/ThemeToggle';
 import DashboardOverview from '../../components/dashboard/DashboardOverview';
 import { fetchDashboardData } from '../../redux/slices/userSlice';
@@ -57,6 +58,7 @@ const QuickStatCard = ({ icon, label, value, unit, color, bg, colors }) => (
 /* ─── Main HomeScreen ─── */
 const HomeScreen = ({ navigation }) => {
   const { colors, isDark } = useAppTheme();
+  const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const { dashboardData, loading } = useSelector((state) => state.user);
   const { user } = useSelector((state) => state.auth);
@@ -85,14 +87,14 @@ const HomeScreen = ({ navigation }) => {
       }
     };
 
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
       window.addEventListener('resize', handleResize);
     }
 
     const dims = Dimensions.addEventListener?.('change', handleResize);
 
     return () => {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== 'undefined' && typeof window.removeEventListener === 'function') {
         window.removeEventListener('resize', handleResize);
       }
       if (dims?.remove) {
@@ -123,7 +125,9 @@ const HomeScreen = ({ navigation }) => {
   }, [selectedDay, colors]);
 
   return (
-    <ScrollView style={[st.c, { backgroundColor: colors.background }]} contentContainerStyle={[st.content, { paddingBottom: IS_SMALL ? 110 : 90 }]}
+    <ScrollView
+      style={[st.c, { backgroundColor: colors.background, paddingTop: insets.top + 4 }]}
+      contentContainerStyle={st.content}
       showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={loading} onRefresh={() => dispatch(fetchDashboardData())} tintColor={colors.primary} />}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
@@ -133,7 +137,7 @@ const HomeScreen = ({ navigation }) => {
         <View style={st.headerLeft}>
           <TouchableOpacity
             style={[st.iconBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
-            onPress={() => navigation.openDrawer()}>
+            onPress={() => navigation.navigate('Settings')}>
             <Ionicons name="menu-outline" size={24} color={colors.textSecondary} />
           </TouchableOpacity>
           <View style={[st.brandPill, { backgroundColor: colors.primaryLight }]}>
@@ -206,10 +210,7 @@ const HomeScreen = ({ navigation }) => {
       <FlatList
         data={days}
         renderItem={renderDayItem}
-        horizontal={false}
-        key={`flatlist-${IS_DESKTOP ? 7 : IS_TABLET ? 4 : 3}`}
-        numColumns={IS_DESKTOP ? 7 : IS_TABLET ? 4 : 3}
-        columnWrapperStyle={(IS_TABLET || IS_MOBILE) ? st.dayListWrap : undefined}
+        horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={st.dayList}
         keyExtractor={(item) => item.key}
@@ -219,7 +220,7 @@ const HomeScreen = ({ navigation }) => {
       <View style={st.medSection}>
         <View style={st.sectionHeader}>
           <Text style={[st.sectionTitle, { color: colors.text }]}>Medication Progress</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Medications')} style={st.seeAllContainer}>
+          <TouchableOpacity onPress={() => navigation.navigate('MedicationList')} style={st.seeAllContainer}>
             <Text style={[st.seeAll, { color: colors.primary }]}>See All</Text>
             <Text style={[st.seeAllDesc, { color: colors.textTertiary }]}>View & manage meds</Text>
           </TouchableOpacity>
@@ -264,7 +265,7 @@ const HomeScreen = ({ navigation }) => {
         <View style={st.schedSection}>
           <View style={st.sectionHeader}>
             <Text style={[st.sectionTitle, { color: colors.text }]}>Today's Schedule</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Reminders')} style={st.seeAllContainer}>
+          <TouchableOpacity onPress={() => navigation.navigate('Reminders')} style={st.seeAllContainer}>
               <Text style={[st.seeAll, { color: colors.primary }]}>View All</Text>
               <Text style={[st.seeAllDesc, { color: colors.textTertiary }]}>Manage reminders</Text>
             </TouchableOpacity>
@@ -307,7 +308,7 @@ const HomeScreen = ({ navigation }) => {
 
 const st = StyleSheet.create({
   c: { flex: 1 },
-  content: { paddingBottom: 32 },
+  content: { paddingBottom: 0 },
 
   /* Header */
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: IS_SMALL ? 16 : 20, paddingTop: 12, paddingBottom: 8 },

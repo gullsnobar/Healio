@@ -1,9 +1,9 @@
-﻿import React, { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { useAppTheme } from '../../styles/ThemeContext';
 import ChatInterface from '../../components/chatbot/ChatInterface';
-import { sendMessage, fetchSuggestions } from '../../redux/slices/chatbotSlice';
+import { sendMessage, fetchSuggestions, loadChatHistory } from '../../redux/slices/chatbotSlice';
 
 const ChatbotScreen = () => {
   const { colors } = useAppTheme();
@@ -11,8 +11,9 @@ const ChatbotScreen = () => {
   const { messages, suggestions, loading, sessionId } = useSelector((state) => state.chatbot);
   
   useEffect(() => { 
+    dispatch(loadChatHistory());
     dispatch(fetchSuggestions()); 
-  }, []);
+  }, [dispatch]);
 
   const handleSendMessage = (text) => {
     dispatch(sendMessage({ message: text, sessionId, context: 'general' }));
@@ -25,5 +26,6 @@ const ChatbotScreen = () => {
     </View>
   );
 };
+
 const s = StyleSheet.create({ c: { flex: 1 } });
 export default ChatbotScreen;

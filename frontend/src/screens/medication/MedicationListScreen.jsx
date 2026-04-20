@@ -1,16 +1,18 @@
-﻿import React, { useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { View, StyleSheet, TouchableOpacity, StatusBar, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { useAppTheme } from '../../styles/ThemeContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MedicationList from '../../components/medication/MedicationList';
 import { fetchMedications, markAsTaken } from '../../redux/slices/medicationSlice';
 import Tooltip from '../../components/common/Tooltip';
 
 const MedicationListScreen = ({ navigation }) => {
   const { colors, isDark } = useAppTheme();
+  const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const { medications, loading } = useSelector((state) => state.medication);
 
@@ -18,7 +20,7 @@ const MedicationListScreen = ({ navigation }) => {
   useFocusEffect(useCallback(() => { dispatch(fetchMedications()); }, [dispatch]));
 
   return (
-    <View style={[ms.c, { backgroundColor: colors.background }]}>
+    <View style={[ms.c, { backgroundColor: colors.background, paddingTop: insets.top }]}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
       
       {/* Header with back button */}

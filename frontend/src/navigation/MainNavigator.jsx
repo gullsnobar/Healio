@@ -4,9 +4,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../styles/ThemeContext';
 
-import DrawerNavigator from './DrawerNavigator';
+import TabNavigator from './TabNavigator';
 
 // Medication Screens
+import MedicationListScreen from '../screens/medication/MedicationListScreen';
 import AddMedicationScreen from '../screens/medication/AddMedicationScreen';
 import EditMedicationScreen from '../screens/medication/EditMedicationScreen';
 import MedicationDetailsScreen from '../screens/medication/MedicationDetailsScreen';
@@ -83,12 +84,13 @@ const MainNavigator = () => {
       })}
     >
       <Stack.Screen
-        name="MainDrawer"
-        component={DrawerNavigator}
+        name="MainTabs"
+        component={TabNavigator}
         options={{ headerShown: false }}
       />
 
       {/* Medication Stack */}
+      <Stack.Screen name="MedicationList" component={MedicationListScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AddMedication" component={AddMedicationScreen} options={{ headerShown: false }} />
       <Stack.Screen name="EditMedication" component={EditMedicationScreen} options={{ title: 'Edit Medication' }} />
       <Stack.Screen name="MedicationDetails" component={MedicationDetailsScreen} options={{ title: 'Medication Details' }} />

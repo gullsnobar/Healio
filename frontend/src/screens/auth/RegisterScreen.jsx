@@ -1,4 +1,4 @@
-﻿import React, { useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity, StatusBar } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
@@ -62,7 +62,6 @@ const RegisterScreen = ({ navigation }) => {
           onLogin={() => navigation.navigate('Login')}
           onGoogleSignIn={handleGoogleSignIn}
         />
-        {loading && <Loading message="Creating your account..." />}
       </ScrollView>
     </KeyboardAvoidingView>
   );

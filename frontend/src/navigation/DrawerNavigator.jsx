@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -17,6 +18,13 @@ const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
   const { colors } = useAppTheme();
+
+  // On web, avoid the drawer implementation which currently throws with Reanimated 4.
+  // Use the tab navigator directly for a stable experience.
+  if (Platform.OS === 'web') {
+    return <TabNavigator />;
+  }
+
   return (
     <Drawer.Navigator
       screenOptions={{
