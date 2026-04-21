@@ -74,7 +74,7 @@ const s = StyleSheet.create({
   scroll: {
     flexGrow: 1,
     paddingHorizontal: 24,
-    paddingTop: 16,
+    paddingTop: 32,
     paddingBottom: 40,
   },
   backBtn: {

@@ -1,10 +1,9 @@
-﻿import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import LoginForm from '../../components/auth/LoginForm';
-import Loading from '../../components/common/Loading';
 import Alert from '../../components/common/Alert';
 import { loginUser, googleSignIn, clearError } from '../../redux/slices/authSlice';
 import { useAppTheme } from '../../styles/ThemeContext';
@@ -82,8 +81,8 @@ const LoginScreen = ({ navigation }) => {
           onForgotPassword={() => navigation.navigate('ForgotPassword')}
           onRegister={() => navigation.navigate('Register')}
           onGoogleSignIn={handleGoogleSignIn}
+          loading={loading}
         />
-        {loading && <Loading message="Signing in..." />}
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -96,7 +95,7 @@ const s = StyleSheet.create({
   scroll: {
     flexGrow: 1,
     paddingHorizontal: 24,
-    paddingTop: 16,
+    paddingTop: 32,
     paddingBottom: 40,
   },
   backBtn: {

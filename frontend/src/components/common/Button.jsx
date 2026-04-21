@@ -46,32 +46,39 @@ const Button = ({
   const textColor = getTextColor();
   const isDisabled = disabled || loading;
 
-  // Render button content
-  const renderContent = () => (
-    <View style={[styles.content, { flexDirection: iconPosition === 'left' ? 'row' : 'row-reverse' }]}>
-      {icon && !loading && (
-        <Ionicons 
-          name={icon} 
-          size={size === 'small' ? 14 : size === 'large' ? 22 : 18} 
-          color={textColor}
-          style={[styles.icon, iconPosition === 'left' ? { marginRight: 8 } : { marginLeft: 8 }]}
-        />
-      )}
-      {loading && (
-        <ActivityIndicator 
-          size="small" 
-          color={textColor} 
-          style={{ marginRight: iconPosition === 'left' ? 8 : 0, marginLeft: iconPosition === 'right' ? 8 : 0 }}
-        />
-      )}
-      <Text style={[styles[`text_${size}`], { color: textColor }]} numberOfLines={1}>
-        {children}
-      </Text>
-    </View>
-  );
+  const renderContent = () => {
+    const content =
+      typeof children === 'string'
+        ? (
+          <Text style={[styles[`text_${size}`], { color: textColor }]} numberOfLines={1}>
+            {children}
+          </Text>
+        )
+        : children;
 
-  // Primary and danger buttons use gradient
-  if ((variant === 'primary' || variant === 'danger') && !isDisabled) {
+    return (
+      <View style={[styles.content, { flexDirection: iconPosition === 'left' ? 'row' : 'row-reverse' }]}>
+        {icon && !loading && (
+          <Ionicons 
+            name={icon} 
+            size={size === 'small' ? 14 : size === 'large' ? 22 : 18} 
+            color={textColor}
+            style={[styles.icon, iconPosition === 'left' ? { marginRight: 8 } : { marginLeft: 8 }]}
+          />
+        )}
+        {loading && (
+          <ActivityIndicator 
+            size="small" 
+            color={textColor} 
+            style={{ marginRight: iconPosition === 'left' ? 8 : 0, marginLeft: iconPosition === 'right' ? 8 : 0 }}
+          />
+        )}
+        {content}
+      </View>
+    );
+  };
+
+  if (variant === 'primary' || variant === 'danger') {
     const gradientColors = variant === 'primary' 
       ? [colors.primary, colors.primaryDark]
       : ['#F87171', '#EF4444'];
@@ -96,7 +103,6 @@ const Button = ({
     );
   }
 
-  // Other variants (outline, secondary, ghost)
   return (
     <TouchableOpacity
       onPress={onPress}

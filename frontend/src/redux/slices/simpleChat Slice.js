@@ -6,7 +6,7 @@ export const sendSimpleMessage = createAsyncThunk('simpleChat/send', async (mess
     const res = await openRouterAPI.sendMessage(message);
     const botMessage = { 
       role: 'bot', 
-      text: res.data?.reply || "No response from AI", 
+      text: res.data?.reply || 'No response from AI', 
       timestamp: new Date().toISOString()
     };
     return { 
@@ -14,7 +14,7 @@ export const sendSimpleMessage = createAsyncThunk('simpleChat/send', async (mess
       botMessage
     };
   } catch (error) {
-    throw error.response?.data?.error || "Failed to send message";
+    throw error.response?.data?.error || 'Failed to send message';
   }
 });
 

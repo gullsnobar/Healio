@@ -4,7 +4,7 @@ import { useAppTheme } from '../../styles/ThemeContext';
 import Button from '../common/Button';
 import Dropdown from '../common/Dropdown';
 
-const ManualFitnessEntry = ({ onSubmit }) => {
+const ManualFitnessEntry = ({ onSubmit, loading }) => {
   const { colors } = useAppTheme();
   const [entry, setEntry] = useState({ type: 'steps', value: '', date: new Date().toISOString().split('T')[0], notes: '' });
   const entryTypes = ['steps', 'sleep', 'water', 'calories', 'weight'];
@@ -37,6 +37,7 @@ const ManualFitnessEntry = ({ onSubmit }) => {
         size="large"
         icon="checkmark-circle-outline"
         onPress={() => onSubmit?.(entry)}
+        loading={!!loading}
         colors={colors}
       >
         Save Entry

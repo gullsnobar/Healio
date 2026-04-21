@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ScrollView,
   View,
@@ -12,6 +12,7 @@ import {
   Image,
   Dimensions,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector, useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -37,6 +38,7 @@ const ProfileScreen = ({ navigation }) => {
     dateOfBirth: '',
   });
   const [focusedField, setFocusedField] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -54,6 +56,15 @@ const ProfileScreen = ({ navigation }) => {
 
   const handleSave = () => {
     Alert.alert('Success', 'Profile updated successfully');
+  };
+
+  const handleSaveOrEdit = () => {
+    if (!isEditing) {
+      setIsEditing(true);
+      return;
+    }
+    handleSave();
+    setIsEditing(false);
   };
 
   const handleLogout = () => {
@@ -98,8 +109,13 @@ const ProfileScreen = ({ navigation }) => {
     return (
       <View key={key} style={{ marginBottom: 14 }}>
         <Text style={[s.fieldLabel, { color: colors.textSecondary }]}>{label}</Text>
-        <View style={[s.inputWrap, { backgroundColor: colors.cardAlt, borderColor: colors.cardAlt },
-          focusedField === key && { borderColor: colors.primary, backgroundColor: colors.card }]}>
+        <View
+          style={[
+            s.inputWrap,
+            { backgroundColor: colors.cardAlt, borderColor: colors.inputBorder },
+            focusedField === key && { borderColor: colors.primary, backgroundColor: colors.card },
+          ]}
+        >
           <TextInput
             style={[s.input, { color: colors.text }]}
             placeholder={placeholder}
@@ -118,10 +134,14 @@ const ProfileScreen = ({ navigation }) => {
   };
 
   return (
-    <ScrollView style={[s.c, { backgroundColor: colors.background }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+    <SafeAreaView style={[s.c, { backgroundColor: colors.background }]}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
+      <ScrollView
+        style={s.c}
+        contentContainerStyle={s.content}
+        showsVerticalScrollIndicator={false}
+      >
 
-      {/* Top bar */}
       <View style={s.topBar}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={[s.backBtn, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
@@ -130,7 +150,6 @@ const ProfileScreen = ({ navigation }) => {
         <View style={{ width: 44 }} />
       </View>
 
-      {/* Avatar */}
       <View style={s.avatarSection}>
         <View style={[s.avatarCircle, { backgroundColor: colors.primary }]}>
           {user?.profilePicture ? (
@@ -142,34 +161,30 @@ const ProfileScreen = ({ navigation }) => {
         <Text style={[s.userName, { color: colors.text }]}>{user?.name || user?.fullName || 'User'}</Text>
       </View>
 
-      {/* Form fields */}
-      <View style={s.formSection}>
-        {renderField('username', 'Username', 'Enter username', { autoCapitalize: 'words' })}
-        {renderField('email', 'Email', 'Enter email', { keyboardType: 'email-address' })}
-        {renderField('phone', 'Phone', 'Enter phone', { keyboardType: 'phone-pad' })}
-        {renderField('gender', 'Gender', 'Male / Female / Other')}
-        {renderField('dateOfBirth', 'Date of Birth', 'YYYY-MM-DD')}
-      </View>
+      {isEditing && (
+        <View style={s.formSection}>
+          {renderField('username', 'Username', 'Enter username', { autoCapitalize: 'words' })}
+          {renderField('email', 'Email', 'Enter email', { keyboardType: 'email-address' })}
+          {renderField('phone', 'Phone', 'Enter phone', { keyboardType: 'phone-pad' })}
+          {renderField('gender', 'Gender', 'Male / Female / Other')}
+          {renderField('dateOfBirth', 'Date of Birth', 'YYYY-MM-DD')}
+        </View>
+      )}
 
-      {/* Save button */}
       <View style={s.formSection}>
-        <Tooltip text="Save changes">
+        <Tooltip text={isEditing ? 'Save changes' : 'Edit your profile'}>
           <Button
             variant="primary"
             size="large"
-            icon="checkmark-circle-outline"
-            onPress={handleSave}
+            icon={isEditing ? 'checkmark-circle-outline' : 'create-outline'}
+            onPress={handleSaveOrEdit}
             colors={colors}
           >
-            Save Profile
+            {isEditing ? 'Save Profile' : 'Edit Profile'}
           </Button>
         </Tooltip>
-        <Text style={[s.buttonDesc, { color: colors.textSecondary }]}>Update your personal information and preferences</Text>
       </View>
 
-      {/* Dark mode toggle */}
-
-      {/* Sign out */}
       <View style={{ paddingHorizontal: IS_SMALL ? 20 : 24, marginTop: 16 }}>
         <Tooltip text="Logout">
           <Button
@@ -178,13 +193,15 @@ const ProfileScreen = ({ navigation }) => {
             icon="log-out-outline"
             onPress={handleLogout}
             colors={colors}
+            style={{ marginTop: 8, alignSelf: 'stretch' }}
           >
             Sign Out
           </Button>
         </Tooltip>
         <Text style={[s.buttonDesc, { color: colors.textSecondary }]}>Sign out of your HEALIO account</Text>
       </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

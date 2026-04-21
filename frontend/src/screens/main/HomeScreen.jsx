@@ -4,6 +4,7 @@ import {
   TouchableOpacity, FlatList, Dimensions, Animated, Platform,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle } from 'react-native-svg';
@@ -11,7 +12,10 @@ import { useAppTheme } from '../../styles/ThemeContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ThemeToggle from '../../components/common/ThemeToggle';
 import DashboardOverview from '../../components/dashboard/DashboardOverview';
-import { fetchDashboardData } from '../../redux/slices/userSlice';
+import { fetchDashboardData, fetchHealthScore } from '../../redux/slices/userSlice';
+import { fetchMedications } from '../../redux/slices/medicationSlice';
+import { fetchFitnessData } from '../../redux/slices/fitnessSlice';
+import { fetchUpcomingReminders } from '../../redux/slices/reminderSlice';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 const IS_SMALL = SCREEN_W < 400;
@@ -60,7 +64,10 @@ const HomeScreen = ({ navigation }) => {
   const { colors, isDark } = useAppTheme();
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
-  const { dashboardData, loading } = useSelector((state) => state.user);
+  const { dashboardData, loading, healthScore: healthScoreData } = useSelector((state) => state.user);
+  const { medications: medicationList } = useSelector((state) => state.medication);
+  const { dailyData: fitnessDaily } = useSelector((state) => state.fitness);
+  const { upcoming: upcomingReminders } = useSelector((state) => state.reminder);
   const { user } = useSelector((state) => state.auth);
   const firstName = user?.name?.split(' ')[0] || 'there';
   const [selectedDay, setSelectedDay] = useState(3);
@@ -75,7 +82,23 @@ const HomeScreen = ({ navigation }) => {
   const today = new Date();
   const greeting = useMemo(() => getGreeting(), []);
 
-  useEffect(() => { dispatch(fetchDashboardData()); }, []);
+  const selectedDayObj = days[selectedDay];
+  const selectedIsToday = selectedDayObj?.isToday;
+  const selectedDateParam = selectedIsToday ? undefined : selectedDayObj?.key.slice(0, 10);
+
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(fetchHealthScore());
+      dispatch(fetchMedications());
+      dispatch(fetchFitnessData());
+      dispatch(fetchUpcomingReminders());
+    }, [dispatch]),
+  );
+
+  useEffect(() => {
+    if (selectedDateParam) dispatch(fetchDashboardData(selectedDateParam));
+    else dispatch(fetchDashboardData());
+  }, [dispatch, selectedDateParam]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -105,10 +128,51 @@ const HomeScreen = ({ navigation }) => {
 
   const IS_DESKTOP = isDesktop;
 
-  const medsTaken = dashboardData?.medications?.taken || 0;
-  const medsTotal = (dashboardData?.medications?.taken || 0) + (dashboardData?.medications?.missed || 0) + (dashboardData?.medications?.pending || 0) || 0;
-  const healthScore = dashboardData?.healthScore || 0;
-  const fitness = dashboardData?.fitness || {};
+  const medsStatus = useMemo(() => {
+    const list = medicationList || [];
+    let taken = 0;
+    let pending = 0;
+    let missed = 0;
+    list.forEach((m) => {
+      const status = (m.status || 'pending').toLowerCase();
+      if (status === 'taken') taken += 1;
+      else if (status === 'missed') missed += 1;
+      else pending += 1;
+    });
+    const total = list.length;
+    return { taken, pending, missed, total };
+  }, [medicationList]);
+
+  const medsTaken = medsStatus.taken;
+  const medsTotal = medsStatus.total;
+
+  const healthScore =
+    typeof healthScoreData?.score === 'number'
+      ? healthScoreData.score
+      : dashboardData?.healthScore || 0;
+
+  const fitnessFromDashboard = dashboardData?.fitness || {};
+  const fitnessFromDaily = fitnessDaily || {};
+
+  const fitness = {
+    steps:
+      fitnessFromDashboard.steps ??
+      fitnessFromDaily.steps ??
+      0,
+    water:
+      fitnessFromDashboard.water ??
+      fitnessFromDaily.water ??
+      0,
+    sleep:
+      fitnessFromDashboard.sleep ??
+      fitnessFromDaily.sleep ??
+      0,
+    calories:
+      fitnessFromDashboard.caloriesBurned ??
+      fitnessFromDaily.calories ??
+      fitnessFromDashboard.calories ??
+      0,
+  };
 
   const renderDayItem = useCallback(({ item, index }) => {
     const active = index === selectedDay;
@@ -129,7 +193,21 @@ const HomeScreen = ({ navigation }) => {
       style={[st.c, { backgroundColor: colors.background, paddingTop: insets.top + 4 }]}
       contentContainerStyle={st.content}
       showsVerticalScrollIndicator={false}
-      refreshControl={<RefreshControl refreshing={loading} onRefresh={() => dispatch(fetchDashboardData())} tintColor={colors.primary} />}>
+      refreshControl={(
+        <RefreshControl
+          refreshing={loading}
+          onRefresh={() => {
+            if (selectedDateParam) dispatch(fetchDashboardData(selectedDateParam));
+            else dispatch(fetchDashboardData());
+            dispatch(fetchHealthScore());
+            dispatch(fetchMedications());
+            dispatch(fetchFitnessData());
+            dispatch(fetchUpcomingReminders());
+          }}
+          tintColor={colors.primary}
+        />
+      )}
+    >
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
 
       {/* Header */}
@@ -245,9 +323,9 @@ const HomeScreen = ({ navigation }) => {
             </View>
             <View style={st.medStats}>
               {[
-                { label: 'Taken', val: dashboardData?.medications?.taken || 0, color: '#22C55E' },
-                { label: 'Pending', val: dashboardData?.medications?.pending || 0, color: '#F59E0B' },
-                { label: 'Missed', val: dashboardData?.medications?.missed || 0, color: '#EF4444' },
+                { label: 'Taken', val: medsStatus.taken, color: '#22C55E' },
+                { label: 'Pending', val: medsStatus.pending, color: '#F59E0B' },
+                { label: 'Missed', val: medsStatus.missed, color: '#EF4444' },
               ].map((s) => (
                 <View key={s.label} style={st.medStatRow}>
                   <View style={[st.medStatDot, { backgroundColor: s.color }]} />
@@ -261,16 +339,16 @@ const HomeScreen = ({ navigation }) => {
       </View>
 
       {/* Today's Schedule */}
-      {dashboardData?.reminders?.length > 0 && (
+      {upcomingReminders?.length > 0 && (
         <View style={st.schedSection}>
           <View style={st.sectionHeader}>
             <Text style={[st.sectionTitle, { color: colors.text }]}>Today's Schedule</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Reminders')} style={st.seeAllContainer}>
+            <TouchableOpacity onPress={() => navigation.navigate('Reminders')} style={st.seeAllContainer}>
               <Text style={[st.seeAll, { color: colors.primary }]}>View All</Text>
               <Text style={[st.seeAllDesc, { color: colors.textTertiary }]}>Manage reminders</Text>
             </TouchableOpacity>
           </View>
-          {dashboardData.reminders.slice(0, 4).map((item, i) => (
+          {upcomingReminders.slice(0, 4).map((item, i) => (
             <TouchableOpacity key={item._id || i}
               style={[st.schedItem, { backgroundColor: colors.card, borderColor: colors.borderLight },
                 Platform.select({
@@ -296,10 +374,17 @@ const HomeScreen = ({ navigation }) => {
 
       {/* Dashboard overview cards */}
       <DashboardOverview
-        healthScore={dashboardData?.healthScore}
-        medications={dashboardData?.medications}
-        fitness={dashboardData?.fitness}
-        reminders={dashboardData?.reminders}
+        medications={{
+          taken: medsStatus.taken,
+          missed: medsStatus.missed,
+          pending: medsStatus.pending,
+        }}
+        fitness={{
+          steps: fitness.steps,
+          sleep: fitness.sleep,
+          water: fitness.water,
+        }}
+        reminders={upcomingReminders}
         navigation={navigation}
       />
     </ScrollView>
@@ -344,7 +429,7 @@ const st = StyleSheet.create({
   statsSection: { paddingHorizontal: IS_SMALL ? 16 : 20, marginBottom: 8 },
   sectionTitle: { fontSize: IS_SMALL ? 15 : 17, fontWeight: '700', marginBottom: 12 },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: IS_SMALL ? 8 : 12 },
-  statCard: { flexBasis: IS_SMALL ? '100%' : IS_TABLET ? '23%' : '48%', maxWidth: IS_SMALL ? '100%' : IS_TABLET ? '23%' : '48%', borderRadius: 16, padding: IS_SMALL ? 12 : 14, marginBottom: IS_SMALL ? 8 : 0 },
+  statCard: { flexBasis: IS_TABLET ? '23%' : '48%', maxWidth: IS_TABLET ? '23%' : '48%', borderRadius: 16, padding: IS_SMALL ? 12 : 14, marginBottom: IS_SMALL ? 8 : 0 },
   statIconWrap: { width: IS_SMALL ? 34 : 40, height: IS_SMALL ? 34 : 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: IS_SMALL ? 8 : 10 },
   statValue: { fontSize: IS_SMALL ? 17 : 20, fontWeight: '800' },
   statUnit: { fontSize: 12, fontWeight: '600' },

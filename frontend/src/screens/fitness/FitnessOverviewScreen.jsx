@@ -1,5 +1,5 @@
-﻿import React, { useEffect } from 'react';
-import { ScrollView, StyleSheet, View, TouchableOpacity, Text, StatusBar } from 'react-native';
+import React, { useEffect } from 'react';
+import { ScrollView, StyleSheet, View, TouchableOpacity, Text, StatusBar, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector, useDispatch } from 'react-redux';
@@ -8,7 +8,7 @@ import StepCounter from '../../components/fitness/StepCounter';
 import SleepTracker from '../../components/fitness/SleepTracker';
 import WaterIntakeLogger from '../../components/fitness/WaterIntakeLogger';
 import GoogleFitSync from '../../components/fitness/GoogleFitSync';
-import { fetchFitnessData } from '../../redux/slices/fitnessSlice';
+import { fetchFitnessData, syncGoogleFitThunk } from '../../redux/slices/fitnessSlice';
 
 const FitnessCard = ({ children, gradient, style }) =>
   gradient ? (
@@ -42,7 +42,17 @@ const FitnessOverviewScreen = ({ navigation }) => {
       </LinearGradient>
 
       <View style={fs.body}>
-        <GoogleFitSync lastSynced={data.lastSynced} onSync={() => dispatch(fetchFitnessData())} />
+        <GoogleFitSync
+          lastSynced={data.lastSynced}
+          onSync={async () => {
+            try {
+              await dispatch(syncGoogleFitThunk()).unwrap();
+              await dispatch(fetchFitnessData());
+            } catch (err) {
+              Alert.alert('Google Fit Sync', typeof err === 'string' ? err : 'Failed to sync with Google Fit');
+            }
+          }}
+        />
 
         <TouchableOpacity onPress={nav('Steps')} activeOpacity={0.9}>
           <FitnessCard gradient={colors.stepsGrad}>

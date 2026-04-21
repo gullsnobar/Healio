@@ -29,6 +29,7 @@ const MedicationList = ({
   onMarkTaken,
   loading = false,
   onRefresh,
+  markingId,
 }) => {
   const { colors } = useAppTheme();
 
@@ -43,12 +44,13 @@ const MedicationList = ({
   return (
     <FlatList
       data={medications}
-      keyExtractor={(item) => item.id?.toString() ?? item.name}
+      keyExtractor={(item) => item._id?.toString() ?? item.id?.toString() ?? item.name}
       renderItem={({ item }) => (
         <MedicationCard
           medication={item}
           onPress={onItemPress}
           onMarkTaken={onMarkTaken}
+          isMarking={markingId === item._id}
         />
       )}
       contentContainerStyle={[

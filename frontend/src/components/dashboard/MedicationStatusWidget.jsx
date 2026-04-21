@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
@@ -12,7 +12,7 @@ const STATS = [
   { key: 'pending', label: 'Pending', icon: 'time',             color: '#F59E0B', bg: '#FEF3C7' },
 ];
 
-const MedicationStatusWidget = ({ data = { taken: 0, missed: 0, pending: 0 }, onPress }) => {
+const MedicationStatusWidget = ({ data = { taken: 0, missed: 0, pending: 0 }, onPress, onStatusPress }) => {
   const { colors } = useAppTheme();
   return (
     <TouchableOpacity style={[styles.container, { backgroundColor: colors.card }]} onPress={onPress} activeOpacity={0.85}>
@@ -22,17 +22,25 @@ const MedicationStatusWidget = ({ data = { taken: 0, missed: 0, pending: 0 }, on
         </View>
         <Text style={[styles.title, { color: colors.text }]}>Today's Medications</Text>
         <Ionicons name='chevron-forward' size={18} color={colors.textTertiary} />
-    </View>
-    <View style={styles.row}>
-      {STATS.map(({ key, label, icon, color, bg }) => (
-        <View key={key} style={[styles.stat, { backgroundColor: bg }]}>
-          <Ionicons name={icon} size={isSmall ? 18 : 22} color={color} />
-          <Text style={[styles.num, { color }]}>{data?.[key] ?? 0}</Text>
-          <Text style={styles.statLabel}>{label}</Text>
-        </View>
-      ))}
-    </View>
-  </TouchableOpacity>
+      </View>
+      <View style={styles.row}>
+        {STATS.map(({ key, label, icon, color, bg }) => (
+          <TouchableOpacity
+            key={key}
+            style={[styles.stat, { backgroundColor: bg }]}
+            activeOpacity={0.85}
+            onPress={() => {
+              if (onStatusPress) onStatusPress(key);
+              else if (onPress) onPress();
+            }}
+          >
+            <Ionicons name={icon} size={isSmall ? 18 : 22} color={color} />
+            <Text style={[styles.num, { color }]}>{data?.[key] ?? 0}</Text>
+            <Text style={styles.statLabel}>{label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </TouchableOpacity>
   );
 };
 

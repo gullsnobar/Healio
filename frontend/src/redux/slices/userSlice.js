@@ -1,9 +1,9 @@
-﻿import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { dashboardAPI } from '../../services/api/dashboardAPI';
 
-export const fetchDashboardData = createAsyncThunk('user/fetchDashboard', async (_, { rejectWithValue }) => {
+export const fetchDashboardData = createAsyncThunk('user/fetchDashboard', async (date, { rejectWithValue }) => {
   try {
-    const res = await dashboardAPI.getDashboardData();
+    const res = await dashboardAPI.getDashboardData(date);
     return res.data.data;
   } catch (err) {
     return rejectWithValue(err.response?.data?.message || 'Failed to fetch dashboard');

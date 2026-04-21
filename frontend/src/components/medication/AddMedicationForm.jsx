@@ -11,12 +11,12 @@ import {
   Switch,
   Modal,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAppTheme } from "../../styles/ThemeContext";
 import DatePickerField from "../common/DatePickerField";
-import Button from "../common/Button";
 import Dropdown from "../common/Dropdown";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import CustomTimePicker from "../common/CustomTimePicker";
@@ -298,28 +298,39 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
   };
 
   const handleSubmit = async () => {
-    if (!form.name.trim())
-      return Alert.alert("Validation", "Medication name is required");
-    if (!form.dosage.trim())
-      return Alert.alert("Validation", "Dosage is required");
     setLoading(true);
     try {
       await onSubmit?.({
         ...form,
-        name: form.name.trim(),
-        dosage: form.dosage.trim(),
-        amount: form.amount.trim(),
-        startDate: form.startDate.trim(),
-        endDate: form.endDate.trim() || null,
-        doctorName: form.doctorName.trim(),
-        notes: form.notes.trim(),
+        name: typeof form.name === "string" ? form.name.trim() : form.name,
+        dosage:
+          typeof form.dosage === "string" ? form.dosage.trim() : form.dosage,
+        amount:
+          typeof form.amount === "string" ? form.amount.trim() : form.amount,
+        startDate:
+          typeof form.startDate === "string"
+            ? form.startDate.trim()
+            : form.startDate,
+        endDate:
+          typeof form.endDate === "string"
+            ? form.endDate.trim() || null
+            : form.endDate || null,
+        doctorName:
+          typeof form.doctorName === "string"
+            ? form.doctorName.trim()
+            : form.doctorName,
+        notes:
+          typeof form.notes === "string" ? form.notes.trim() : form.notes,
       });
+    } catch (err) {
+      Alert.alert(
+        "Error",
+        err?.message || "Unexpected error while saving medicine.",
+      );
     } finally {
       setLoading(false);
     }
   };
-
-  const disabled = loading || !form.name.trim() || !form.dosage.trim();
 
   return (
     <ScrollView
@@ -553,30 +564,50 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
       {/* Save button */}
       <TouchableOpacity
         onPress={handleSubmit}
-        disabled={disabled || loading}
-        activeOpacity={0.8}
+        disabled={loading}
+        activeOpacity={0.85}
         style={{
-          backgroundColor: colors.primary,
-          borderRadius: 14,
-          paddingVertical: 16,
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "row",
-          gap: 8,
           marginTop: 8,
-          opacity: disabled || loading ? 0.6 : 1,
+          borderRadius: 14,
+          overflow: "hidden",
+          opacity: loading ? 0.7 : 1,
         }}
       >
-        <Ionicons name="checkmark-circle-outline" size={20} color="#FFFFFF" />
-        <Text style={{ color: "#FFFFFF", fontSize: 16, fontWeight: "700" }}>
-          {initialData ? "Update Medicine" : "Save Medicine"}
-        </Text>
+        <LinearGradient
+          colors={colors.primaryGrad || [colors.primary, colors.primaryDark]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{
+            paddingVertical: 16,
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "row",
+            gap: 8,
+          }}
+        >
+          {loading ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <Ionicons
+              name="checkmark-circle-outline"
+              size={20}
+              color="#FFFFFF"
+              style={{ marginRight: 4 }}
+            />
+          )}
+          <Text
+            style={{ color: "#FFFFFF", fontSize: 16, fontWeight: "700" }}
+          >
+            {loading
+              ? initialData
+                ? "Updating..."
+                : "Saving..."
+              : initialData
+                ? "Update Medicine"
+                : "Save Medicine"}
+          </Text>
+        </LinearGradient>
       </TouchableOpacity>
-      <Text style={[s.buttonDesc, { color: colors.textTertiary }]}>
-        {initialData
-          ? "Update your medication details and schedule"
-          : "Add this medicine to your daily routine"}
-      </Text>
     </ScrollView>
   );
 };

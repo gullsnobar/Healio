@@ -13,12 +13,11 @@ import { useAppTheme } from '../../styles/ThemeContext';
 import Button from '../common/Button';
 import GoogleIcon from '../common/GoogleIcon';
 
-const LoginForm = ({ onSubmit, onForgotPassword, onRegister, onGoogleSignIn }) => {
+const LoginForm = ({ onSubmit, onForgotPassword, onRegister, onGoogleSignIn, loading }) => {
   const { colors, isDark } = useAppTheme();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [secureEntry, setSecureEntry] = useState(true);
-  const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
 
   // Override Chrome's autofill background (which ignores normal CSS) via box-shadow trick
@@ -44,21 +43,15 @@ const LoginForm = ({ onSubmit, onForgotPassword, onRegister, onGoogleSignIn }) =
     `;
   }, [isDark]);
 
-  const handleLogin = async () => {
+  const handleLogin = () => {
     if (!identifier.trim() || !password.trim()) return;
-    setLoading(true);
-    try {
-      await onSubmit?.({ identifier: identifier.trim(), password });
-    } finally {
-      setLoading(false);
-    }
+    onSubmit?.({ identifier: identifier.trim(), password });
   };
 
   const disabled = loading || !identifier.trim() || !password.trim();
 
   return (
     <View style={s.container}>
-      {/* Email / Phone */}
       <View style={[s.inputWrap, { backgroundColor: isDark ? colors.cardAlt : colors.card, borderColor: colors.inputBorder }, focusedField === 'id' && { borderColor: colors.primary, backgroundColor: isDark ? colors.card : colors.primaryLight }]}>
         <Ionicons name="mail-outline" size={20} color={focusedField === 'id' ? colors.primary : colors.textTertiary} style={s.inputIcon} />
         <TextInput
@@ -78,7 +71,6 @@ const LoginForm = ({ onSubmit, onForgotPassword, onRegister, onGoogleSignIn }) =
         />
       </View>
 
-      {/* Password */}
       <View style={[s.inputWrap, { backgroundColor: isDark ? colors.cardAlt : colors.card, borderColor: colors.inputBorder }, focusedField === 'pw' && { borderColor: colors.primary, backgroundColor: isDark ? colors.card : colors.primaryLight }]}>
         <Ionicons name="lock-closed-outline" size={20} color={focusedField === 'pw' ? colors.primary : colors.textTertiary} style={s.inputIcon} />
         <TextInput
@@ -100,12 +92,10 @@ const LoginForm = ({ onSubmit, onForgotPassword, onRegister, onGoogleSignIn }) =
         </TouchableOpacity>
       </View>
 
-      {/* Forgot password */}
       <TouchableOpacity onPress={onForgotPassword} style={s.forgotBtn}>
         <Text style={[s.forgotText, { color: colors.primary }]}>Forgot Password?</Text>
       </TouchableOpacity>
 
-      {/* Login button */}
       <Button
         variant="primary"
         size="large"
@@ -114,28 +104,28 @@ const LoginForm = ({ onSubmit, onForgotPassword, onRegister, onGoogleSignIn }) =
         loading={loading}
         disabled={disabled}
         colors={colors}
-        style={{ marginBottom: 24 }}
+        style={{ marginBottom: 24, alignSelf: 'stretch' }}
       >
         Login
       </Button>
 
-      {/* Divider */}
       <View style={s.dividerRow}>
         <View style={[s.dividerLine, { backgroundColor: colors.border }]} />
         <Text style={[s.dividerText, { color: colors.textTertiary }]}>Or</Text>
         <View style={[s.dividerLine, { backgroundColor: colors.border }]} />
       </View>
 
-      {/* Google sign-in */}
       <Button
         variant="outline"
         size="large"
         onPress={onGoogleSignIn}
         colors={colors}
-        style={{ marginBottom: 32 }}
+        style={{ marginBottom: 32, alignSelf: 'stretch' }}
       >
-        <GoogleIcon size={18} style={{ marginRight: 6 }} />
-        <Text style={[{ color: colors.text, fontSize: 15, fontWeight: '600' }]}>Continue with Google</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <GoogleIcon size={18} style={{ marginRight: 10 }} />
+          <Text style={{ color: colors.text, fontSize: 15, fontWeight: '600' }}>Continue with Google</Text>
+        </View>
       </Button>
 
       {/* Register link */}

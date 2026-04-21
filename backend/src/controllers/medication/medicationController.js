@@ -1,5 +1,16 @@
-﻿const Medication = require('../../models/Medication');
+const Medication = require('../../models/Medication');
 const { MedicationReminder } = require('../../models/Reminder');
+
+const getTodayStatus = (medication) => {
+  if (!medication) return 'pending';
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const history = medication.adherenceHistory || [];
+  const todayEntries = history.filter((h) => h.date >= today);
+  if (!todayEntries.length) return 'pending';
+  if (todayEntries.some((h) => h.status === 'taken')) return 'taken';
+  if (todayEntries.some((h) => ['missed', 'skipped', 'late'].includes(h.status))) return 'missed';
+  return 'pending';
+};
 
 exports.getAllMedications = async (req, res, next) => {
   try {
@@ -8,7 +19,18 @@ exports.getAllMedications = async (req, res, next) => {
     if (active !== undefined) filter.isActive = active === 'true';
     const medications = await Medication.find(filter).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(Number(limit));
     const total = await Medication.countDocuments(filter);
-    res.json({ success: true, data: { medications, pagination: { page: Number(page), limit: Number(limit), total, pages: Math.ceil(total / limit) } } });
+    const medsWithStatus = medications.map((m) => {
+      const obj = m.toObject({ virtuals: true });
+      obj.status = getTodayStatus(m);
+      return obj;
+    });
+    res.json({
+      success: true,
+      data: {
+        medications: medsWithStatus,
+        pagination: { page: Number(page), limit: Number(limit), total, pages: Math.ceil(total / limit) },
+      },
+    });
   } catch (error) { next(error); }
 };
 
@@ -16,7 +38,9 @@ exports.getMedication = async (req, res, next) => {
   try {
     const medication = await Medication.findOne({ _id: req.params.id, user: req.userId });
     if (!medication) return res.status(404).json({ success: false, message: 'Medication not found' });
-    res.json({ success: true, data: medication });
+    const medObj = medication.toObject({ virtuals: true });
+    medObj.status = getTodayStatus(medication);
+    res.json({ success: true, data: medObj });
   } catch (error) { next(error); }
 };
 
@@ -74,7 +98,9 @@ exports.updateMedication = async (req, res, next) => {
   try {
     const medication = await Medication.findOneAndUpdate({ _id: req.params.id, user: req.userId }, req.body, { new: true, runValidators: true });
     if (!medication) return res.status(404).json({ success: false, message: 'Medication not found' });
-    res.json({ success: true, data: medication });
+    const medObj = medication.toObject({ virtuals: true });
+    medObj.status = getTodayStatus(medication);
+    res.json({ success: true, data: medObj });
   } catch (error) { next(error); }
 };
 
@@ -100,6 +126,8 @@ exports.markAsTaken = async (req, res, next) => {
       medication.refillReminder.currentStock -= 1;
     }
     await medication.save();
-    res.json({ success: true, data: { adherenceRate: medication.adherenceRate, medication } });
+    const medObj = medication.toObject({ virtuals: true });
+    medObj.status = getTodayStatus(medication);
+    res.json({ success: true, data: { adherenceRate: medication.adherenceRate, medication: medObj } });
   } catch (error) { next(error); }
 };

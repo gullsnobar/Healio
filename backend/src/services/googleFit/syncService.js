@@ -1,4 +1,4 @@
-﻿const { google } = require('googleapis');
+const { google } = require('googleapis');
 const User = require('../../models/User');
 const FitnessData = require('../../models/FitnessData');
 const { oauth2Client } = require('../../config/googleFit');
@@ -7,7 +7,21 @@ exports.syncFromGoogleFit = async (userId) => {
   try {
     const user = await User.findById(userId);
     if (!user?.googleFitConnected || !user.googleFitTokens) {
-      throw new Error('Google Fit not connected');
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const existing = await FitnessData.findOne({ user: userId, date: today });
+      if (existing) return existing;
+      const fallback = await FitnessData.findOneAndUpdate(
+        { user: userId, date: today },
+        {
+          steps: { count: 0, goal: 10000 },
+          sleep: { duration: 0, goal: 8 },
+          calories: { burned: 0, goal: 2500 },
+          source: 'manual',
+        },
+        { upsert: true, new: true }
+      );
+      return fallback;
     }
 
     // Set credentials including refresh token for automatic refresh
@@ -158,4 +172,3 @@ exports.connectGoogleFit = async (userId, code) => {
     throw new Error(`Google Fit connection failed: ${error.message}`);
   }
 };
-

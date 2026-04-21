@@ -1,4 +1,4 @@
-﻿import api from './axiosInstance';
+import api from './axiosInstance';
 
 export const notificationAPI = {
   getAll: (params) => api.get('/notifications', { params }),
@@ -7,5 +7,6 @@ export const notificationAPI = {
   delete: (id) => api.delete('/notifications/' + id),
   updateSettings: (settings) => api.put('/notifications/preferences', settings),
   getSettings: () => api.get('/users/profile'),
+  updatePrivacy: (settings) => api.put('/users/profile', { privacySettings: settings }),
   registerDevice: (token) => api.post('/notifications/register-device', { token }),
 };

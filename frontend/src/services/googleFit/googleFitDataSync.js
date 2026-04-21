@@ -1,4 +1,3 @@
-﻿import googleFitService from './googleFitService';
 import { fitnessAPI } from '../api/fitnessAPI';
 
 /**
@@ -9,24 +8,8 @@ import { fitnessAPI } from '../api/fitnessAPI';
  */
 export const syncGoogleFitData = async () => {
   try {
-    console.log('[GoogleFitSync] Starting sync...');
-
-    // Ensure Google Fit is initialized
-    const isInitialized = await googleFitService.isInitialized;
-    if (!isInitialized) {
-      await googleFitService.initialize();
-    }
-
-    // Fetch all available data from Google Fit
-    const data = await googleFitService.syncAll();
-
-    if (!data) {
-      throw new Error('Failed to fetch Google Fit data');
-    }
-
-    // Send synced data to backend for storage
-    const response = await fitnessAPI.syncGoogleFit(data);
-
+    console.log('[GoogleFitSync] Starting backend sync...');
+    const response = await fitnessAPI.syncGoogleFit();
     console.log('[GoogleFitSync] Sync successful:', response);
     return response;
   } catch (error) {
@@ -40,20 +23,11 @@ export const syncGoogleFitData = async () => {
  */
 export const connectGoogleFit = async () => {
   try {
-    console.log('[GoogleFitSync] Connecting Google Fit...');
-
-    // Initialize and request permissions
-    const authorized = await googleFitService.initialize();
-
-    if (!authorized) {
-      throw new Error('Google Fit authorization failed');
-    }
-
-    console.log('[GoogleFitSync] Connected successfully');
-    return { connected: true };
+    console.log('[GoogleFitSync] Connecting Google Fit via backend...');
+    const response = await fitnessAPI.syncGoogleFit();
+    return response;
   } catch (error) {
     console.error('[GoogleFitSync] Connection failed:', error.message);
     throw new Error(`Google Fit connection failed: ${error.message}`);
   }
 };
-

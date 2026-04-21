@@ -6,7 +6,11 @@ import UpcomingReminders from './UpcomingReminders';
 
 const DashboardOverview = ({ medications, fitness, reminders, navigation }) => (
   <View style={styles.container}>
-    <MedicationStatusWidget data={medications} onPress={() => navigation?.navigate('MedicationList')} />
+    <MedicationStatusWidget
+      data={medications}
+      onPress={() => navigation?.navigate('MedicationList')}
+      onStatusPress={(status) => navigation?.navigate('MedicationList', { filterStatus: status })}
+    />
     <FitnessProgressWidget data={fitness} onPress={() => navigation?.navigate('Fitness')} />
     <UpcomingReminders reminders={reminders} />
   </View>

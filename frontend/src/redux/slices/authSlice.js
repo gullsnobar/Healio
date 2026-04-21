@@ -1,4 +1,4 @@
-﻿import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { authAPI } from '../../services/api/authAPI';
 import { secureStorage } from '../../services/storage/secureStorage';
 import { firebaseAuth } from '../../services/firebase/firebaseAuth';
@@ -141,8 +141,22 @@ const authSlice = createSlice({
         }
       })
       .addCase(verifyOTP.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
-      .addCase(logoutUser.fulfilled, (state) => { state.user = null; state.token = null; state.isAuthenticated = false; })
-      .addCase(logoutUser.rejected, (state) => { state.user = null; state.token = null; state.isAuthenticated = false; })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
+        state.loading = false;
+        state.isAuthLoading = false;
+        state.error = null;
+      })
+      .addCase(logoutUser.rejected, (state) => {
+        state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
+        state.loading = false;
+        state.isAuthLoading = false;
+        state.error = null;
+      })
       .addCase(googleSignIn.pending, (state) => { state.loading = true; state.error = null; })
       .addCase(googleSignIn.fulfilled, (state, action) => { state.loading = false; state.isAuthenticated = true; state.user = action.payload.user; state.token = action.payload.accessToken; })
       .addCase(googleSignIn.rejected, (state, action) => { state.loading = false; state.error = action.payload; });

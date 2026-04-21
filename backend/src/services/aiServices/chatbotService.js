@@ -1,20 +1,15 @@
-/**
- * AI CHATBOT SERVICE
- * Uses Hugging Face Mistral-7B for health-related queries
- * Production-ready with error handling and logging
- */
-
 const axios = require('axios');
+const { getAIResponse } = require('../ai/geminiService');
 
 const HF_API_KEY = process.env.HuggingFace_API_KEY;
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const HF_API_URL = 'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2';
+const AI_PROVIDER =
+  (process.env.AI_PROVIDER || '').toLowerCase()
+    || (OPENROUTER_API_KEY ? 'openrouter' : 'huggingface');
 
-// In-memory conversation history (use Redis/MongoDB in production)
 const conversationHistory = {};
 
-/**
- * Format message with health assistant system prompt
- */
 const formatPrompt = (message, history = []) => {
   const systemPrompt = `You are a helpful health and medication assistant for the HEALIO app.
 Your responsibilities:
@@ -43,12 +38,6 @@ Assistant:`;
   return fullPrompt;
 };
 
-/**
- * Chat with AI Health Assistant (Single turn)
- * @param {string} userMessage - User's message/query
- * @param {string} userId - User ID for logging
- * @returns {Promise<object>} - AI response
- */
 const chatWithAI = async (userMessage, userId = 'unknown') => {
   try {
     // Validate input
@@ -64,6 +53,63 @@ const chatWithAI = async (userMessage, userId = 'unknown') => {
       throw new Error('Message too long (max 2000 characters)');
     }
 
+    if (AI_PROVIDER === 'gemini') {
+      const aiText = await getAIResponse(userMessage, [], 'chatbot');
+      const message = aiText || "I'm thinking... Could you rephrase your question?";
+      return {
+        success: true,
+        message,
+        model: 'gemini-pro',
+      };
+    }
+
+    if (AI_PROVIDER === 'openrouter') {
+      if (!OPENROUTER_API_KEY) {
+        throw new Error('OpenRouter API key not configured');
+      }
+
+      console.log(`📝 [Chatbot] User ${userId} sent message (OpenRouter): "${userMessage.substring(0, 50)}..."`);
+
+      const response = await axios.post(
+        'https://openrouter.ai/api/v1/chat/completions',
+        {
+          model: 'meta-llama/llama-3-8b-instruct',
+          messages: [
+            {
+              role: 'user',
+              content: userMessage.trim(),
+            },
+          ],
+          temperature: 0.7,
+          top_p: 0.95,
+          top_k: 40,
+          max_tokens: 500,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': process.env.APP_URL || 'http://localhost:3000',
+            'X-OpenRouter-Title': 'Healio Health Assistant',
+          },
+          timeout: 30000,
+        }
+      );
+
+      const data = response.data || {};
+      const reply =
+        (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content)
+        || "I'm thinking... Could you rephrase your question?";
+
+      console.log(`✅ [Chatbot] OpenRouter response generated: ${reply.substring(0, 50)}...`);
+
+      return {
+        success: true,
+        message: reply,
+        model: data.model || 'meta-llama/llama-3-8b-instruct',
+      };
+    }
+
     if (!HF_API_KEY) {
       throw new Error('Hugging Face API key not configured');
     }
@@ -72,7 +118,6 @@ const chatWithAI = async (userMessage, userId = 'unknown') => {
 
     const prompt = formatPrompt(userMessage);
 
-    // Call Hugging Face API
     const response = await axios.post(
       HF_API_URL,
       {
@@ -93,18 +138,15 @@ const chatWithAI = async (userMessage, userId = 'unknown') => {
       }
     );
 
-    // Extract generated text
     let aiResponse = '';
     if (response.data && Array.isArray(response.data) && response.data.length > 0) {
       aiResponse = response.data[0].generated_text || '';
 
-      // Extract only the assistant's response (after "Assistant:")
       const assistantIndex = aiResponse.indexOf('Assistant:');
       if (assistantIndex !== -1) {
         aiResponse = aiResponse.substring(assistantIndex + 10).trim();
       }
 
-      // Remove any leftover prompt text
       aiResponse = aiResponse.split('User:')[0].trim();
     }
 
@@ -139,74 +181,75 @@ const chatWithAI = async (userMessage, userId = 'unknown') => {
   }
 };
 
-/**
- * Multi-turn conversation with memory
- * @param {string} userId - User ID
- * @param {string} userMessage - User's message
- * @returns {Promise<object>} - AI response with context
- */
 const chatWithContext = async (userId, userMessage) => {
   try {
     if (!userId || !userMessage) {
       throw new Error('userId and message are required');
     }
 
-    // Initialize or get conversation history
     if (!conversationHistory[userId]) {
       conversationHistory[userId] = [];
     }
 
-    // Keep only last 5 exchanges for context
     let history = conversationHistory[userId];
     if (history.length > 5) {
       history = history.slice(-5);
     }
-
-    if (!HF_API_KEY) {
-      throw new Error('Hugging Face API key not configured');
-    }
-
-    console.log(`📝 [Chatbot Context] User ${userId} message in conversation`);
-
-    const prompt = formatPrompt(userMessage, history);
-
-    const response = await axios.post(
-      HF_API_URL,
-      {
-        inputs: prompt,
-        parameters: {
-          max_new_tokens: 250,
-          temperature: 0.7,
-          top_p: 0.9,
-          do_sample: true,
-        },
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${HF_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        timeout: 30000,
-      }
-    );
-
     let aiResponse = '';
-    if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-      aiResponse = response.data[0].generated_text || '';
 
-      const assistantIndex = aiResponse.indexOf('Assistant:');
-      if (assistantIndex !== -1) {
-        aiResponse = aiResponse.substring(assistantIndex + 10).trim();
+    if (AI_PROVIDER === 'gemini') {
+      const geminiHistory = history.flatMap((turn) => [
+        { role: 'user', content: turn.user },
+        { role: 'assistant', content: turn.assistant },
+      ]);
+
+      aiResponse = await getAIResponse(userMessage, geminiHistory, 'chatbot');
+      aiResponse = aiResponse || "I'm thinking... Could you rephrase your question?";
+    } else {
+      if (!HF_API_KEY) {
+        throw new Error('Hugging Face API key not configured');
       }
 
-      aiResponse = aiResponse.split('User:')[0].trim();
+      console.log(`📝 [Chatbot Context] User ${userId} message in conversation`);
+
+      const prompt = formatPrompt(userMessage, history);
+
+      const response = await axios.post(
+        HF_API_URL,
+        {
+          inputs: prompt,
+          parameters: {
+            max_new_tokens: 250,
+            temperature: 0.7,
+            top_p: 0.9,
+            do_sample: true,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${HF_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          timeout: 30000,
+        }
+      );
+
+      if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+        aiResponse = response.data[0].generated_text || '';
+
+        const assistantIndex = aiResponse.indexOf('Assistant:');
+        if (assistantIndex !== -1) {
+          aiResponse = aiResponse.substring(assistantIndex + 10).trim();
+        }
+
+        aiResponse = aiResponse.split('User:')[0].trim();
+      }
+
+      if (!aiResponse) {
+        aiResponse = "I'm thinking... Could you rephrase your question?";
+      }
     }
 
-    if (!aiResponse) {
-      aiResponse = "I'm thinking... Could you rephrase your question?";
-    }
-
-    // Store in history
     conversationHistory[userId].push({
       user: userMessage,
       assistant: aiResponse,

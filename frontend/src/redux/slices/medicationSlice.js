@@ -1,4 +1,4 @@
-﻿import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { medicationAPI } from '../../services/api/medicationAPI';
 
 export const fetchMedications = createAsyncThunk('medication/fetchAll', async (_, { rejectWithValue }) => {
@@ -35,8 +35,30 @@ const medicationSlice = createSlice({
       .addCase(updateMedication.fulfilled, (state, action) => { const i = state.medications.findIndex(m => m._id === action.payload._id); if (i !== -1) state.medications[i] = action.payload; })
       .addCase(deleteMedication.fulfilled, (state, action) => { state.medications = state.medications.filter(m => m._id !== action.payload); })
       .addCase(markAsTaken.fulfilled, (state, action) => {
-        const med = action.payload.data?.medication;
-        if (med) { const i = state.medications.findIndex(m => m._id === med._id); if (i !== -1) state.medications[i] = med; }
+        const payload = action.payload || {};
+        const med =
+          payload.data?.medication ||
+          payload.data ||
+          payload.medication ||
+          null;
+
+        if (med && med._id) {
+          const i = state.medications.findIndex((m) => m._id === med._id);
+          if (i !== -1) state.medications[i] = med;
+          return;
+        }
+
+        const id = payload.id || action.meta?.arg;
+        if (!id) return;
+        const idx = state.medications.findIndex(
+          (m) => m._id === id || m.id === id,
+        );
+        if (idx !== -1) {
+          state.medications[idx] = {
+            ...state.medications[idx],
+            status: 'taken',
+          };
+        }
       });
   },
 });

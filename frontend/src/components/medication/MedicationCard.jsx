@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
 import Button from '../common/Button';
 
-const MedicationCard = ({ medication, onPress, onMarkTaken }) => {
+const MedicationCard = ({ medication, onPress, onMarkTaken, isMarking }) => {
   const { colors } = useAppTheme();
 
   const STATUS_CONFIG = {
@@ -71,6 +71,8 @@ const MedicationCard = ({ medication, onPress, onMarkTaken }) => {
           size="medium"
           icon="checkmark-circle-outline"
           onPress={() => onMarkTaken?.(medication)}
+          loading={isMarking}
+          disabled={isMarking}
           colors={colors}
         >
           Mark as Taken

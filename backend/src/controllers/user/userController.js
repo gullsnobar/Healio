@@ -1,4 +1,4 @@
-﻿const User = require('../../models/User');
+const User = require('../../models/User');
 
 exports.getProfile = async (req, res, next) => {
   try { res.json({ success: true, data: req.user }); } catch (error) { next(error); }
@@ -6,7 +6,7 @@ exports.getProfile = async (req, res, next) => {
 
 exports.updateProfile = async (req, res, next) => {
   try {
-    const allowed = ['name', 'phone', 'dateOfBirth', 'gender', 'bloodGroup', 'emergencyContact', 'healthConditions', 'allergies', 'preferredLanguage', 'notificationPreferences'];
+    const allowed = ['name', 'phone', 'dateOfBirth', 'gender', 'bloodGroup', 'emergencyContact', 'healthConditions', 'allergies', 'preferredLanguage', 'notificationPreferences', 'privacySettings'];
     const updates = {};
     allowed.forEach(field => { if (req.body[field] !== undefined) updates[field] = req.body[field]; });
     const user = await User.findByIdAndUpdate(req.userId, updates, { new: true, runValidators: true });

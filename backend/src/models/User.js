@@ -1,4 +1,4 @@
-﻿const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
@@ -22,6 +22,11 @@ const userSchema = new mongoose.Schema({
     appointment: { type: Boolean, default: true },
     fitness: { type: Boolean, default: true },
     general: { type: Boolean, default: true },
+  },
+  privacySettings: {
+    shareWithContacts: { type: Boolean, default: true },
+    dataCollection: { type: Boolean, default: true },
+    locationTracking: { type: Boolean, default: false },
   },
   isActive: { type: Boolean, default: true },
   isVerified: { type: Boolean, default: false },

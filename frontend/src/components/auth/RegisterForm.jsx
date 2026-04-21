@@ -153,7 +153,6 @@ const RegisterForm = ({ onSubmit, onLogin, onGoogleSignIn, loading: externalLoad
         textContentType: 'newPassword',
       })}
 
-      {/* Register button */}
       <Button
         variant="primary"
         size="large"
@@ -162,28 +161,28 @@ const RegisterForm = ({ onSubmit, onLogin, onGoogleSignIn, loading: externalLoad
         loading={loading}
         disabled={disabled}
         colors={colors}
-        style={{ marginTop: 8, marginBottom: 24 }}
+        style={{ marginTop: 8, marginBottom: 24, alignSelf: 'stretch' }}
       >
         Register
       </Button>
 
-      {/* Divider */}
       <View style={s.dividerRow}>
         <View style={[s.dividerLine, { backgroundColor: colors.border }]} />
         <Text style={[s.dividerText, { color: colors.textTertiary }]}>Or</Text>
         <View style={[s.dividerLine, { backgroundColor: colors.border }]} />
       </View>
 
-      {/* Google sign-in */}
       <Button
         variant="outline"
         size="large"
         onPress={onGoogleSignIn}
         colors={colors}
-        style={{ marginBottom: 32 }}
+        style={{ marginBottom: 32, alignSelf: 'stretch' }}
       >
-        <GoogleIcon size={18} style={{ marginRight: 6 }} />
-        <Text style={[{ color: colors.text, fontSize: 15, fontWeight: '600' }]}>Continue with Google</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <GoogleIcon size={18} style={{ marginRight: 10 }} />
+          <Text style={{ color: colors.text, fontSize: 15, fontWeight: '600' }}>Continue with Google</Text>
+        </View>
       </Button>
 
       {/* Login link */}

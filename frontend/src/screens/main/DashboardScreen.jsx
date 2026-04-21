@@ -1,14 +1,15 @@
-﻿import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { ScrollView, StyleSheet, View, Text, StatusBar, Platform, TouchableOpacity, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector, useDispatch } from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
 import { useAppTheme } from '../../styles/ThemeContext';
 import WeeklyProgressChart from '../../components/dashboard/WeeklyProgressChart';
 import MonthlyProgressChart from '../../components/dashboard/MonthlyProgressChart';
 import HealthScoreWidget from '../../components/dashboard/HealthScoreWidget';
 import AIHealthInsightsWidget from '../../components/dashboard/AIHealthInsightsWidget';
-import { fetchDashboardData } from '../../redux/slices/userSlice';
+import { fetchDashboardData, fetchHealthScore } from '../../redux/slices/userSlice';
 import { fetchAIHealthInsights } from '../../redux/slices/aiInsightsSlice';
 
 const { width: SCREEN_W } = Dimensions.get('window');
@@ -29,14 +30,40 @@ const StatCard = ({ icon, label, value, color, bg, colors }) => (
 const DashboardScreen = ({ navigation }) => {
   const { colors, isDark } = useAppTheme();
   const dispatch = useDispatch();
-  const { dashboardData } = useSelector((state) => state.user);
+  const { dashboardData, healthScore: healthScoreData } = useSelector((state) => state.user);
+  const { dailyData: fitnessDaily } = useSelector((state) => state.fitness);
   const { recommendations: aiRecs, weeklyFeedback: aiFeedback } = useSelector((state) => state.aiInsights);
 
-  useEffect(() => { dispatch(fetchDashboardData()); dispatch(fetchAIHealthInsights(7)); }, []);
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(fetchDashboardData());
+      dispatch(fetchHealthScore());
+    }, [dispatch]),
+  );
 
-  const score = dashboardData?.healthScore || 0;
+  useEffect(() => { dispatch(fetchAIHealthInsights(7)); }, [dispatch]);
+
+  const score =
+    typeof healthScoreData?.score === 'number'
+      ? healthScoreData.score
+      : dashboardData?.healthScore || 0;
   const meds = dashboardData?.medications || {};
-  const fit = dashboardData?.fitness || {};
+  const fitFromDashboard = dashboardData?.fitness || {};
+  const fitFromDaily = fitnessDaily || {};
+  const fit = {
+    steps:
+      fitFromDashboard.steps ??
+      fitFromDaily.steps ??
+      0,
+    water:
+      fitFromDashboard.water ??
+      fitFromDaily.water ??
+      0,
+    sleep:
+      fitFromDashboard.sleep ??
+      fitFromDaily.sleep ??
+      0,
+  };
   const meals = dashboardData?.mealSummary || {};
   const insights = dashboardData?.healthInsights || [];
 
@@ -60,8 +87,9 @@ const DashboardScreen = ({ navigation }) => {
         <View style={ds.statsGrid}>
           <StatCard icon="checkmark-circle" label="Taken"   value={taken}   color={colors.success}      bg={colors.successLight}     colors={colors} />
           <StatCard icon="close-circle"     label="Missed"  value={missed}  color={colors.error}        bg={colors.errorLight}       colors={colors} />
-          <StatCard icon="walk" label="Steps"  value={(fit.steps   ?? 0).toLocaleString()} color={colors.fitnessSteps} bg={colors.fitnessStepsBg}  colors={colors} />
-          <StatCard icon="water-outline"    label="Water"  value={`${fit.water ?? 0}ml`}              color={colors.fitnessWater} bg={colors.fitnessWaterBg}  colors={colors} />
+          <StatCard icon="walk"             label="Steps"   value={(fit.steps   ?? 0).toLocaleString()} color={colors.fitnessSteps}  bg={colors.fitnessStepsBg}  colors={colors} />
+          <StatCard icon="water-outline"    label="Water"   value={`${fit.water ?? 0}ml`}                color={colors.fitnessWater}  bg={colors.fitnessWaterBg}  colors={colors} />
+          <StatCard icon="moon-outline"     label="Sleep"   value={`${fit.sleep ?? 0}h`}                 color={colors.fitnessSleep}  bg={colors.fitnessSleepBg}  colors={colors} />
         </View>
 
         {/* Meal Summary */}

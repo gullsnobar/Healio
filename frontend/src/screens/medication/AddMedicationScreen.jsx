@@ -1,5 +1,6 @@
-﻿import React from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, Alert, TouchableOpacity, StatusBar } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
@@ -11,10 +12,21 @@ const AddMedicationScreen = ({ navigation }) => {
   const { colors, isDark } = useAppTheme();
   const handleSubmit = async (data) => {
     const result = await dispatch(addMedication(data));
-    if (!result.error) { Alert.alert('Success', 'Medication added'); navigation.goBack(); }
+    if (result.meta?.requestStatus === 'fulfilled') {
+      Alert.alert('Success', 'Medication added');
+      navigation.goBack();
+      return;
+    }
+    const backendMessage = typeof result.payload === 'string' ? result.payload : null;
+    const errorMessage =
+      backendMessage ||
+      result.error?.message ||
+      'Failed to save medication. Please try again.';
+    Alert.alert('Error', errorMessage);
+    return result;
   };
   return (
-    <View style={[s.c, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[s.c, { backgroundColor: colors.background }]}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
       <View style={s.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={[s.backBtn, { backgroundColor: colors.card, borderColor: colors.border }]}>
@@ -26,7 +38,7 @@ const AddMedicationScreen = ({ navigation }) => {
         </View>
       </View>
       <AddMedicationForm onSubmit={handleSubmit} />
-    </View>
+    </SafeAreaView>
   );
 };
 const s = StyleSheet.create({

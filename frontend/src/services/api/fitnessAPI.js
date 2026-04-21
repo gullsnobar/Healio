@@ -1,7 +1,8 @@
-﻿import api from './axiosInstance';
+import api from './axiosInstance';
 
 export const fitnessAPI = {
-  getDaily: () => api.get('/fitness', { params: { date: new Date().toISOString().split('T')[0] } }),
+  getDaily: () => api.get('/fitness'),
+  getWaterDaily: () => api.get('/fitness/water'),
   getWeekly: () => api.get('/fitness/stats/weekly'),
   getWeeklyStats: () => api.get('/fitness/stats/weekly'),
   getWeeklyChart: () => api.get('/fitness/stats/weekly-chart'),
@@ -17,4 +18,3 @@ export const fitnessAPI = {
   getMealHistory: (params) => api.get('/fitness/diet/history', { params }),
   deleteMeal: (mealId) => api.delete(`/fitness/diet/${mealId}`),
 };
-
