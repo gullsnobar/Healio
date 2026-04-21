@@ -52,16 +52,16 @@ const DashboardScreen = ({ navigation }) => {
   const fitFromDaily = fitnessDaily || {};
   const fit = {
     steps:
-      fitFromDashboard.steps ??
       fitFromDaily.steps ??
+      fitFromDashboard.steps ??
       0,
     water:
-      fitFromDashboard.water ??
       fitFromDaily.water ??
+      fitFromDashboard.water ??
       0,
     sleep:
-      fitFromDashboard.sleep ??
       fitFromDaily.sleep ??
+      fitFromDashboard.sleep ??
       0,
   };
   const meals = dashboardData?.mealSummary || {};

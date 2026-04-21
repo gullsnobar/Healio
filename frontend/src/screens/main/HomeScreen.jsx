@@ -156,20 +156,20 @@ const HomeScreen = ({ navigation }) => {
 
   const fitness = {
     steps:
-      fitnessFromDashboard.steps ??
       fitnessFromDaily.steps ??
+      fitnessFromDashboard.steps ??
       0,
     water:
-      fitnessFromDashboard.water ??
       fitnessFromDaily.water ??
+      fitnessFromDashboard.water ??
       0,
     sleep:
-      fitnessFromDashboard.sleep ??
       fitnessFromDaily.sleep ??
+      fitnessFromDashboard.sleep ??
       0,
     calories:
-      fitnessFromDashboard.caloriesBurned ??
       fitnessFromDaily.calories ??
+      fitnessFromDashboard.caloriesBurned ??
       fitnessFromDashboard.calories ??
       0,
   };
