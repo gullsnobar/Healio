@@ -24,10 +24,10 @@ const ChatInterface = ({ messages = [], onSend, suggestions = [], loading = fals
   }, [messages.length]);
   
   return (
-    <KeyboardAvoidingView 
-      style={[s.c, { backgroundColor: colors.background, paddingBottom: insets.bottom }]} 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
-      keyboardVerticalOffset={Platform.OS === 'android' ? 56 : 0}
+    <KeyboardAvoidingView
+      style={[s.c, { backgroundColor: colors.background }]}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'android' ? 80 : 0}
     >
       <FlatList 
         ref={listRef} 

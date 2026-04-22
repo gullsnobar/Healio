@@ -14,12 +14,14 @@ import AppNavigator from './navigation/AppNavigator';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import { ThemeProvider, useAppTheme } from './styles/ThemeContext';
 import i18n from './localization/i18n';
+import { useNotifications } from './hooks/useNotifications';
 
 /** Inner shell that reads the current theme from context */
 function ThemedApp() {
   const { paperTheme, isDark, colors, loaded } = useAppTheme();
   const dispatch = useDispatch();
   const { isAuthLoading } = useSelector((state) => state.auth);
+  useNotifications();
 
   useEffect(() => {
     dispatch(checkAuth());

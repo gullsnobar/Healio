@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, StatusBar, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import ReminderForm from '../../components/reminder/ReminderForm';
@@ -23,7 +23,10 @@ const AddReminderScreen = ({ navigation, route }) => {
     try {
       await dispatch(addReminder(data)).unwrap();
       navigation.goBack();
-    } catch { /* error handled in slice */ }
+    } catch (err) {
+      const msg = typeof err === 'string' ? err : 'Failed to save reminder. Please try again.';
+      Alert.alert('Save Reminder', msg);
+    }
   };
 
   // Step 1 — pick type (unless pre-selected)

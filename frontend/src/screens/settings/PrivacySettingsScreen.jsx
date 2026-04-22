@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState, useCallback } from 'react';
+﻿﻿import React, { useEffect, useState, useCallback } from 'react';
 import { ScrollView, StyleSheet, Alert } from 'react-native';
 import { useAppTheme } from '../../styles/ThemeContext';
 import PrivacySettings from '../../components/profile/PrivacySettings';

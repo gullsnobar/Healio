@@ -100,13 +100,16 @@ exports.snoozeReminder = async (userId, reminderId, minutes = 15) => {
 exports.getUpcomingReminders = async (userId, hours = 24) => {
   const now = new Date();
   const future = new Date(now.getTime() + hours * 60 * 60 * 1000);
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   return Reminder.find({
     user: userId,
     isActive: true,
     isCompleted: false,
-    date: { $gte: now, $lte: future },
-  }).sort({ date: 1, time: 1 }).limit(20);
+    date: { $gte: startOfToday, $lte: future },
+  })
+    .sort({ date: 1, time: 1 })
+    .limit(20);
 };
 
 /**

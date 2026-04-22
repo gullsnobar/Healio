@@ -103,7 +103,7 @@ const RemindersScreen = ({ navigation }) => {
   return (
     <View style={[s.container, { backgroundColor: isDark ? '#0F172A' : '#F8FAFC' }]}>
       <View style={s.content}>
-        <StatusBar barStyle="light-content" backgroundColor="#0F766E" />
+        <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.card} />
 
         {/* Type Tabs */}
         <View style={s.tabBar}>
@@ -207,7 +207,7 @@ const s = StyleSheet.create({
   emptyHint: { fontSize: 13, marginTop: 6 },
   content: { flex: 1 },
   fab: {
-    position: 'absolute', right: 20, bottom: -55, width: 60, height: 60,
+    position: 'absolute', right: 20, bottom: 24, width: 60, height: 60,
     shadowColor: '#14B8A6', shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4, shadowRadius: 12, elevation: 10,
   },

@@ -198,7 +198,7 @@ const ProfileScreen = ({ navigation }) => {
             Sign Out
           </Button>
         </Tooltip>
-        <Text style={[s.buttonDesc, { color: colors.textSecondary }]}>Sign out of your HEALIO account</Text>
+        <Text style={[s.buttonDesc, { color: colors.textSecondary }]}>Sign out of your MR & FT account</Text>
       </View>
       </ScrollView>
     </SafeAreaView>

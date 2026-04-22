@@ -100,7 +100,7 @@ const WelcomeScreen = ({ navigation }) => {
           <HeroIllustration />
 
           <Text style={[s.welcomeLabel, { color: colors.secondary }]}>Welcome To</Text>
-          <Text style={[s.brandName, { color: colors.primaryDark }]}>HEALIO</Text>
+          <Text style={[s.brandName, { color: colors.primaryDark }]}>MR & FT</Text>
           <Text style={[s.tagline, { color: colors.textSecondary }]}>
             Your personal assistant for managing{'\n'}your health & medication schedule.
           </Text>

@@ -95,7 +95,7 @@ const DrawerNavigator = () => {
         name="AboutDrawer"
         component={AboutScreen}
         options={{
-          title: 'About HEALIO',
+          title: 'About MR & FT',
           drawerIcon: ({ color, size }) => <Ionicons name="information-circle-outline" size={size} color={color} />,
         }}
       />

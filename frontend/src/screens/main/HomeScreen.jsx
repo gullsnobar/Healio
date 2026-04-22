@@ -221,7 +221,7 @@ const HomeScreen = ({ navigation }) => {
           <View style={[st.brandPill, { backgroundColor: colors.primaryLight }]}>
             <MaterialCommunityIcons name="heart-pulse" size={18} color={colors.primary} />
           </View>
-          <Text style={[st.brand, { color: colors.text }]}>HEALIO</Text>
+          <Text style={[st.brand, { color: colors.text }]}>MR & FT</Text>
         </View>
         <View style={st.headerRight}>
           <ThemeToggle variant="icon" size={20} />
@@ -348,27 +348,39 @@ const HomeScreen = ({ navigation }) => {
               <Text style={[st.seeAllDesc, { color: colors.textTertiary }]}>Manage reminders</Text>
             </TouchableOpacity>
           </View>
-          {upcomingReminders.slice(0, 4).map((item, i) => (
-            <TouchableOpacity key={item._id || i}
-              style={[st.schedItem, { backgroundColor: colors.card, borderColor: colors.borderLight },
-                Platform.select({
-                  ios: { shadowColor: colors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4 },
-                  android: { elevation: 1 },
-                })]}
-              activeOpacity={0.8}>
-              <View style={[st.schedIcon, { backgroundColor: item.type === 'medication' ? colors.primaryLight : colors.accentLight }]}>
-                <Ionicons name={item.type === 'medication' ? 'medical-outline' : 'calendar-outline'} size={20}
-                  color={item.type === 'medication' ? colors.primary : colors.accent} />
-              </View>
-              <View style={st.schedInfo}>
-                <Text style={[st.schedName, { color: colors.text }]} numberOfLines={1}>{item.title}</Text>
-                <Text style={[st.schedSub, { color: colors.textTertiary }]}>{item.subtitle || item.time || 'Scheduled'}</Text>
-              </View>
-              <View style={[st.timeBadge, { backgroundColor: colors.primaryLight }]}>
-                <Text style={[st.timeText, { color: colors.primary }]}>{item.time || '--:--'}</Text>
-              </View>
-            </TouchableOpacity>
-          ))}
+          {upcomingReminders.slice(0, 4).map((item, i) => {
+            const typeKey = item.reminderType || item.type || 'appointment';
+            const isMed = typeKey === 'medication';
+            return (
+              <TouchableOpacity
+                key={item._id || i}
+                style={[st.schedItem, {
+                  backgroundColor: colors.card,
+                  borderColor: colors.borderLight,
+                  ...Platform.select({
+                    ios: { shadowColor: colors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4 },
+                    android: { elevation: 1 },
+                  }),
+                }]}
+                activeOpacity={0.8}
+              >
+                <View style={[st.schedIcon, { backgroundColor: isMed ? colors.primaryLight : colors.accentLight }]}>
+                  <Ionicons
+                    name={isMed ? 'medical-outline' : 'calendar-outline'}
+                    size={20}
+                    color={isMed ? colors.primary : colors.accent}
+                  />
+                </View>
+                <View style={st.schedInfo}>
+                  <Text style={[st.schedName, { color: colors.text }]} numberOfLines={1}>{item.title}</Text>
+                  <Text style={[st.schedSub, { color: colors.textTertiary }]}>{item.subtitle || item.time || 'Scheduled'}</Text>
+                </View>
+                <View style={[st.timeBadge, { backgroundColor: colors.primaryLight }]}>
+                  <Text style={[st.timeText, { color: colors.primary }]}>{item.time || '--:--'}</Text>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
         </View>
       )}
 

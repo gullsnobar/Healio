@@ -90,7 +90,7 @@ const chatWithAI = async (userMessage, userId = 'unknown') => {
             Authorization: `Bearer ${OPENROUTER_API_KEY}`,
             'Content-Type': 'application/json',
             'HTTP-Referer': process.env.APP_URL || 'http://localhost:3000',
-            'X-OpenRouter-Title': 'Healio Health Assistant',
+            'X-OpenRouter-Title': 'MR & FT Health Assistant',
           },
           timeout: 30000,
         }

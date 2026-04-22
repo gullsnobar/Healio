@@ -1,4 +1,6 @@
-﻿import { useEffect } from 'react';
+import { useEffect } from 'react';
+import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchNotifications, markAsRead, markAllRead } from '../redux/slices/notificationSlice';
 import { registerForPushNotifications, setupNotificationListeners } from '../services/firebase/fcmService';
@@ -8,7 +10,10 @@ export const useNotifications = () => {
   const state = useSelector((s) => s.notification);
 
   useEffect(() => {
-    registerForPushNotifications();
+    const isExpoGo = Constants.appOwnership === 'expo';
+    if (!isExpoGo && Platform.OS !== 'web') {
+      registerForPushNotifications();
+    }
     dispatch(fetchNotifications());
     const cleanup = setupNotificationListeners(() => dispatch(fetchNotifications()));
     return cleanup;

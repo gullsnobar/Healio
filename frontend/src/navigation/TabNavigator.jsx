@@ -131,7 +131,7 @@ const TabNavigator = () => {
           component={component}
           options={{
             title: label,
-            headerTitle: name === "Home" ? "HEALIO" : label,
+          headerTitle: name === "Home" ? "MR & FT" : label,
             headerShown: name === "Home" ? false : true,
           }}
         />

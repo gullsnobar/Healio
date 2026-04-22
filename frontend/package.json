@@ -1,7 +1,7 @@
 {
   "name": "healio-frontend",
   "version": "1.0.0",
-  "description": "HEALIO - All-in-One Health Management Mobile App",
+  "description": "MR & FT - All-in-One Health Management Mobile App",
   "scripts": {
     "start": "expo start --dev-client",
     "dev": "expo start",

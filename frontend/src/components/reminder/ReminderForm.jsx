@@ -14,7 +14,11 @@ const IS_SMALL = SCREEN_W < 400;
 
 const REPEAT_OPTIONS = ['none', 'daily', 'weekly', 'monthly'];
 const FREQUENCY_OPTIONS = ['Once daily', 'Twice daily', 'Three times daily', 'Every 8 hours', 'As needed'];
-const APPOINTMENT_TYPES = ['In-person', 'Telehealth', 'Phone', 'Follow-up'];
+const APPOINTMENT_TYPES = [
+  { label: 'In-person', value: 'in_person' },
+  { label: 'Video (Telehealth)', value: 'video' },
+  { label: 'Phone', value: 'phone' },
+];
 const REPORT_TYPES = ['Blood Test', 'Urine Test', 'Imaging', 'Biopsy', 'Other'];
 
 const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmit, loading }) => {
@@ -38,7 +42,7 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
   const [doctorName, setDoctorName] = useState(initialValues.doctorName || '');
   const [specialty, setSpecialty] = useState(initialValues.specialty || '');
   const [location, setLocation] = useState(initialValues.location || '');
-  const [appointmentType, setAppointmentType] = useState(initialValues.appointmentType || 'In-person');
+  const [appointmentType, setAppointmentType] = useState(initialValues.appointmentType || 'in_person');
 
   // Lab-specific
   const [labName, setLabName] = useState(initialValues.labName || '');
@@ -49,12 +53,36 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
+  const normalizeTime = (value) => {
+    if (!value) return '09:00';
+    if (value instanceof Date) {
+      const h = String(value.getHours()).padStart(2, '0');
+      const m = String(value.getMinutes()).padStart(2, '0');
+      return `${h}:${m}`;
+    }
+    if (typeof value === 'string') {
+      const match = value.match(/^(\d{1,2}):(\d{2})/);
+      if (match) {
+        const h = match[1].padStart(2, '0');
+        return `${h}:${match[2]}`;
+      }
+      const parsed = new Date(value);
+      if (!Number.isNaN(parsed.getTime())) {
+        const h = String(parsed.getHours()).padStart(2, '0');
+        const m = String(parsed.getMinutes()).padStart(2, '0');
+        return `${h}:${m}`;
+      }
+      return value;
+    }
+    return String(value);
+  };
+
   const handleSubmit = () => {
     if (!title.trim()) { Alert.alert('Validation', 'Title is required'); return; }
     const payload = {
       title: title.trim(),
       date: date.toISOString(),
-      time,
+      time: normalizeTime(time),
       notes: notes.trim(),
       repeat,
       reminderType,
@@ -65,7 +93,12 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
     }
     if (reminderType === 'appointment') {
       if (!doctorName.trim()) { Alert.alert('Validation', 'Doctor name is required'); return; }
-      Object.assign(payload, { doctorName: doctorName.trim(), specialty: specialty.trim(), location: location.trim(), appointmentType });
+      Object.assign(payload, {
+        doctorName: doctorName.trim(),
+        specialty: specialty.trim(),
+        location: location.trim(),
+        appointmentType,
+      });
     }
     if (reminderType === 'lab') {
       Object.assign(payload, { labName: labName.trim(), reportType, testName: testName.trim(), orderedBy: orderedBy.trim() });
@@ -114,12 +147,17 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
   );
 
   return (
-    <ScrollView style={[s.container, { backgroundColor: colors.background }]} contentContainerStyle={{ padding: 16, paddingBottom: 92 }}>
+    <ScrollView
+      style={[s.container, { backgroundColor: colors.background }]}
+      contentContainerStyle={{ padding: 16, paddingBottom: 92 }}
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="none"
+    >
       {/* Common fields */}
       <View style={[s.section, { backgroundColor: bg }]}
       >
         <Text style={[s.sectionTitle, { color: colors.primary }]}>Basic Info</Text>
-        <InputField label="Title" value={title} onChangeText={setTitle} placeholder="e.g. Morning medication" />
+        <InputField label="Title" value={title} onChangeText={setTitle} placeholder="e.g. Morning medication" autoFocus />
 
         {/* Date */}
         <View style={s.fieldGroup}>

@@ -90,9 +90,18 @@ const reminderSlice = createSlice({
         state.upcoming = action.payload.data || action.payload;
       })
       // Add
+      .addCase(addReminder.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(addReminder.fulfilled, (state, action) => {
+        state.loading = false;
         const reminder = action.payload.data || action.payload;
         state.reminders.unshift(reminder);
+      })
+      .addCase(addReminder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
       // Update
       .addCase(updateReminder.fulfilled, (state, action) => {

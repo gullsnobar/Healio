@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
@@ -7,9 +7,9 @@ const UpcomingReminders = ({ reminders = [] }) => {
   const { colors } = useAppTheme();
 
   const TYPE_CONFIG = {
-    medication: { icon: 'medkit',       color: colors.primary, bg: colors.primaryLight },
-    appointment: { icon: 'calendar',    color: colors.fitnessSleep, bg: colors.fitnessSleepBg },
-    fitness:     { icon: 'fitness',     color: colors.success, bg: colors.successLight },
+    medication: { icon: 'medkit', color: colors.primary, bg: colors.primaryLight },
+    appointment: { icon: 'calendar', color: colors.fitnessSleep, bg: colors.fitnessSleepBg },
+    lab: { icon: 'flask', color: colors.accent, bg: colors.accentLight },
   };
 
   return (
@@ -27,7 +27,8 @@ const UpcomingReminders = ({ reminders = [] }) => {
       </View>
     ) : (
       reminders.slice(0, 5).map((item, i) => {
-        const cfg = TYPE_CONFIG[item.type] || TYPE_CONFIG.appointment;
+        const typeKey = item.reminderType || item.type || 'appointment';
+        const cfg = TYPE_CONFIG[typeKey] || TYPE_CONFIG.appointment;
         return (
           <View key={item._id || i} style={[styles.item, { borderBottomColor: colors.borderLight }]}>
             <View style={[styles.itemIcon, { backgroundColor: cfg.bg }]}>
