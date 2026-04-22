@@ -35,7 +35,7 @@ const FitnessOverviewScreen = ({ navigation }) => {
 
   return (
     <ScrollView style={[fs.c, { backgroundColor: colors.background }]} contentContainerStyle={fs.content} showsVerticalScrollIndicator={false}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.secondary} />
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.card} />
       <LinearGradient colors={isDark ? ['#064E3B', '#065F46'] : ['#059669', '#10B981']} style={fs.header}>
         <Text style={fs.headerTitle}>Fitness</Text>
         <Text style={fs.headerSub}>Stay active, stay healthy</Text>

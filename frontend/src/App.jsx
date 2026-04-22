@@ -46,7 +46,7 @@ function ThemedApp() {
       <SafeAreaProvider>
         <ErrorBoundary>
           <NavigationContainer theme={navTheme}>
-            <StatusBar style={isDark ? 'light' : 'dark'} />
+            <StatusBar style={isDark ? 'light' : 'dark'} backgroundColor={colors.card} translucent={false} />
             <AppNavigator />
           </NavigationContainer>
         </ErrorBoundary>

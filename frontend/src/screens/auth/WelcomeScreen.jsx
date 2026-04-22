@@ -89,7 +89,7 @@ const WelcomeScreen = ({ navigation }) => {
 
   return (
     <View style={[s.root, { backgroundColor: colors.background }]}>
-      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.card} />
 
       <ScrollView
         contentContainerStyle={s.scroll}

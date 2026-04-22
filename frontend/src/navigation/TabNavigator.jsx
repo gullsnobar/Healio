@@ -69,11 +69,11 @@ const TabNavigator = () => {
       }}
       screenOptions={({ route }) => ({
         headerStyle: {
-          backgroundColor: colors.primary,
+          backgroundColor: colors.card,
           elevation: 0,
           shadowOpacity: 0,
         },
-        headerTintColor: "#fff",
+        headerTintColor: colors.text,
         headerTitleStyle: { fontWeight: "700", fontSize: 17 },
         tabBarShowLabel: true,
         tabBarLabelPosition: 'below-icon',

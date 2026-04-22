@@ -98,7 +98,7 @@ const ReminderDetailsScreen = ({ navigation, route }) => {
 
   return (
     <View style={[s.container, { backgroundColor: isDark ? '#0F172A' : '#F8FAFC' }]}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.primaryDark} />
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.card} />
       <ScrollView contentContainerStyle={{ padding: IS_SMALL ? 12 : 16, paddingBottom: 120 }}>
         {/* Header card */}
         <View style={[s.headerCard, { backgroundColor: bg }]}>

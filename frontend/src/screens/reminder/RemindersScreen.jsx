@@ -30,11 +30,11 @@ const RemindersScreen = ({ navigation }) => {
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerStyle: { backgroundColor: '#0F766E' },
-      headerTintColor: '#FFFFFF',
-      headerTitleStyle: { fontWeight: '700', fontSize: 20 },
+      headerStyle: { backgroundColor: colors.card },
+      headerTintColor: colors.text,
+      headerTitleStyle: { fontWeight: '700', fontSize: 20, color: colors.text },
     });
-  }, [navigation]);
+  }, [navigation, colors.card, colors.text]);
 
   const load = useCallback(() => {
     dispatch(fetchReminders(selectedType ? { type: selectedType } : {}));
