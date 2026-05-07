@@ -5,6 +5,7 @@ import { useAppTheme } from '../../styles/ThemeContext';
 const ChatInput = ({ onSend, loading = false }) => {
   const { colors } = useAppTheme();
   const [text, setText] = useState('');
+  const canSend = !!text.trim() && !loading;
   const send = () => { if (text.trim()) { onSend(text.trim()); setText(''); } };
   return (
     <View style={[s.c, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
@@ -22,8 +23,12 @@ const ChatInput = ({ onSend, loading = false }) => {
           blurOnSubmit={false}
         />
       </View>
-      <TouchableOpacity style={[s.btn, { backgroundColor: colors.primary }, (!text.trim() && !loading) && { backgroundColor: colors.textTertiary }]} onPress={send} disabled={loading || !text.trim()}>
-        {loading ? <ActivityIndicator color="#FFF" size="small" /> : <Ionicons name="send" size={18} color="#FFF" />}
+      <TouchableOpacity
+        style={[s.btn, { backgroundColor: canSend ? colors.primary : colors.border }]}
+        onPress={send}
+        disabled={!canSend}
+      >
+        {loading ? <ActivityIndicator color="#FFF" size="small" /> : <Ionicons name="send" size={18} color={canSend ? '#FFF' : colors.textTertiary} />}
       </TouchableOpacity>
     </View>
   );

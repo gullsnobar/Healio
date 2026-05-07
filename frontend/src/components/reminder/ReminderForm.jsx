@@ -13,13 +13,94 @@ const { width: SCREEN_W } = Dimensions.get('window');
 const IS_SMALL = SCREEN_W < 400;
 
 const REPEAT_OPTIONS = ['none', 'daily', 'weekly', 'monthly'];
-const FREQUENCY_OPTIONS = ['Once daily', 'Twice daily', 'Three times daily', 'Every 8 hours', 'As needed'];
+const FREQUENCY_OPTIONS = [
+  { label: 'Once daily', value: 'once_daily' },
+  { label: 'Twice daily', value: 'twice_daily' },
+  { label: 'Three times daily', value: 'three_daily' },
+  { label: 'Four times daily', value: 'four_daily' },
+  { label: 'Weekly', value: 'weekly' },
+  { label: 'As needed', value: 'as_needed' },
+  { label: 'Custom', value: 'custom' },
+];
 const APPOINTMENT_TYPES = [
   { label: 'In-person', value: 'in_person' },
   { label: 'Video (Telehealth)', value: 'video' },
   { label: 'Phone', value: 'phone' },
 ];
 const REPORT_TYPES = ['Blood Test', 'Urine Test', 'Imaging', 'Biopsy', 'Other'];
+
+const s = StyleSheet.create({
+  container: { flex: 1 },
+  section: { borderRadius: 14, padding: IS_SMALL ? 12 : 16, marginBottom: 16, elevation: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4 },
+  sectionTitle: { fontSize: IS_SMALL ? 14 : 15, fontWeight: '700', marginBottom: 14 },
+  fieldGroup: { marginBottom: 14 },
+  fieldLabel: { fontSize: IS_SMALL ? 12 : 13, fontWeight: '600', marginBottom: 6 },
+  input: { borderRadius: 12, paddingHorizontal: 16, paddingVertical: IS_SMALL ? 12 : 14, fontSize: 15, minHeight: 52, borderColor: 'transparent', borderWidth: 1.5 },
+  dateBtn: { flexDirection: 'row', alignItems: 'center', borderRadius: 10, paddingHorizontal: IS_SMALL ? 12 : 14, paddingVertical: IS_SMALL ? 12 : 14 },
+  row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start' },
+  rowItem: { minWidth: 120, flexBasis: '48%' },
+  dateBtnText: { fontSize: IS_SMALL ? 13 : 14, marginLeft: 8 },
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: IS_SMALL ? 4 : 6 },
+  chip: { paddingHorizontal: IS_SMALL ? 10 : 12, paddingVertical: IS_SMALL ? 6 : 7, borderRadius: 20, borderWidth: 1.5 },
+  chipText: { fontSize: IS_SMALL ? 11 : 12, fontWeight: '500' },
+  submitWrapper: { marginTop: 16, marginBottom: 32 },
+  buttonDesc: { fontSize: IS_SMALL ? 11 : 12, textAlign: 'center', marginTop: 8, lineHeight: IS_SMALL ? 16 : 18 },
+});
+
+const InputField = React.memo(({
+  colors,
+  inputBg,
+  textColor,
+  placeholderColor,
+  label,
+  value,
+  onChangeText,
+  placeholder,
+  multiline,
+  ...rest
+}) => (
+  <View style={s.fieldGroup}>
+    <Text style={[s.fieldLabel, { color: colors.textSecondary }]}>{label}</Text>
+    <TextInput
+      style={[
+        s.input,
+        { backgroundColor: inputBg, color: textColor, borderColor: colors.border },
+        multiline && { minHeight: 80, textAlignVertical: 'top' },
+      ]}
+      value={value}
+      onChangeText={onChangeText}
+      placeholder={placeholder}
+      placeholderTextColor={placeholderColor}
+      multiline={multiline}
+      {...rest}
+    />
+  </View>
+));
+
+const ChipSelect = React.memo(({ colors, inputBg, textColor, isDark, label, options, value, onChange }) => (
+  <View style={s.fieldGroup}>
+    <Text style={[s.fieldLabel, { color: isDark ? '#94A3B8' : '#475569' }]}>{label}</Text>
+    <View style={s.chipRow}>
+      {options.map((opt) => {
+        const active = value === opt;
+        return (
+          <TouchableOpacity
+            key={opt}
+            style={[
+              s.chip,
+              active
+                ? { backgroundColor: colors.primary + '22', borderColor: colors.primary }
+                : { backgroundColor: inputBg, borderColor: 'transparent' },
+            ]}
+            onPress={() => onChange(opt)}
+          >
+            <Text style={[s.chipText, { color: active ? colors.primary : textColor }]}>{opt}</Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  </View>
+));
 
 const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmit, loading }) => {
   const { colors, isDark } = useAppTheme();
@@ -35,7 +116,7 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
   const [medicationName, setMedicationName] = useState(initialValues.medicationName || '');
   const [dosage, setDosage] = useState(initialValues.dosage || '');
   const [dosageUnit, setDosageUnit] = useState(initialValues.dosageUnit || 'mg');
-  const [frequency, setFrequency] = useState(initialValues.frequency || 'Once daily');
+  const [frequency, setFrequency] = useState(initialValues.frequency || 'once_daily');
   const [instructions, setInstructions] = useState(initialValues.instructions || '');
 
   // Appointment-specific
@@ -89,7 +170,8 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
     };
     if (reminderType === 'medication') {
       if (!medicationName.trim()) { Alert.alert('Validation', 'Medication name is required'); return; }
-      Object.assign(payload, { medicationName: medicationName.trim(), dosage, dosageUnit, frequency, instructions: instructions.trim() });
+      if (!dosage || !String(dosage).trim()) { Alert.alert('Validation', 'Dosage is required'); return; }
+      Object.assign(payload, { medicationName: medicationName.trim(), dosage: String(dosage).trim(), dosageUnit, frequency, instructions: instructions.trim() });
     }
     if (reminderType === 'appointment') {
       if (!doctorName.trim()) { Alert.alert('Validation', 'Doctor name is required'); return; }
@@ -101,6 +183,7 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
       });
     }
     if (reminderType === 'lab') {
+      if (!labName.trim()) { Alert.alert('Validation', 'Lab name is required'); return; }
       Object.assign(payload, { labName: labName.trim(), reportType, testName: testName.trim(), orderedBy: orderedBy.trim() });
     }
     onSubmit(payload);
@@ -110,41 +193,6 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
   const inputBg = colors.cardAlt;
   const textColor = colors.text;
   const placeholderColor = colors.textSecondary;
-
-  const InputField = ({ label, value, onChangeText, placeholder, multiline, ...rest }) => (
-    <View style={s.fieldGroup}>
-      <Text style={[s.fieldLabel, { color: colors.textSecondary }]}>{label}</Text>
-      <TextInput
-        style={[s.input, { backgroundColor: inputBg, color: textColor, borderColor: colors.border }, multiline && { minHeight: 80, textAlignVertical: 'top' }]}
-        value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
-        placeholderTextColor={placeholderColor}
-        multiline={multiline}
-        {...rest}
-      />
-    </View>
-  );
-
-  const ChipSelect = ({ label, options, value, onChange }) => (
-    <View style={s.fieldGroup}>
-      <Text style={[s.fieldLabel, { color: isDark ? '#94A3B8' : '#475569' }]}>{label}</Text>
-      <View style={s.chipRow}>
-        {options.map((opt) => {
-          const active = value === opt;
-          return (
-            <TouchableOpacity
-              key={opt}
-              style={[s.chip, active ? { backgroundColor: colors.primary + '22', borderColor: colors.primary } : { backgroundColor: inputBg, borderColor: 'transparent' }]}
-              onPress={() => onChange(opt)}
-            >
-              <Text style={[s.chipText, { color: active ? colors.primary : textColor }]}>{opt}</Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-    </View>
-  );
 
   return (
     <ScrollView
@@ -157,7 +205,7 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
       <View style={[s.section, { backgroundColor: bg }]}
       >
         <Text style={[s.sectionTitle, { color: colors.primary }]}>Basic Info</Text>
-        <InputField label="Title" value={title} onChangeText={setTitle} placeholder="e.g. Morning medication" autoFocus />
+        <InputField colors={colors} inputBg={inputBg} textColor={textColor} placeholderColor={placeholderColor} label="Title" value={title} onChangeText={setTitle} placeholder="e.g. Morning medication" autoFocus />
 
         {/* Date */}
         <View style={s.fieldGroup}>
@@ -210,7 +258,7 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
           placeholder="Select repeat frequency"
           onSelect={setRepeat}
         />
-        <InputField label="Notes" value={notes} onChangeText={setNotes} placeholder="Optional notes…" multiline />
+        <InputField colors={colors} inputBg={inputBg} textColor={textColor} placeholderColor={placeholderColor} label="Notes" value={notes} onChangeText={setNotes} placeholder="Optional notes…" multiline />
       </View>
 
       {/* Medication-specific */}
@@ -219,16 +267,16 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
           <Text style={[s.sectionTitle, { color: colors.primary }]}>
             <Ionicons name="medical-outline" size={16} /> Medication Details
           </Text>
-          <InputField label="Medication Name *" value={medicationName} onChangeText={setMedicationName} placeholder="e.g. Metformin" />
+          <InputField colors={colors} inputBg={inputBg} textColor={textColor} placeholderColor={placeholderColor} label="Medication Name *" value={medicationName} onChangeText={setMedicationName} placeholder="e.g. Metformin" />
           <View style={s.row}>
             <View style={[s.rowItem, { flex: 1, marginRight: IS_SMALL ? 0 : 8 }]}> 
-              <InputField label="Dosage" value={dosage} onChangeText={setDosage} placeholder="500" keyboardType="numeric" />
+              <InputField colors={colors} inputBg={inputBg} textColor={textColor} placeholderColor={placeholderColor} label="Dosage" value={dosage} onChangeText={setDosage} placeholder="500" keyboardType="numeric" />
             </View>
             <View style={[s.rowItem, { flex: IS_SMALL ? 1 : 0.4, marginTop: IS_SMALL ? 10 : 0 }]}> 
               <Dropdown
                 label="Unit"
                 value={dosageUnit}
-                options={['mg', 'ml', 'g', 'IU']}
+                options={['mg', 'ml', 'tablet', 'capsule', 'drops', 'units']}
                 placeholder="Unit"
                 onSelect={setDosageUnit}
               />
@@ -241,7 +289,7 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
             placeholder="Select frequency"
             onSelect={setFrequency}
           />
-          <InputField label="Instructions" value={instructions} onChangeText={setInstructions} placeholder="Take with food…" multiline />
+          <InputField colors={colors} inputBg={inputBg} textColor={textColor} placeholderColor={placeholderColor} label="Instructions" value={instructions} onChangeText={setInstructions} placeholder="Take with food…" multiline />
         </View>
       )}
 
@@ -251,9 +299,9 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
           <Text style={[s.sectionTitle, { color: colors.primary }]}>
             <Ionicons name="calendar-outline" size={16} /> Appointment Details
           </Text>
-          <InputField label="Doctor Name *" value={doctorName} onChangeText={setDoctorName} placeholder="e.g. Dr. Smith" />
-          <InputField label="Specialty" value={specialty} onChangeText={setSpecialty} placeholder="e.g. Cardiology" />
-          <InputField label="Location" value={location} onChangeText={setLocation} placeholder="e.g. City Hospital" />
+          <InputField colors={colors} inputBg={inputBg} textColor={textColor} placeholderColor={placeholderColor} label="Doctor Name *" value={doctorName} onChangeText={setDoctorName} placeholder="e.g. Dr. Smith" />
+          <InputField colors={colors} inputBg={inputBg} textColor={textColor} placeholderColor={placeholderColor} label="Specialty" value={specialty} onChangeText={setSpecialty} placeholder="e.g. Cardiology" />
+          <InputField colors={colors} inputBg={inputBg} textColor={textColor} placeholderColor={placeholderColor} label="Location" value={location} onChangeText={setLocation} placeholder="e.g. City Hospital" />
           <Dropdown
             label="Appointment Type"
             value={appointmentType}
@@ -270,7 +318,7 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
           <Text style={[s.sectionTitle, { color: colors.primary }]}>
             <Ionicons name="flask-outline" size={16} /> Lab Report Details
           </Text>
-          <InputField label="Lab Name" value={labName} onChangeText={setLabName} placeholder="e.g. HealthLab" />
+          <InputField colors={colors} inputBg={inputBg} textColor={textColor} placeholderColor={placeholderColor} label="Lab Name" value={labName} onChangeText={setLabName} placeholder="e.g. HealthLab" />
           <Dropdown
             label="Report Type"
             value={reportType}
@@ -278,8 +326,8 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
             placeholder="Select report type"
             onSelect={setReportType}
           />
-          <InputField label="Test Name" value={testName} onChangeText={setTestName} placeholder="e.g. Complete Blood Count" />
-          <InputField label="Ordered By" value={orderedBy} onChangeText={setOrderedBy} placeholder="Doctor who ordered" />
+          <InputField colors={colors} inputBg={inputBg} textColor={textColor} placeholderColor={placeholderColor} label="Test Name" value={testName} onChangeText={setTestName} placeholder="e.g. Complete Blood Count" />
+          <InputField colors={colors} inputBg={inputBg} textColor={textColor} placeholderColor={placeholderColor} label="Ordered By" value={orderedBy} onChangeText={setOrderedBy} placeholder="Doctor who ordered" />
         </View>
       )}
 
@@ -305,23 +353,5 @@ const ReminderForm = ({ initialValues = {}, reminderType = 'medication', onSubmi
     </ScrollView>
   );
 };
-
-const s = StyleSheet.create({
-  container: { flex: 1 },
-  section: { borderRadius: 14, padding: IS_SMALL ? 12 : 16, marginBottom: 16, elevation: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4 },
-  sectionTitle: { fontSize: IS_SMALL ? 14 : 15, fontWeight: '700', marginBottom: 14 },
-  fieldGroup: { marginBottom: 14 },
-  fieldLabel: { fontSize: IS_SMALL ? 12 : 13, fontWeight: '600', marginBottom: 6 },
-  input: { borderRadius: 12, paddingHorizontal: 16, paddingVertical: IS_SMALL ? 12 : 14, fontSize: 15, minHeight: 52, borderColor: 'transparent', borderWidth: 1.5 },
-  dateBtn: { flexDirection: 'row', alignItems: 'center', borderRadius: 10, paddingHorizontal: IS_SMALL ? 12 : 14, paddingVertical: IS_SMALL ? 12 : 14 },
-  row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start' },
-  rowItem: { minWidth: 120, flexBasis: '48%' },
-  dateBtnText: { fontSize: IS_SMALL ? 13 : 14, marginLeft: 8 },
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: IS_SMALL ? 4 : 6 },
-  chip: { paddingHorizontal: IS_SMALL ? 10 : 12, paddingVertical: IS_SMALL ? 6 : 7, borderRadius: 20, borderWidth: 1.5 },
-  chipText: { fontSize: IS_SMALL ? 11 : 12, fontWeight: '500' },
-  submitWrapper: { marginTop: 16, marginBottom: 32 },
-  buttonDesc: { fontSize: IS_SMALL ? 11 : 12, textAlign: 'center', marginTop: 8, lineHeight: IS_SMALL ? 16 : 18 },
-});
 
 export default ReminderForm;

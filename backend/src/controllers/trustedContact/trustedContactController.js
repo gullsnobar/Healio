@@ -1,4 +1,4 @@
-﻿const TrustedContact = require('../../models/TrustedContact');
+const TrustedContact = require('../../models/TrustedContact');
 const crypto = require('crypto');
 const { sendVerificationEmail } = require('../../services/email/emailService');
 
@@ -13,8 +13,12 @@ exports.addContact = async (req, res, next) => {
   try {
     const token = crypto.randomBytes(32).toString('hex');
     const contact = await TrustedContact.create({ ...req.body, user: req.userId, verificationToken: token });
-    await sendVerificationEmail(contact.email, token, req.user.name);
-    res.status(201).json({ success: true, data: contact });
+    try {
+      await sendVerificationEmail(contact.email, token, req.user.name);
+    } catch (emailErr) {
+      return res.status(201).json({ success: true, data: contact, emailSent: false });
+    }
+    res.status(201).json({ success: true, data: contact, emailSent: true });
   } catch (error) { next(error); }
 };
 

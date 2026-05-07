@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { ScrollView, StyleSheet, Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { useAppTheme } from '../../styles/ThemeContext';
@@ -11,8 +11,16 @@ const AddContactScreen = ({ navigation }) => {
   return (
     <ScrollView style={[s.c, { backgroundColor: colors.background }]}>
       <AddTrustedContactForm onSubmit={async (data) => {
-        const r = await dispatch(addContact(data));
-        if (!r.error) { Alert.alert('Success', 'Contact added'); navigation.goBack(); }
+        try {
+          await dispatch(addContact(data)).unwrap();
+          Alert.alert('Success', 'Contact added');
+          navigation.goBack();
+        } catch (err) {
+          const msg = typeof err === 'string'
+            ? err
+            : err?.message || err?.response?.data?.message || 'Failed to add contact';
+          Alert.alert('Add Contact', msg);
+        }
       }} />
     </ScrollView>
   );

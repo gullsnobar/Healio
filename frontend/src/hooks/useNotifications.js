@@ -8,16 +8,26 @@ import { registerForPushNotifications, setupNotificationListeners } from '../ser
 export const useNotifications = () => {
   const dispatch = useDispatch();
   const state = useSelector((s) => s.notification);
+  const { isAuthenticated, isAuthLoading } = useSelector((s) => s.auth);
 
   useEffect(() => {
+    if (isAuthLoading || !isAuthenticated) {
+      return undefined;
+    }
+
     const isExpoGo = Constants.appOwnership === 'expo';
     if (!isExpoGo && Platform.OS !== 'web') {
       registerForPushNotifications();
     }
+
     dispatch(fetchNotifications());
-    const cleanup = setupNotificationListeners(() => dispatch(fetchNotifications()));
+
+    const cleanup = setupNotificationListeners(() => {
+      dispatch(fetchNotifications());
+    });
+
     return cleanup;
-  }, [dispatch]);
+  }, [dispatch, isAuthenticated, isAuthLoading]);
 
   return {
     ...state,

@@ -134,7 +134,7 @@ const MainNavigator = () => {
       <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} options={{ title: 'Notifications' }} />
       <Stack.Screen name="PrivacySettings" component={PrivacySettingsScreen} options={{ title: 'Privacy' }} />
       <Stack.Screen name="Appearance" component={AppearanceScreen} options={{ title: 'Appearance' }} />
-      <Stack.Screen name="About" component={AboutScreen} options={{ title: 'About MR & FT' }} />
+      <Stack.Screen name="About" component={AboutScreen} options={{ title: 'About HEALIO' }} />
 
       {/* Reminders */}
       <Stack.Screen name="Reminders" component={RemindersScreen} options={{ title: 'Reminders' }} />
