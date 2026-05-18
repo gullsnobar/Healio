@@ -1,18 +1,27 @@
 ﻿import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 import { notificationAPI } from '../api/notificationAPI';
 
-// Configure how foreground notifications are displayed
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
+// Configure how foreground notifications are displayed (only if not in Expo Go)
+if (Constants.appOwnership !== 'expo') {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    }),
+  });
+}
 
 export const registerForPushNotifications = async () => {
+  // Skip notification setup in Expo Go (SDK 53+ removed support)
+  if (Constants.appOwnership === 'expo') {
+    console.warn('Push notifications are not supported in Expo Go. Use a development build instead.');
+    return null;
+  }
+
   if (!Device.isDevice) {
     console.log('Push notifications require a physical device');
     return null;
@@ -60,6 +69,11 @@ export const registerForPushNotifications = async () => {
 };
 
 export const setupNotificationListeners = (onNotification) => {
+  // Skip notification listeners in Expo Go
+  if (Constants.appOwnership === 'expo') {
+    return () => {};
+  }
+
   const receivedSub = Notifications.addNotificationReceivedListener(() => {
     onNotification?.();
   });
@@ -75,6 +89,10 @@ export const setupNotificationListeners = (onNotification) => {
 };
 
 export const scheduleLocalNotification = async ({ title, body, data, triggerDate }) => {
+  if (Constants.appOwnership === 'expo') {
+    console.warn('Local notifications are not supported in Expo Go. Use a development build instead.');
+    return null;
+  }
   return Notifications.scheduleNotificationAsync({
     content: { title, body, data, sound: 'default' },
     trigger: triggerDate ? { date: triggerDate } : null,
@@ -82,5 +100,8 @@ export const scheduleLocalNotification = async ({ title, body, data, triggerDate
 };
 
 export const cancelAllScheduledNotifications = async () => {
+  if (Constants.appOwnership === 'expo') {
+    return;
+  }
   await Notifications.cancelAllScheduledNotificationsAsync();
 };

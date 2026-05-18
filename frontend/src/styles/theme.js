@@ -92,6 +92,3 @@ export const darkTheme = {
 
 export const theme = lightTheme;
 export default theme;
-
-// Re-export useAppTheme so components can import from either './theme' or './ThemeContext'
-export { useAppTheme } from './ThemeContext';

@@ -1,5 +1,5 @@
 const appConfig = {
-  name: 'HEALIO',
+  name: 'MR & FT',
   version: '1.0.0',
   description: 'All-in-One Health Management App',
 
