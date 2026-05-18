@@ -1,6 +1,7 @@
-﻿import * as Notifications from 'expo-notifications';
+import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 import { notificationAPI } from '../api/notificationAPI';
 
 // Configure how foreground notifications are displayed
@@ -13,8 +14,11 @@ Notifications.setNotificationHandler({
 });
 
 export const registerForPushNotifications = async () => {
+  const isExpoGo = Constants.appOwnership === 'expo' || Constants.executionEnvironment === 'storeClient';
+  if (isExpoGo && Platform.OS === 'android') {
+    return null;
+  }
   if (!Device.isDevice) {
-    console.log('Push notifications require a physical device');
     return null;
   }
 
@@ -26,7 +30,6 @@ export const registerForPushNotifications = async () => {
     finalStatus = status;
   }
   if (finalStatus !== 'granted') {
-    console.log('Push notification permission denied');
     return null;
   }
 
@@ -54,7 +57,6 @@ export const registerForPushNotifications = async () => {
 
     return token;
   } catch (err) {
-    console.warn('Failed to get device push token:', err.message);
     return null;
   }
 };

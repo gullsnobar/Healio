@@ -8,12 +8,16 @@ import { fitnessAPI } from '../api/fitnessAPI';
  */
 export const syncGoogleFitData = async () => {
   try {
-    console.log('[GoogleFitSync] Starting backend sync...');
     const response = await fitnessAPI.syncGoogleFit();
-    console.log('[GoogleFitSync] Sync successful:', response);
+    if (typeof __DEV__ !== 'undefined' && __DEV__) {
+      const msg = response?.data?.message || 'Google Fit data synced';
+      console.log('[GoogleFitSync] ' + msg);
+    }
     return response;
   } catch (error) {
-    console.error('[GoogleFitSync] Sync failed:', error.message);
+    if (typeof __DEV__ !== 'undefined' && __DEV__) {
+      console.error('[GoogleFitSync] Sync failed:', error?.message);
+    }
     throw new Error(`Google Fit sync failed: ${error.message}`);
   }
 };
@@ -23,11 +27,12 @@ export const syncGoogleFitData = async () => {
  */
 export const connectGoogleFit = async () => {
   try {
-    console.log('[GoogleFitSync] Connecting Google Fit via backend...');
     const response = await fitnessAPI.syncGoogleFit();
     return response;
   } catch (error) {
-    console.error('[GoogleFitSync] Connection failed:', error.message);
+    if (typeof __DEV__ !== 'undefined' && __DEV__) {
+      console.error('[GoogleFitSync] Connection failed:', error?.message);
+    }
     throw new Error(`Google Fit connection failed: ${error.message}`);
   }
 };

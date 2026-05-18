@@ -25,8 +25,47 @@ const { width: SCREEN_W } = Dimensions.get("window");
 const IS_SMALL = SCREEN_W < 400;
 
 const MED_TYPES = ["Capsule", "Tablet", "Drops", "Syrup", "Injection", "Other"];
-const DOSAGE_UNITS = ["mg", "ml", "tablets", "capsules", "drops", "units"];
+const DOSAGE_UNITS = [
+  { label: 'mg', value: 'mg' },
+  { label: 'ml', value: 'ml' },
+  { label: 'tablet', value: 'tablet' },
+  { label: 'capsule', value: 'capsule' },
+  { label: 'drops', value: 'drops' },
+  { label: 'units', value: 'units' },
+];
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+const normalizeTimeToHHMM = (value) => {
+  if (!value) return null;
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    const h = String(value.getHours()).padStart(2, "0");
+    const m = String(value.getMinutes()).padStart(2, "0");
+    return `${h}:${m}`;
+  }
+  const raw = String(value).trim();
+  const hhmm = raw.match(/^(\d{1,2}):(\d{2})$/);
+  if (hhmm) {
+    const h = String(parseInt(hhmm[1], 10)).padStart(2, "0");
+    const m = String(parseInt(hhmm[2], 10)).padStart(2, "0");
+    return `${h}:${m}`;
+  }
+  const ampm = raw.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (ampm) {
+    let h = parseInt(ampm[1], 10);
+    const m = parseInt(ampm[2], 10);
+    const mer = ampm[3].toUpperCase();
+    if (mer === "PM" && h !== 12) h += 12;
+    if (mer === "AM" && h === 12) h = 0;
+    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+  }
+  const parsed = new Date(raw);
+  if (!Number.isNaN(parsed.getTime())) {
+    const h = String(parsed.getHours()).padStart(2, "0");
+    const m = String(parsed.getMinutes()).padStart(2, "0");
+    return `${h}:${m}`;
+  }
+  return null;
+};
 
 /**
  * MedicationTimeInput Component
@@ -298,13 +337,27 @@ const AddMedicationForm = ({ onSubmit, initialData }) => {
   };
 
   const handleSubmit = async () => {
+    const name = typeof form.name === "string" ? form.name.trim() : form.name;
+    const dosage = typeof form.dosage === "string" ? form.dosage.trim() : form.dosage;
+    if (!name) {
+      Alert.alert('Validation', 'Medicine name is required');
+      return;
+    }
+    if (!dosage) {
+      Alert.alert('Validation', 'Dosage is required');
+      return;
+    }
+
     setLoading(true);
     try {
+      const normalizedTimes = Array.isArray(form.times)
+        ? form.times.map(normalizeTimeToHHMM).filter(Boolean)
+        : [];
       await onSubmit?.({
         ...form,
-        name: typeof form.name === "string" ? form.name.trim() : form.name,
-        dosage:
-          typeof form.dosage === "string" ? form.dosage.trim() : form.dosage,
+        name,
+        dosage,
+        times: normalizedTimes,
         amount:
           typeof form.amount === "string" ? form.amount.trim() : form.amount,
         startDate:

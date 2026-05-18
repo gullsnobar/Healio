@@ -1,4 +1,4 @@
-﻿const { createAndSendNotification } = require('./pushService');
+const { createAndSendNotification } = require('./pushService');
 
 exports.notifyMedicationReminder = (userId, medication, time) =>
   createAndSendNotification(userId, { title: 'Medication Reminder', body: 'Time to take ' + medication.name + ' (' + medication.dosage + ')', type: 'medication', data: { medicationId: medication._id.toString(), time }, priority: 'high' });
@@ -13,7 +13,7 @@ exports.notifyRefillReminder = (userId, medication) =>
   createAndSendNotification(userId, { title: 'Refill Reminder', body: medication.name + ' is running low', type: 'refill', data: { medicationId: medication._id.toString() } });
 
 exports.notifyLabReminder = (userId, lab) =>
-  createAndSendNotification(userId, { title: 'Lab Report Reminder', body: `Upcoming: ${lab.testName || lab.title}${lab.labName ? ' at ' + lab.labName : ''}`, type: 'lab', data: { labId: lab._id.toString() } });
+  createAndSendNotification(userId, { title: 'Lab Report Reminder', body: `Upcoming: ${lab.testName || lab.title}${lab.labName ? ' at ' + lab.labName : ''}`, type: 'lab_report', data: { labId: lab._id.toString() } });
 
 exports.notifyNewRecommendation = (userId, recommendation) =>
   createAndSendNotification(userId, { title: 'New Health Recommendation', body: recommendation.title, type: 'recommendation', data: { recommendationId: recommendation._id.toString() } });

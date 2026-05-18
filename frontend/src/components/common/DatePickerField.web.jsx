@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
-import CustomDatePicker from './CustomDatePicker';
 
 /**
  * Web-only DatePickerField — renders a native browser <input type="date"> styled
@@ -10,7 +9,10 @@ import CustomDatePicker from './CustomDatePicker';
  */
 const DatePickerField = ({ value, onChange, placeholder = 'Select Date', containerStyle }) => {
   const { colors, isDark } = useAppTheme();
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const inputBg = isDark ? '#334155' : '#F1F5F9';
+  const borderColor = colors.border;
+  const textColor = colors.text;
+  const placeholderColor = colors.textTertiary;
 
   return (
     <View
@@ -18,9 +20,7 @@ const DatePickerField = ({ value, onChange, placeholder = 'Select Date', contain
         marginBottom: 14,
       }, containerStyle]}
     >
-      <TouchableOpacity
-        onPress={() => setShowDatePicker(true)}
-        activeOpacity={0.7}
+      <View
         style={{
           width: '100%',
           height: 52,
@@ -30,24 +30,29 @@ const DatePickerField = ({ value, onChange, placeholder = 'Select Date', contain
           paddingLeft: 16,
           paddingRight: 16,
           borderWidth: 1.5,
-          borderColor: '#334155',
+          borderColor,
           borderRadius: 12,
-          backgroundColor: '#F1F5F9',
-          cursor: 'pointer',
+          backgroundColor: inputBg,
           boxSizing: 'border-box',
         }}
       >
-        <Text style={{ color: value ? '#1F2937' : '#94A3B8', fontSize: 15 }}>
-          {value ? new Date(value + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : placeholder}
-        </Text>
-        <Ionicons name="calendar-outline" size={20} color="#14B8A6" />
-      </TouchableOpacity>
-      <CustomDatePicker
-        visible={showDatePicker}
-        value={value}
-        onConfirm={(date) => { onChange(date); setShowDatePicker(false); }}
-        onCancel={() => setShowDatePicker(false)}
-      />
+        <Ionicons
+          name="calendar-outline"
+          size={20}
+          color={value ? colors.primary : colors.textTertiary}
+          style={{ marginRight: 10 }}
+        />
+        <TextInput
+          value={value || ''}
+          onChangeText={(t) => onChange(t)}
+          placeholder={placeholder}
+          placeholderTextColor={placeholderColor}
+          style={{ flex: 1, height: '100%', fontSize: 15, color: value ? textColor : placeholderColor }}
+          autoCapitalize="none"
+          type="date"
+        />
+        <Ionicons name="chevron-down" size={16} color={colors.textTertiary} />
+      </View>
     </View>
   );
 };

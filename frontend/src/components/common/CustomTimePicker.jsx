@@ -35,11 +35,7 @@ const CustomTimePicker = ({ visible, value, onConfirm, onCancel }) => {
   }, [visible, value]);
 
   const handleConfirm = () => {
-    let hour = selectedHour;
-    if (selectedAmpm === 'PM' && hour !== 12) hour += 12;
-    if (selectedAmpm === 'AM' && hour === 12) hour = 0;
-    const timeString = `${hour.toString().padStart(2, '0')}:${selectedMinute} ${selectedAmpm}`;
-    console.log('time selected:', timeString);
+    const timeString = `${String(selectedHour).padStart(2, '0')}:${selectedMinute} ${selectedAmpm}`;
     onConfirm(timeString);
   };
 

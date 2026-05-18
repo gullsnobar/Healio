@@ -117,17 +117,27 @@ exports.getUpcomingReminders = async (userId, hours = 24) => {
  */
 exports.getDueReminders = async () => {
   const now = new Date();
-  const currentHour = now.getHours().toString().padStart(2, '0');
-  const currentMin = (Math.floor(now.getMinutes() / 15) * 15).toString().padStart(2, '0');
-  const timeWindow = `${currentHour}:${currentMin}`;
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const toHHMM = (d) => {
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    return `${hh}:${mm}`;
+  };
+
+  const slots = new Set([toHHMM(now)]);
+  for (let i = 1; i <= 2; i++) {
+    const d = new Date(now.getTime() - i * 60 * 1000);
+    slots.add(toHHMM(d));
+  }
+  const timeSlots = Array.from(slots);
 
   return Reminder.find({
     isActive: true,
     isCompleted: false,
     notificationSent: false,
     date: { $gte: today, $lt: new Date(today.getTime() + 86400000) },
-    time: { $regex: `^${currentHour}` },
+    time: { $in: timeSlots },
     $or: [
       { snoozedUntil: null },
       { snoozedUntil: { $lte: now } },

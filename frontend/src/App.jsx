@@ -6,7 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { I18nextProvider } from 'react-i18next';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, View, LogBox } from 'react-native';
 
 import store from './redux/store';
 import { checkAuth } from './redux/slices/authSlice';
@@ -24,6 +24,9 @@ function ThemedApp() {
   useNotifications();
 
   useEffect(() => {
+    LogBox.ignoreLogs([
+      'expo-notifications: Android Push notifications (remote notifications) functionality provided by expo-notifications was removed from Expo Go',
+    ]);
     dispatch(checkAuth());
   }, [dispatch]);
 

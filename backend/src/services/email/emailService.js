@@ -1,4 +1,4 @@
-﻿const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
 const logger = require('../../utils/logger');
 
 let transporter = null;
@@ -42,7 +42,7 @@ exports.verifyEmailConnection = async () => {
 
 exports.isEmailReady = () => emailReady;
 
-const FROM = () => `HEALIO <${process.env.EMAIL_USER}>`;
+const FROM = () => `MR & FT <${process.env.EMAIL_USER}>`;
 
 exports.sendOTPEmail = async (email, otp) => {
   if (!transporter || !emailReady) {
@@ -51,10 +51,10 @@ exports.sendOTPEmail = async (email, otp) => {
   await transporter.sendMail({
     from: FROM(),
     to: email,
-    subject: 'HEALIO - Verification Code',
+    subject: 'MR & FT - Verification Code',
     html: `
       <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#f8fafc;border-radius:12px;">
-        <h2 style="color:#0F766E;margin:0 0 8px;">HEALIO</h2>
+        <h2 style="color:#0F766E;margin:0 0 8px;">MR &amp; FT</h2>
         <p style="color:#334155;font-size:15px;">Your verification code is:</p>
         <div style="background:#ffffff;border:2px solid #14B8A6;border-radius:10px;padding:20px;text-align:center;margin:16px 0;">
           <span style="font-size:32px;font-weight:bold;letter-spacing:8px;color:#0F766E;">${otp}</span>
@@ -67,14 +67,39 @@ exports.sendOTPEmail = async (email, otp) => {
 };
 
 exports.sendVerificationEmail = async (email, token, userName) => {
-  const link = process.env.FRONTEND_URL + '/verify-contact/' + token;
-  await transporter.sendMail({ from: FROM, to: email, subject: 'HEALIO - Trusted Contact Verification', html: '<p>' + userName + ' wants to add you as a trusted contact on HEALIO.</p><a href="' + link + '">Verify</a>' });
+  if (!transporter || !emailReady) {
+    throw new Error('Email service not configured or SMTP credentials invalid');
+  }
+  const safeName = userName ? String(userName) : 'A MR & FT user';
+  const link = String(token || '');
+  await transporter.sendMail({
+    from: FROM(),
+    to: email,
+    subject: 'MR & FT - Trusted Contact Verification',
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:28px;background:#f8fafc;border-radius:14px;">
+        <h2 style="color:#0F766E;margin:0 0 10px;">MR &amp; FT</h2>
+        <p style="color:#334155;font-size:15px;line-height:1.5;margin:0 0 14px;">
+          <strong>${safeName}</strong> wants to add you as a trusted contact.
+        </p>
+        <p style="color:#475569;font-size:14px;line-height:1.5;margin:0 0 18px;">
+          Please confirm your email address by clicking the button below.
+        </p>
+        <a href="${link}" style="display:inline-block;background:#14B8A6;color:#ffffff;text-decoration:none;padding:12px 16px;border-radius:10px;font-weight:700;">
+          Verify Trusted Contact
+        </a>
+        <p style="color:#64748B;font-size:12px;line-height:1.5;margin:18px 0 0;">
+          If you didn’t expect this email, you can ignore it.
+        </p>
+      </div>
+    `,
+  });
 };
 
 exports.sendShareNotification = async (email, data) => {
-  await transporter.sendMail({ from: FROM, to: email, subject: 'HEALIO - Health Report Shared', html: '<p>A health report has been shared with you.</p>' });
+  await transporter.sendMail({ from: FROM(), to: email, subject: 'MR & FT - Health Report Shared', html: '<p>A health report has been shared with you.</p>' });
 };
 
 exports.sendAppointmentReminder = async (email, appointment) => {
-  await transporter.sendMail({ from: FROM, to: email, subject: 'HEALIO - Appointment Reminder', html: '<p>Reminder: You have an appointment with Dr. ' + appointment.doctorName + ' on ' + appointment.date + '</p>' });
+  await transporter.sendMail({ from: FROM(), to: email, subject: 'MR & FT - Appointment Reminder', html: '<p>Reminder: You have an appointment with Dr. ' + appointment.doctorName + ' on ' + appointment.date + '</p>' });
 };

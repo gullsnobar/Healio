@@ -6,9 +6,8 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
-  Platform,
 } from 'react-native';
-import { TextInput, Menu, Button, ProgressBar } from 'react-native-paper';
+import { TextInput, Button, ProgressBar } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import { useAppTheme } from '../../styles/ThemeContext';
@@ -31,18 +30,8 @@ const UploadLabReport = ({ onUpload }) => {
   const [notes, setNotes] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
 
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTypeMenu, setShowTypeMenu] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-
-  const formatDate = (d) =>
-    d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-  const handleDateChange = (event, selectedDate) => {
-    setShowDatePicker(Platform.OS === 'ios');
-    if (selectedDate) setDate(selectedDate);
-  };
 
   const pickFile = async () => {
     try {
@@ -96,10 +85,11 @@ const UploadLabReport = ({ onUpload }) => {
     }, 300);
 
     try {
+      const safeDate = date instanceof Date && !Number.isNaN(date.getTime()) ? date : new Date();
       await onUpload?.({
         title: title.trim(),
         type: reportType,
-        date: date.toISOString(),
+        date: safeDate.toISOString(),
         notes: notes.trim(),
         file: selectedFile,
       });
@@ -150,10 +140,18 @@ const UploadLabReport = ({ onUpload }) => {
 
         <Dropdown
           label="Report Date"
-          value={date.toISOString().split('T')[0]}
+          value={date instanceof Date && !Number.isNaN(date.getTime()) ? date.toISOString().split('T')[0] : ''}
           placeholder="Select date"
           mode="date"
-          onChange={(dateString) => setDate(new Date(dateString + 'T00:00:00'))}
+          onChange={(value) => {
+            if (typeof value === 'string') {
+              setDate(new Date(value + 'T00:00:00'));
+              return;
+            }
+            if (value instanceof Date && !Number.isNaN(value.getTime())) {
+              setDate(value);
+            }
+          }}
           required
         />
 

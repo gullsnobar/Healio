@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import ReminderForm from '../../components/reminder/ReminderForm';
 import { addReminder } from '../../redux/slices/reminderSlice';
 import { useAppTheme } from '../../styles/ThemeContext';
+import { scheduleLocalNotification } from '../../services/firebase/fcmService';
 
 const TYPES = [
   { key: 'medication', label: 'Medication', icon: 'medical-outline', color: '#14B8A6' },
@@ -22,6 +23,30 @@ const AddReminderScreen = ({ navigation, route }) => {
   const handleSubmit = async (data) => {
     try {
       await dispatch(addReminder(data)).unwrap();
+      try {
+        const timeStr = typeof data.time === 'string' ? data.time : '';
+        const match = timeStr.match(/^(\d{2}):(\d{2})$/);
+        const baseDate = data.date ? new Date(data.date) : new Date();
+        if (match && !Number.isNaN(baseDate.getTime())) {
+          const h = parseInt(match[1], 10);
+          const m = parseInt(match[2], 10);
+          const triggerDate = new Date(baseDate);
+          triggerDate.setHours(h, m, 0, 0);
+          if (triggerDate.getTime() > Date.now() - 60 * 1000) {
+            const title = data.reminderType === 'medication'
+              ? 'Medication Reminder'
+              : data.reminderType === 'appointment'
+                ? 'Appointment Reminder'
+                : 'Lab Report Reminder';
+            const body = data.reminderType === 'medication'
+              ? `Time to take ${data.medicationName || data.title}`
+              : data.reminderType === 'appointment'
+                ? `Reminder: ${data.title}`
+                : `Reminder: ${data.title}`;
+            await scheduleLocalNotification({ title, body, data: { type: 'REMINDER' }, triggerDate });
+          }
+        }
+      } catch (_) {}
       navigation.goBack();
     } catch (err) {
       const msg = typeof err === 'string' ? err : 'Failed to save reminder. Please try again.';

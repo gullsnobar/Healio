@@ -16,7 +16,6 @@ exports.run = async () => {
 
     for (const reminder of dueReminders) {
       const user = reminder.user;
-      if (!user?.fcmToken) continue;
 
       try {
         switch (reminder.reminderType) {

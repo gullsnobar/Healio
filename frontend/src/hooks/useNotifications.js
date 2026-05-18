@@ -15,18 +15,28 @@ export const useNotifications = () => {
       return undefined;
     }
 
-    const isExpoGo = Constants.appOwnership === 'expo';
+    const isExpoGo = Constants.appOwnership === 'expo' || Constants.executionEnvironment === 'storeClient';
+    const isAndroidExpoGo = isExpoGo && Platform.OS === 'android';
     if (!isExpoGo && Platform.OS !== 'web') {
       registerForPushNotifications();
     }
 
     dispatch(fetchNotifications());
 
-    const cleanup = setupNotificationListeners(() => {
-      dispatch(fetchNotifications());
-    });
+    const cleanup = isAndroidExpoGo
+      ? null
+      : setupNotificationListeners(() => {
+        dispatch(fetchNotifications());
+      });
 
-    return cleanup;
+    const interval = setInterval(() => {
+      dispatch(fetchNotifications());
+    }, 60000);
+
+    return () => {
+      clearInterval(interval);
+      cleanup?.();
+    };
   }, [dispatch, isAuthenticated, isAuthLoading]);
 
   return {

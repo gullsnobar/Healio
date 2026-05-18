@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
 import AddMedicationForm from '../../components/medication/AddMedicationForm';
 import { addMedication } from '../../redux/slices/medicationSlice';
+import { scheduleLocalNotification } from '../../services/firebase/fcmService';
 
 const AddMedicationScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -13,6 +14,51 @@ const AddMedicationScreen = ({ navigation }) => {
   const handleSubmit = async (data) => {
     const result = await dispatch(addMedication(data));
     if (result.meta?.requestStatus === 'fulfilled') {
+      try {
+        const toHHMM = (t) => {
+          if (!t) return null;
+          if (t instanceof Date && !Number.isNaN(t.getTime())) {
+            const hh = String(t.getHours()).padStart(2, '0');
+            const mm = String(t.getMinutes()).padStart(2, '0');
+            return `${hh}:${mm}`;
+          }
+          const raw = String(t).trim();
+          const hhmm = raw.match(/^(\d{1,2}):(\d{2})$/);
+          if (hhmm) return `${String(parseInt(hhmm[1], 10)).padStart(2, '0')}:${hhmm[2]}`;
+          const ampm = raw.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+          if (!ampm) return null;
+          let h = parseInt(ampm[1], 10);
+          const m = parseInt(ampm[2], 10);
+          const mer = ampm[3].toUpperCase();
+          if (mer === 'PM' && h !== 12) h += 12;
+          if (mer === 'AM' && h === 12) h = 0;
+          return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        };
+
+        const base = data.startDate ? new Date(data.startDate) : new Date();
+        const baseDate = Number.isNaN(base.getTime()) ? new Date() : base;
+        const times = Array.isArray(data.times) ? data.times : [];
+        for (const t of times) {
+          const hhmm = toHHMM(typeof t === 'object' ? t.time : t);
+          const match = hhmm?.match(/^(\d{2}):(\d{2})$/);
+          if (!match) continue;
+          const h = parseInt(match[1], 10);
+          const m = parseInt(match[2], 10);
+          const triggerDate = new Date(baseDate);
+          triggerDate.setHours(h, m, 0, 0);
+          if (triggerDate.getTime() < Date.now() + 30 * 1000) {
+            triggerDate.setDate(triggerDate.getDate() + 1);
+          }
+
+          await scheduleLocalNotification({
+            title: 'Medication Reminder',
+            body: `Time to take ${data.name || 'your medication'}${data.dosage ? ` (${data.dosage})` : ''}`,
+            data: { type: 'MEDICATION_REMINDER' },
+            triggerDate,
+          });
+        }
+      } catch (_) {}
+
       Alert.alert('Success', 'Medication added');
       navigation.goBack();
       return;

@@ -13,6 +13,15 @@ const getDevHost = () => {
 
 const DEV_HOST = getDevHost();
 
+const sanitizeUrl = (value) => {
+  if (!value) return value;
+  const v = String(value).trim();
+  return v
+    .replace(/^`|`$/g, '')
+    .replace(/^['"]|['"]$/g, '')
+    .trim();
+};
+
 const ENV = {
   development: {
     apiUrl: `http://${DEV_HOST}:5000/api`,
@@ -39,8 +48,8 @@ const getEnvVars = () => {
   else if (releaseChannel === 'staging') env = ENV.staging;
 
   // Prefer explicit EXPO_PUBLIC_* values from .env if provided
-  const explicitApi = process.env.EXPO_PUBLIC_API_BASE_URL;
-  const explicitAi = process.env.EXPO_PUBLIC_AI_ENGINE_URL;
+  const explicitApi = sanitizeUrl(process.env.EXPO_PUBLIC_API_BASE_URL);
+  const explicitAi = sanitizeUrl(process.env.EXPO_PUBLIC_AI_ENGINE_URL);
   return {
     ...env,
     apiUrl: explicitApi || env.apiUrl,

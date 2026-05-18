@@ -1,11 +1,12 @@
-﻿const logger = require('../utils/logger');
+const logger = require('../utils/logger');
 
 const errorHandler = (err, req, res, next) => {
   logger.error(err.message, { stack: err.stack, path: req.path, method: req.method });
 
   if (err.name === 'ValidationError') {
     const errors = Object.values(err.errors).map(e => ({ field: e.path, message: e.message }));
-    return res.status(400).json({ success: false, message: 'Validation error', errors });
+    const message = errors.map(e => e.message).join('. ') || 'Validation error';
+    return res.status(400).json({ success: false, message, errors });
   }
   if (err.name === 'CastError') return res.status(400).json({ success: false, message: 'Invalid ID format' });
   if (err.code === 11000) {
