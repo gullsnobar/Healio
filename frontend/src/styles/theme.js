@@ -1,7 +1,7 @@
 ﻿import { DefaultTheme } from 'react-native-paper';
 import { light, dark } from './colors';
 
-// HEALIO – react-native-paper MD3 themes
+// MR & FT – react-native-paper MD3 themes
 // Roundness 16 for premium card feel
 
 export const lightTheme = {

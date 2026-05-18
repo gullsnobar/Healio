@@ -23,7 +23,7 @@ const ThemeContext = createContext({
 });
 
 /**
- * HEALIO ThemeProvider
+ * MR & FT ThemeProvider
  * Wraps the app and provides color tokens + Paper theme for both modes.
  *
  * Supports three modes:
@@ -104,7 +104,7 @@ ThemeProvider.defaultProps = {
 };
 
 /**
- * Hook – access HEALIO theme tokens anywhere:
+ * Hook – access MR & FT theme tokens anywhere:
  *
  *   const { colors, isDark, mode, toggleTheme, setScheme } = useAppTheme();
  */

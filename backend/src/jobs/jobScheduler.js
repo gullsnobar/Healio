@@ -12,6 +12,7 @@ const healthScoreUpdater = require('./healthScoreUpdater');
 const healthInsightGenerator = require('./healthInsightGenerator');
 const dailyHealthSummary = require('./dailyHealthSummary');
 const recurringReminderSpawner = require('./recurringReminderSpawner');
+const { cleanupInvalidTokens } = require('../services/notification/pushService');
 const logger = require('../utils/logger');
 
 exports.startAllJobs = () => {
@@ -29,5 +30,7 @@ exports.startAllJobs = () => {
   cron.schedule('0 9 * * 1', () => { healthInsightGenerator.run(); logger.info('Weekly health insight generation ran'); });
   cron.schedule('0 21 * * *', () => { dailyHealthSummary.run(); logger.info('Daily health summary sent'); });
   cron.schedule('0 0 * * *', () => { recurringReminderSpawner.run(); logger.info('Recurring reminder spawner ran'); });
+  // FCM token cleanup - run weekly on Sunday at 4 AM
+  cron.schedule('0 4 * * 0', () => { cleanupInvalidTokens(); logger.info('FCM token cleanup ran'); });
   logger.info('All cron jobs scheduled');
 };

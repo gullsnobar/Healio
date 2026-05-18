@@ -1,7 +1,7 @@
 {
   "name": "healio-backend",
   "version": "1.0.0",
-  "description": "HEALIO Backend API - Health Management Platform",
+  "description": "MR & FT Backend API - Health Management Platform",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

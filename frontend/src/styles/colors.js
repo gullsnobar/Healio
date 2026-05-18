@@ -1,5 +1,5 @@
 ﻿// ─────────────────────────────────────────────────────────
-// HEALIO – Premium Healthcare Design System Color Tokens
+// MR & FT – Premium Healthcare Design System Color Tokens
 // Industry-grade palette: Neumorphism + Glassmorphism + Cards
 // ─────────────────────────────────────────────────────────
 

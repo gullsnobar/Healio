@@ -18,8 +18,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.healio.app",
       "infoPlist": {
-        "NSMotionUsageDescription": "HEALIO needs access to motion data for step tracking.",
-        "NSHealthShareUsageDescription": "HEALIO needs access to health data for fitness tracking."
+        "NSMotionUsageDescription": "MR & FT needs access to motion data for step tracking.",
+        "NSHealthShareUsageDescription": "MR & FT needs access to health data for fitness tracking."
       }
     },
     "android": {
@@ -29,11 +29,14 @@
       },
       "package": "com.healio.app",
       "permissions": [
-        "ACTIVITY_RECOGNITION",
-        "ACCESS_FINE_LOCATION",
-        "RECEIVE_BOOT_COMPLETED",
-        "VIBRATE",
-        "WAKE_LOCK"
+        "android.permission.ACTIVITY_RECOGNITION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.VIBRATE",
+        "android.permission.WAKE_LOCK",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "updates": {
@@ -45,7 +48,13 @@
       "expo-image-picker",
       "expo-document-picker",
       "@react-native-community/datetimepicker",
-      "expo-font"
-    ]
+      "expo-font",
+      "@react-native-google-signin/google-signin"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "e4297a6f-2c35-4148-8833-b5c86499e59c"
+      }
+    }
   }
 }

@@ -1,6 +1,6 @@
 ﻿import { StyleSheet, Platform } from 'react-native';
 
-// HEALIO – Global Style Utilities
+// MR & FT – Global Style Utilities
 // Neumorphism, Glassmorphism, Card, Shadow presets
 
 export const globalStyles = StyleSheet.create({

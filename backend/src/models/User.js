@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
   googleFitConnected: { type: Boolean, default: false },
   googleFitTokens: { accessToken: String, refreshToken: String, expiresAt: Date },
   fcmToken: { type: String },
+  tokenUpdatedAt: { type: Date },
   preferredLanguage: { type: String, enum: ['en', 'ur'], default: 'en' },
   notificationPreferences: {
     medication: { type: Boolean, default: true },
