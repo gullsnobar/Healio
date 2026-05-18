@@ -1,4 +1,4 @@
-# HEALIO - All-in-One Health Management App
+# MR & FT - All-in-One Health Management App
 
 <p align="center">
   <strong>Medication Reminder & Fitness Tracker</strong><br/>
@@ -9,7 +9,7 @@
 
 ## Overview
 
-HEALIO is a comprehensive mobile health management application that combines **medication management**, **appointment scheduling**, **fitness tracking**, and **AI-powered health insights** into one seamless platform. It solves a real-world problem: people with busy schedules forget medications, miss doctor appointments, and struggle to track their fitness consistently.
+MR & FT is a comprehensive mobile health management application that combines **medication management**, **appointment scheduling**, **fitness tracking**, and **AI-powered health insights** into one seamless platform. It solves a real-world problem: people with busy schedules forget medications, miss doctor appointments, and struggle to track their fitness consistently.
 
 ## Key Features
 
@@ -147,4 +147,4 @@ Developed for educational purposes at the University of Education, Lahore.
 
 ---
 
-**HEALIO FYP | Department of Information Sciences | University of Education, Lahore | May 2026**
+**MR & FT FYP | Department of Information Sciences | University of Education, Lahore | May 2026**

@@ -1,7 +1,7 @@
 ﻿import { DefaultTheme } from 'react-native-paper';
 import { light, dark } from './colors';
 
-// HEALIO – react-native-paper MD3 themes
+// MR & FT – react-native-paper MD3 themes
 // Roundness 16 for premium card feel
 
 export const lightTheme = {
@@ -92,6 +92,3 @@ export const darkTheme = {
 
 export const theme = lightTheme;
 export default theme;
-
-// Re-export useAppTheme so components can import from either './theme' or './ThemeContext'
-export { useAppTheme } from './ThemeContext';

@@ -22,7 +22,7 @@ const LoginScreen = ({ navigation }) => {
     }, [dispatch])
   );
 
-  // ✅ Handle Firebase redirect result (web Google auth)
+  // Handle Firebase redirect result (web Google auth)
   useEffect(() => {
     if (Platform.OS === 'web') {
       const handleRedirect = async () => {

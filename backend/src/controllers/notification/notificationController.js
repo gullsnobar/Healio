@@ -46,7 +46,7 @@ exports.registerDevice = async (req, res, next) => {
   try {
     const { token } = req.body;
     if (!token) return res.status(400).json({ success: false, message: 'Device token is required' });
-    await User.findByIdAndUpdate(req.userId, { fcmToken: token });
+    await User.findByIdAndUpdate(req.userId, { fcmToken: token, tokenUpdatedAt: new Date() });
     logger.info('FCM token registered for user ' + req.userId);
     res.json({ success: true, message: 'Device registered' });
   } catch (error) { next(error); }

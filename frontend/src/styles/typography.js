@@ -1,4 +1,4 @@
-﻿// HEALIO – Premium Typography System
+﻿// MR & FT – Premium Typography System
 // Fonts: Inter (primary), Poppins (headings alternative)
 // 8px grid baseline
 

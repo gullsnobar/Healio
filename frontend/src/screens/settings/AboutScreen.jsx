@@ -7,11 +7,11 @@ const AboutScreen = () => {
   return (
   <View style={[s.c, { backgroundColor: colors.background }]}>
     <View style={s.content}>
-      <Text style={[s.name, { color: colors.primary }]}>HEALIO</Text>
+      <Text style={[s.name, { color: colors.primary }]}>MR & FT</Text>
       <Text style={[s.ver, { color: colors.textTertiary }]}>Version 1.0.0</Text>
       <Text style={[s.desc, { color: colors.textSecondary }]}>All-in-One Health Management App</Text>
       <Text style={[s.org, { color: colors.textTertiary }]}>Department of Information Sciences{`\n`}University of Education, Lahore</Text>
-      <Text style={[s.copy, { color: colors.textTertiary }]}> 2026 HEALIO. All rights reserved.</Text>
+      <Text style={[s.copy, { color: colors.textTertiary }]}> 2026 MR & FT. All rights reserved.</Text>
     </View>
   </View>
   );

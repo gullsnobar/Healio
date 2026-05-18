@@ -1,4 +1,4 @@
-﻿// HEALIO – 8px Grid Spacing System
+﻿// MR & FT – 8px Grid Spacing System
 export const spacing = {
   // Base 8px grid
   xxs: 2,
