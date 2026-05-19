@@ -1,7 +1,7 @@
-﻿# HEALIO User Guide
+﻿# MR & FT User Guide
 
 ## Getting Started
-1. Download HEALIO from App Store / Play Store
+1. Download MR & FT from App Store / Play Store
 2. Register with email or sign in with Google
 3. Complete profile setup (optional)
 

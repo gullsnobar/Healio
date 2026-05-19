@@ -90,7 +90,7 @@ function logTest(testName, passed, message = '') {
 // Test suite
 async function runTests() {
   console.log(`\n${colors.cyan}========================================`);
-  console.log(`HEALIO AI ENDPOINTS TEST SUITE`);
+  console.log(`MR & FT AI ENDPOINTS TEST SUITE`);
   console.log(`========================================${colors.reset}\n`);
 
   // 1. Health Check

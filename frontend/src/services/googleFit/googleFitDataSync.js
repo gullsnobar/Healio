@@ -15,10 +15,20 @@ export const syncGoogleFitData = async () => {
     }
     return response;
   } catch (error) {
-    if (typeof __DEV__ !== 'undefined' && __DEV__) {
-      console.error('[GoogleFitSync] Sync failed:', error?.message);
+    const errorMessage = error?.message || 'Unknown error';
+    
+    // Handle session expired / no refresh token case
+    if (error?.code === 'NO_REFRESH_TOKEN' || errorMessage.includes('Session expired') || errorMessage.includes('No refresh token')) {
+      if (typeof __DEV__ !== 'undefined' && __DEV__) {
+        console.error('[GoogleFitSync] Session expired:', errorMessage);
+      }
+      throw new Error('Session expired. Please log in again to continue syncing with Google Fit.');
     }
-    throw new Error(`Google Fit sync failed: ${error.message}`);
+    
+    if (typeof __DEV__ !== 'undefined' && __DEV__) {
+      console.error('[GoogleFitSync] Sync failed:', errorMessage);
+    }
+    throw new Error(`Google Fit sync failed: ${errorMessage}`);
   }
 };
 
@@ -30,9 +40,19 @@ export const connectGoogleFit = async () => {
     const response = await fitnessAPI.syncGoogleFit();
     return response;
   } catch (error) {
-    if (typeof __DEV__ !== 'undefined' && __DEV__) {
-      console.error('[GoogleFitSync] Connection failed:', error?.message);
+    const errorMessage = error?.message || 'Unknown error';
+    
+    // Handle session expired / no refresh token case
+    if (error?.code === 'NO_REFRESH_TOKEN' || errorMessage.includes('Session expired') || errorMessage.includes('No refresh token')) {
+      if (typeof __DEV__ !== 'undefined' && __DEV__) {
+        console.error('[GoogleFitSync] Session expired during connection:', errorMessage);
+      }
+      throw new Error('Session expired. Please log in again to connect Google Fit.');
     }
-    throw new Error(`Google Fit connection failed: ${error.message}`);
+    
+    if (typeof __DEV__ !== 'undefined' && __DEV__) {
+      console.error('[GoogleFitSync] Connection failed:', errorMessage);
+    }
+    throw new Error(`Google Fit connection failed: ${errorMessage}`);
   }
 };

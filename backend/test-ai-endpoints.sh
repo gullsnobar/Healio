@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🧪 HEALIO AI SERVICES - CURL TESTING GUIDE
+# 🧪 MR & FT AI SERVICES - CURL TESTING GUIDE
 # 
 # This script contains curl commands to test all 12 AI endpoints
 # Run each command individually in your terminal
@@ -10,7 +10,7 @@
 # - OpenAI API key configured in .env
 # - Firebase token for notification tests (optional)
 
-echo "🚀 HEALIO AI Services - Testing Guide"
+echo "🚀 MR & FT AI Services - Testing Guide"
 echo "========================================"
 echo ""
 

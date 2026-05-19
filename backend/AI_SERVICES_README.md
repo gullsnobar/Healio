@@ -1,6 +1,6 @@
-# 🤖 HEALIO AI SERVICES DOCUMENTATION
+# 🤖 MR & FT AI SERVICES DOCUMENTATION
 
-Complete production-ready AI module system for HEALIO FYP project.
+Complete production-ready AI module system for MR & FT FYP project.
 
 ## 📋 Table of Contents
 

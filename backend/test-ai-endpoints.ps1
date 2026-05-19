@@ -1,4 +1,4 @@
-# 🧪 HEALIO AI SERVICES - POWERSHELL TESTING GUIDE
+# 🧪 MR & FT AI SERVICES - POWERSHELL TESTING GUIDE
 # Windows PowerShell version for testing all 12 AI endpoints
 #
 # Usage: .\test-ai-endpoints.ps1
@@ -7,7 +7,7 @@
 # - Backend running on http://localhost:5000
 # - OpenAI API key configured in .env
 
-Write-Host "🚀 HEALIO AI Services - Testing Guide" -ForegroundColor Cyan
+Write-Host "🚀 MR & FT AI Services - Testing Guide" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 

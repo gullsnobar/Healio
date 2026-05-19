@@ -1,4 +1,4 @@
-# 🚀 HEALIO AI SERVICES - SETUP CHECKLIST & QUICK START
+# 🚀 MR & FT AI SERVICES - SETUP CHECKLIST & QUICK START
 
 ## ✅ Pre-Setup Requirements
 
@@ -8,7 +8,7 @@ Before you start, ensure you have:
 - [x] MongoDB running locally or Atlas URI ready
 - [x] OpenAI API account with API key
 - [x] Firebase project setup (for notifications)
-- [x] Git clone of HEALIO project
+- [x] Git clone of MR & FT project
 
 ---
 

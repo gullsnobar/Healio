@@ -1,4 +1,4 @@
-# HEALIO AI System - Troubleshooting Guide
+# MR & FT AI System - Troubleshooting Guide
 
 ## Common Issues & Solutions
 

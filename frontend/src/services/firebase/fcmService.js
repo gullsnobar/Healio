@@ -16,19 +16,12 @@ if (Constants.appOwnership !== 'expo') {
 }
 
 export const registerForPushNotifications = async () => {
-<<<<<<< HEAD
-  const isExpoGo = Constants.appOwnership === 'expo' || Constants.executionEnvironment === 'storeClient';
-  if (isExpoGo && Platform.OS === 'android') {
-    return null;
-  }
-=======
   // Skip notification setup in Expo Go (SDK 53+ removed support)
   if (Constants.appOwnership === 'expo') {
     console.warn('Push notifications are not supported in Expo Go. Use a development build instead.');
     return null;
   }
 
->>>>>>> 68d89750f78f4b8cd2b7ac7b06483ec8798a9660
   if (!Device.isDevice) {
     return null;
   }

@@ -1,4 +1,4 @@
-# HEALIO AI Integration Guide
+# MR & FT AI Integration Guide
 
 ## Complete API Endpoints Documentation
 

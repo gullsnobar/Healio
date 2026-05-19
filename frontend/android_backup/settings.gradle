@@ -1,4 +1,4 @@
-rootProject.name = 'HEALIO'
+rootProject.name = 'MR & FT'
 
 dependencyResolutionManagement {
   versionCatalogs {

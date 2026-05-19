@@ -1,9 +1,9 @@
 ﻿# Software Requirements Specification (SRS)
-## HEALIO - All-in-One Health Management Platform
+## MR & FT - All-in-One Health Management Platform
 
 ### 1. Introduction
 #### 1.1 Purpose
-HEALIO is a comprehensive mobile health management application designed to help users manage medications, appointments, fitness tracking, lab reports, and receive AI-powered health recommendations.
+MR & FT is a comprehensive mobile health management application designed to help users manage medications, appointments, fitness tracking, lab reports, and receive AI-powered health recommendations.
 
 #### 1.2 Scope
 - Cross-platform mobile application (iOS & Android)

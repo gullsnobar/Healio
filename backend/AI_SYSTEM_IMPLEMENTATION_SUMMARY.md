@@ -1,7 +1,7 @@
 # AI System Implementation Summary
 
 ## Overview
-Complete AI system integration for HEALIO using Hugging Face Inference API with 6 major features:
+Complete AI system integration for MR & FT using Hugging Face Inference API with 6 major features:
 1. ✅ AI Chatbot (Mistral-7B-Instruct-v0.2)
 2. ✅ Speech-to-Text (OpenAI Whisper-base)
 3. ✅ Image Analysis (Salesforce BLIP)

@@ -60,7 +60,9 @@ export const syncGoogleFitThunk = createAsyncThunk('fitness/syncGoogleFit', asyn
     const res = await syncGoogleFitData();
     return res.data;
   } catch (e) {
-    return rejectWithValue(e.message || e.response?.data?.message || 'Google Fit sync failed');
+    const errorMsg = e.message || e.response?.data?.message || 'Google Fit sync failed';
+    // Pass through detailed error messages for UI display
+    return rejectWithValue(errorMsg);
   }
 });
 

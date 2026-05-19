@@ -1,4 +1,4 @@
-# HEALIO AI System - Quick Start Guide
+# MR & FT AI System - Quick Start Guide
 
 ## 🚀 Get Started in 5 Minutes
 

@@ -58,7 +58,10 @@ api.interceptors.response.use(
     try {
       const refreshToken = await AsyncStorage.getItem('refresh_token');
       if (!refreshToken) {
-        throw new Error('No refresh token');
+        const error = new Error('Session expired: Please log in again');
+        error.code = 'NO_REFRESH_TOKEN';
+        error.requiresReLogin = true;
+        throw error;
       }
 
       // Use a plain axios call to avoid interceptor loops
@@ -81,6 +84,10 @@ api.interceptors.response.use(
       processQueue(refreshError, null);
       // Clear tokens — user must log in again
       await AsyncStorage.multiRemove(['auth_token', 'refresh_token']);
+      // Preserve the error code if it exists
+      if (refreshError.requiresReLogin) {
+        refreshError.message = 'Session expired: Please log in again';
+      }
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;

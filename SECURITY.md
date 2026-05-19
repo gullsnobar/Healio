@@ -1,4 +1,4 @@
-# Security Guidelines for HEALIO
+# Security Guidelines for MR & FT
 
 ## Environment Variables & Credentials
 
@@ -37,7 +37,7 @@
 ```bash
 # 1. Clone the repository
 git clone <repo-url>
-cd Healio
+cd mr-ft
 
 # 2. Backend setup
 cd backend
