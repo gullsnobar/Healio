@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import { Card, Button } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
-import { useAppTheme } from '../../styles/theme';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const AppointmentReminder = ({ appointment, onDismiss }) => {
   const { colors } = useAppTheme();

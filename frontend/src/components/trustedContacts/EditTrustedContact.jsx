@@ -1,6 +1,6 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
-import { useAppTheme } from '../../styles/theme';
+import { useAppTheme } from '../../styles/ThemeContext';
 const EditTrustedContact = ({ contact, onSubmit, onDelete }) => {
   const { colors } = useAppTheme();
   const [form, setForm] = useState(contact || {});

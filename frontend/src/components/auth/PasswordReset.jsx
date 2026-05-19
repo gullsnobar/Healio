@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useAppTheme } from '../../styles/theme';
+import { useAppTheme } from '../../styles/ThemeContext';
 
 const PasswordReset = ({ onSubmit, loading: externalLoading }) => {
   const { colors } = useAppTheme();

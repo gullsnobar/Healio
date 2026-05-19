@@ -1,7 +1,7 @@
-﻿import React from 'react';
+import React from 'react';
 import { FlatList, Text, StyleSheet } from 'react-native';
 import NotificationItem from './NotificationItem';
-import { useAppTheme } from '../../styles/theme';
+import { useAppTheme } from '../../styles/ThemeContext';
 const NotificationList = ({ notifications = [], onItemPress, onDismiss }) => {
   const { colors } = useAppTheme();
   return (

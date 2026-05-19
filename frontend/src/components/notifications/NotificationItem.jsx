@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useAppTheme } from '../../styles/theme';
+import { useAppTheme } from '../../styles/ThemeContext';
 const iconMap = { medication: 'medkit', appointment: 'calendar', fitness: 'fitness', system: 'information-circle' };
 const NotificationItem = ({ notification, onPress, onDismiss }) => {
   const { colors } = useAppTheme();

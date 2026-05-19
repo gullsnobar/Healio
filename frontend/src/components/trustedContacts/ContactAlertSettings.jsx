@@ -1,6 +1,6 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
-import { useAppTheme } from '../../styles/theme';
+import { useAppTheme } from '../../styles/ThemeContext';
 const ContactAlertSettings = ({ settings, onUpdate }) => {
   const { colors } = useAppTheme();
   const [s2, setS] = useState(settings || { missedDose: true, appointment: true, emergency: true });

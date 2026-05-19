@@ -1,7 +1,7 @@
-﻿import React from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useAppTheme } from '../../styles/theme';
+import { useAppTheme } from '../../styles/ThemeContext';
 const iconMap = { medication: 'medkit', fitness: 'fitness', sleep: 'moon', diet: 'nutrition', general: 'bulb' };
 const AIRecommendationCard = ({ recommendation }) => {
   const { colors } = useAppTheme();

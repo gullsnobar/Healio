@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
-import { useAppTheme } from '../../styles/theme';
+import { useAppTheme } from '../../styles/ThemeContext';
 const PrivacySettings = ({ settings, onUpdate, disabled }) => {
   const { colors } = useAppTheme();
   const [s2, setS] = useState(settings || { shareWithContacts: true, dataCollection: true, locationTracking: false });

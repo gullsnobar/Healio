@@ -1,7 +1,7 @@
-﻿import React from 'react';
+import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useAppTheme } from '../../styles/theme';
+import { useAppTheme } from '../../styles/ThemeContext';
 const ProfilePictureUpload = ({ imageUri, onPick }) => {
   const { colors } = useAppTheme();
   return (

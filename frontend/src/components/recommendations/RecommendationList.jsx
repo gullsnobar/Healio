@@ -1,7 +1,7 @@
-﻿import React from 'react';
+import React from 'react';
 import { FlatList, Text, StyleSheet } from 'react-native';
 import AIRecommendationCard from './AIRecommendationCard';
-import { useAppTheme } from '../../styles/theme';
+import { useAppTheme } from '../../styles/ThemeContext';
 const RecommendationList = ({ recommendations = [], loading }) => {
   const { colors } = useAppTheme();
   return (

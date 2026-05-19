@@ -1,6 +1,6 @@
-﻿import React from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { useAppTheme } from '../../styles/theme';
+import { useAppTheme } from '../../styles/ThemeContext';
 const WeeklyReport = ({ report }) => {
   const { colors } = useAppTheme();
   return (

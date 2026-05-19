@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import { useAppTheme } from '../../styles/theme';
+import { useAppTheme } from '../../styles/ThemeContext';
 const EditProfile = ({ user, onSubmit }) => {
   const { colors } = useAppTheme();
   const [form, setForm] = useState({ fullName: user?.fullName || '', phone: user?.phone || '', dateOfBirth: user?.dateOfBirth || '', bloodGroup: user?.bloodGroup || '', emergencyContact: user?.emergencyContact || '' });

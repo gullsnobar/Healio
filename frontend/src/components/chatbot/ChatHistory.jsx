@@ -1,6 +1,6 @@
-﻿import React from 'react';
+import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import { useAppTheme } from '../../styles/theme';
+import { useAppTheme } from '../../styles/ThemeContext';
 const ChatHistory = ({ sessions = [], onSelect }) => {
   const { colors } = useAppTheme();
   return (

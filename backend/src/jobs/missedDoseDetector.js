@@ -1,10 +1,13 @@
-﻿const Medication = require('../models/Medication');
+const Medication = require('../models/Medication');
 const { notifyMissedDose } = require('../services/notification/notificationService');
 const { detectMissedDosePattern } = require('../services/ai/recommendationEngine');
 
 exports.run = async () => {
   const medications = await Medication.find({ isActive: true }).populate('user');
   for (const med of medications) {
+    // Skip medications whose user has been deleted or is null
+    if (!med.user) continue;
+
     const today = new Date(); today.setHours(0, 0, 0, 0);
     const todayEntries = med.adherenceHistory.filter(h => h.date >= today);
     const expectedDoses = med.times?.length || 1;

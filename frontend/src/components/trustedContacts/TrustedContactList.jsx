@@ -1,7 +1,7 @@
-﻿import React from 'react';
+import React from 'react';
 import { FlatList, Text, StyleSheet } from 'react-native';
 import TrustedContactCard from './TrustedContactCard';
-import { useAppTheme } from '../../styles/theme';
+import { useAppTheme } from '../../styles/ThemeContext';
 const TrustedContactList = ({ contacts = [], onItemPress, onDelete, loading }) => {
   const { colors } = useAppTheme();
   return (

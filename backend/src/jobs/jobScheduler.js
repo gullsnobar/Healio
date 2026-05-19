@@ -15,20 +15,25 @@ const { cleanupInvalidTokens } = require('../services/notification/pushService')
 const logger = require('../utils/logger');
 
 exports.startAllJobs = () => {
-  cron.schedule('* * * * *', () => { genericReminderJob.run(); logger.info('Generic reminder job ran'); });
-  cron.schedule('0 20 * * *', () => { appointmentReminder.run(); logger.info('Appointment reminder job ran'); });
-  cron.schedule('0 */2 * * *', () => { missedDoseDetector.run(); logger.info('Missed dose detector ran'); });
-  cron.schedule('0 */6 * * *', () => { fitnessSync.run(); logger.info('Fitness sync ran'); });
-  cron.schedule('0 0 * * 1', () => { reportGenerator.run(); logger.info('Weekly report generation ran'); });
-  cron.schedule('0 9 * * *', () => { refillChecker.run(); logger.info('Refill checker ran'); });
-  cron.schedule('0 3 * * 0', () => { dataCleanup.run(); logger.info('Data cleanup ran'); });
-  cron.schedule('0 8 * * *', () => { recommendationUpdater.run(); logger.info('Recommendation updater ran'); });
-  cron.schedule('0 0 * * *', () => { healthScoreUpdater.run(); logger.info('Health score updater ran'); });
+  const safeRun = (name, fn) => async () => {
+    try { await fn(); logger.info(`${name} ran`); }
+    catch (err) { logger.error(`${name} failed: ${err.message}`); }
+  };
+
+  cron.schedule('* * * * *', safeRun('Generic reminder job', genericReminderJob.run));
+  cron.schedule('0 20 * * *', safeRun('Appointment reminder job', appointmentReminder.run));
+  cron.schedule('0 */2 * * *', safeRun('Missed dose detector', missedDoseDetector.run));
+  cron.schedule('0 */6 * * *', safeRun('Fitness sync', fitnessSync.run));
+  cron.schedule('0 0 * * 1', safeRun('Weekly report generation', reportGenerator.run));
+  cron.schedule('0 9 * * *', safeRun('Refill checker', refillChecker.run));
+  cron.schedule('0 3 * * 0', safeRun('Data cleanup', dataCleanup.run));
+  cron.schedule('0 8 * * *', safeRun('Recommendation updater', recommendationUpdater.run));
+  cron.schedule('0 0 * * *', safeRun('Health score updater', healthScoreUpdater.run));
   // New jobs: AI health insights weekly, daily summary at 9 PM, recurring reminders at midnight
-  cron.schedule('0 9 * * 1', () => { healthInsightGenerator.run(); logger.info('Weekly health insight generation ran'); });
-  cron.schedule('0 21 * * *', () => { dailyHealthSummary.run(); logger.info('Daily health summary sent'); });
-  cron.schedule('0 0 * * *', () => { recurringReminderSpawner.run(); logger.info('Recurring reminder spawner ran'); });
+  cron.schedule('0 9 * * 1', safeRun('Weekly health insight generation', healthInsightGenerator.run));
+  cron.schedule('0 21 * * *', safeRun('Daily health summary', dailyHealthSummary.run));
+  cron.schedule('0 0 * * *', safeRun('Recurring reminder spawner', recurringReminderSpawner.run));
   // FCM token cleanup - run weekly on Sunday at 4 AM
-  cron.schedule('0 4 * * 0', () => { cleanupInvalidTokens(); logger.info('FCM token cleanup ran'); });
+  cron.schedule('0 4 * * 0', safeRun('FCM token cleanup', cleanupInvalidTokens));
   logger.info('All cron jobs scheduled');
 };

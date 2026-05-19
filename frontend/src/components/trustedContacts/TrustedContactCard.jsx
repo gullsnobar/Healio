@@ -1,7 +1,7 @@
-﻿import React from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useAppTheme } from '../../styles/theme';
+import { useAppTheme } from '../../styles/ThemeContext';
 const TrustedContactCard = ({ contact, onPress, onDelete }) => {
   const { colors } = useAppTheme();
   return (

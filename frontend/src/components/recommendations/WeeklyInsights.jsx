@@ -1,6 +1,6 @@
-﻿import React from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useAppTheme } from '../../styles/theme';
+import { useAppTheme } from '../../styles/ThemeContext';
 const WeeklyInsights = ({ insights }) => {
   const { colors } = useAppTheme();
   const safeInsights = insights || {};
