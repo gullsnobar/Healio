@@ -1,55 +1,139 @@
 import React from 'react';
-import { View, Text, StyleSheet, Switch, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Switch,
+  ActivityIndicator,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../styles/ThemeContext';
 
 const PREF_ITEMS = [
-  { key: 'medication', label: 'Medication Reminders', description: 'Get notified about medication doses' },
-  { key: 'appointment', label: 'Appointment Reminders', description: 'Reminders for upcoming appointments' },
-  { key: 'fitness', label: 'Fitness Reminders', description: 'Stay on track with fitness goals' },
-  { key: 'general', label: 'General Notifications', description: 'Reports, recommendations & updates' },
+  {
+    key: 'medication',
+    label: 'Medication Reminders',
+    description: 'Alerts for doses and refill schedules',
+    icon: 'medkit-outline',
+    iconColor: '#14B8A6',
+    iconBg: '#14B8A618',
+  },
+  {
+    key: 'appointment',
+    label: 'Appointment Alerts',
+    description: 'Reminders before upcoming appointments',
+    icon: 'calendar-outline',
+    iconColor: '#6366F1',
+    iconBg: '#6366F118',
+  },
+  {
+    key: 'fitness',
+    label: 'Fitness Updates',
+    description: 'Daily goals, streaks and activity nudges',
+    icon: 'barbell-outline',
+    iconColor: '#F59E0B',
+    iconBg: '#F59E0B18',
+  },
+  {
+    key: 'general',
+    label: 'General Notifications',
+    description: 'Reports, AI insights & app updates',
+    icon: 'notifications-outline',
+    iconColor: '#EC4899',
+    iconBg: '#EC489918',
+  },
 ];
 
 const NotificationSettings = ({ preferences, onToggle, loading }) => {
-  const { colors, isDark } = useAppTheme();
-  const bg = isDark ? '#1E293B' : '#FFF';
+  const { colors } = useAppTheme();
 
   if (loading) {
     return (
-      <View style={[s.c, { backgroundColor: bg }, s.loadingWrap]}>
+      <View style={s.loadingWrap}>
         <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={[s.loadingText, { color: colors.textTertiary }]}>Loading preferences…</Text>
       </View>
     );
   }
 
+  const enabledCount = PREF_ITEMS.filter((i) => preferences?.[i.key]).length;
+
   return (
-    <View style={[s.c, { backgroundColor: bg }]}>
-      <Text style={[s.t, { color: colors.text }]}>Notification Preferences</Text>
-      {PREF_ITEMS.map(({ key, label, description }) => (
-        <View key={key} style={[s.r, { borderBottomColor: isDark ? '#334155' : '#F0F0F0' }]}>
-          <View style={s.labelWrap}>
-            <Text style={[s.l, { color: colors.text }]}>{label}</Text>
-            <Text style={[s.desc, { color: colors.textSecondary }]}>{description}</Text>
-          </View>
-          <Switch
-            value={!!preferences?.[key]}
-            onValueChange={() => onToggle(key)}
-            trackColor={{ false: isDark ? '#475569' : '#D1D5DB', true: colors.primary + '80' }}
-            thumbColor={preferences?.[key] ? colors.primary : isDark ? '#94A3B8' : '#F3F4F6'}
-          />
-        </View>
-      ))}
+    <View>
+      {/* Summary chip */}
+      <View style={[s.summaryRow, { backgroundColor: colors.primary + '12', borderColor: colors.primary + '30' }]}>
+        <Ionicons name="notifications" size={16} color={colors.primary} />
+        <Text style={[s.summaryText, { color: colors.textSecondary }]}>
+          <Text style={{ color: colors.primary, fontWeight: '700' }}>{enabledCount}</Text>
+          {' '}of {PREF_ITEMS.length} notification types enabled
+        </Text>
+      </View>
+
+      {/* Toggle rows */}
+      <View style={[s.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        {PREF_ITEMS.map((item, i) => {
+          const on = !!preferences?.[item.key];
+          return (
+            <View
+              key={item.key}
+              style={[
+                s.row,
+                i < PREF_ITEMS.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
+              ]}
+            >
+              <View style={[s.iconBox, { backgroundColor: on ? item.iconBg : colors.border + '40' }]}>
+                <Ionicons
+                  name={item.icon}
+                  size={20}
+                  color={on ? item.iconColor : colors.textTertiary}
+                />
+              </View>
+              <View style={s.textWrap}>
+                <Text style={[s.label, { color: on ? colors.text : colors.textTertiary }]}>{item.label}</Text>
+                <Text style={[s.desc, { color: colors.textTertiary }]}>{item.description}</Text>
+              </View>
+              <Switch
+                value={on}
+                onValueChange={() => onToggle(item.key)}
+                trackColor={{ false: colors.border, true: item.iconColor + '88' }}
+                thumbColor={on ? item.iconColor : colors.textTertiary}
+              />
+            </View>
+          );
+        })}
+      </View>
     </View>
   );
 };
 
 const s = StyleSheet.create({
-  c: { borderRadius: 12, padding: 16 },
-  loadingWrap: { alignItems: 'center', justifyContent: 'center', minHeight: 200 },
-  t: { fontSize: 18, fontWeight: '600', marginBottom: 12 },
-  r: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 14, borderBottomWidth: 1 },
-  labelWrap: { flex: 1, marginRight: 12 },
-  l: { fontSize: 15, fontWeight: '500' },
-  desc: { fontSize: 12, marginTop: 2 },
+  loadingWrap: { alignItems: 'center', justifyContent: 'center', paddingVertical: 60, gap: 12 },
+  loadingText: { fontSize: 14 },
+
+  summaryRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    borderRadius: 14,
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 14,
+  },
+  summaryText: { fontSize: 13, flex: 1 },
+
+  card: { borderRadius: 18, borderWidth: 1, overflow: 'hidden' },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    gap: 12,
+  },
+  iconBox: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  textWrap: { flex: 1 },
+  label: { fontSize: 15, fontWeight: '600' },
+  desc: { fontSize: 12, marginTop: 2, lineHeight: 17 },
 });
 
 export default NotificationSettings;

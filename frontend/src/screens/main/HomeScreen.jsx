@@ -128,8 +128,49 @@ const HomeScreen = ({ navigation }) => {
 
   const IS_DESKTOP = isDesktop;
 
+  // Filter medications for today based on their schedule
+  const getTodaysMedications = (meds) => {
+    if (!meds || meds.length === 0) return [];
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    return meds.filter(med => {
+      // Check if medication has started
+      if (med.schedule?.startDate) {
+        const startDate = new Date(med.schedule.startDate);
+        startDate.setHours(0, 0, 0, 0);
+        if (startDate > today) return false; // Medication hasn't started yet
+      }
+      
+      // Check if medication has ended
+      if (med.schedule?.endDate) {
+        const endDate = new Date(med.schedule.endDate);
+        endDate.setHours(0, 0, 0, 0);
+        if (endDate < today) return false; // Medication has ended
+      }
+      
+      // Check if medication is active today based on frequency
+      if (med.schedule?.frequency) {
+        const freq = (med.schedule.frequency || '').toLowerCase();
+        // If frequency is specified, assume it applies to today
+        return freq.length > 0;
+      }
+      
+      // If no schedule info, include medication if it has a start date in the past
+      if (med.schedule?.startDate) {
+        return true;
+      }
+      
+      // Include all active medications without schedule info
+      return med.active !== false;
+    });
+  };
+
+  const todaysMeds = useMemo(() => getTodaysMedications(medicationList), [medicationList]);
+
   const medsStatus = useMemo(() => {
-    const list = medicationList || [];
+    const list = todaysMeds || [];
     let taken = 0;
     let pending = 0;
     let missed = 0;
@@ -141,7 +182,7 @@ const HomeScreen = ({ navigation }) => {
     });
     const total = list.length;
     return { taken, pending, missed, total };
-  }, [medicationList]);
+  }, [todaysMeds]);
 
   const medsTaken = medsStatus.taken;
   const medsTotal = medsStatus.total;

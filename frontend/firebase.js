@@ -30,6 +30,7 @@ let _authInitialized = false;
 
 const getFirebaseAuth = () => {
   if (!_authInitialized) {
+    _authInitialized = true;
     try {
       if (Platform.OS === "web") {
         _auth = getAuth(app);
@@ -40,11 +41,11 @@ const getFirebaseAuth = () => {
         });
       }
     } catch (e) {
-      console.warn("Firebase Auth init failed:", e.message);
-      // Fallback to in-memory persistence if initialization fails
-      _auth = getAuth(app);
+      console.warn("Firebase Auth init skipped:", e.message);
+      // On Expo Go, native Firebase Auth modules may not be available.
+      // Return null — Google Sign-In will use expo-auth-session instead.
+      _auth = null;
     }
-    _authInitialized = true;
   }
   return _auth;
 };

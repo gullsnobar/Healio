@@ -1,6 +1,12 @@
-﻿import { signInWithRedirect, getRedirectResult, signInWithCredential, signOut, GoogleAuthProvider } from 'firebase/auth';
 import { Platform } from 'react-native';
 import { getFirebaseAuth, googleProvider } from '../../../firebase';
+import {
+  signInWithCredential,
+  signInWithRedirect,
+  getRedirectResult,
+  GoogleAuthProvider,
+  signOut,
+} from 'firebase/auth';
 
 export const firebaseAuth = {
   /**
@@ -10,7 +16,7 @@ export const firebaseAuth = {
   handleRedirectResult: async () => {
     const auth = getFirebaseAuth();
     if (!auth || Platform.OS !== 'web') return null;
-    
+
     try {
       const result = await getRedirectResult(auth);
       if (result?.user) {
@@ -33,59 +39,72 @@ export const firebaseAuth = {
   },
 
   /**
-   * Google Sign-In
-   * - Web: uses signInWithRedirect (avoids COOP popup issues)
-   * - Native: caller must pass a Google ID token from @react-native-google-signin/google-signin
+   * Google Sign-In (web only – uses Firebase redirect flow)
+   * For native, use the useGoogleAuth hook in the component instead.
    */
-  signInWithGoogle: async (nativeIdToken) => {
+  signInWithGoogleWeb: async () => {
     const auth = getFirebaseAuth();
     if (!auth) {
-      throw new Error(
-        'Firebase Auth is not configured. Please enable Authentication in the Firebase Console.',
-      );
+      throw new Error('Firebase Auth is not configured.');
     }
+    await signInWithRedirect(auth, googleProvider);
+    return null;
+  },
 
-    let user;
-
-    if (Platform.OS === 'web') {
-      // ✅ Use redirect flow instead of popup to avoid COOP issues on Expo Web
-      // This will redirect user to Google login, then back to the app
-      // Handle the result in useEffect with handleRedirectResult()
-      await signInWithRedirect(auth, googleProvider);
-      // Note: Function returns here, page will reload after redirect
-      return null;
-    } else {
-      // ✅ Native: Use credential-based auth with Google Sign-In plugin
-      if (!nativeIdToken) {
-        throw new Error(
-          'On native platforms, a Google ID token must be provided. ' +
-          'Use @react-native-google-signin/google-signin to obtain it.',
-        );
+  /**
+   * Process a Google ID token (from expo-auth-session on native)
+   * Tries Firebase credential auth first, falls back to decoding the token directly.
+   */
+  processGoogleToken: async (idToken) => {
+    // Try Firebase credential auth if available
+    try {
+      const auth = getFirebaseAuth();
+      if (auth) {
+        const credential = GoogleAuthProvider.credential(idToken);
+        const fbResult = await signInWithCredential(auth, credential);
+        const firebaseToken = await fbResult.user.getIdToken();
+        return {
+          token: firebaseToken,
+          profile: {
+            name: fbResult.user.displayName || '',
+            email: fbResult.user.email || '',
+            photo: fbResult.user.photoURL || '',
+            uid: fbResult.user.uid,
+          },
+        };
       }
-      const credential = GoogleAuthProvider.credential(nativeIdToken);
-      const result = await signInWithCredential(auth, credential);
-      user = result.user;
-
-      const idToken = await user.getIdToken();
-      return {
-        token: idToken,
-        profile: {
-          name: user.displayName || '',
-          email: user.email || '',
-          photo: user.photoURL || '',
-          uid: user.uid,
-        },
-      };
+    } catch (firebaseErr) {
+      console.warn('Firebase credential sign-in unavailable, using Google token directly:', firebaseErr.message);
     }
+
+    // Fallback: decode the JWT to get profile info
+    const payload = JSON.parse(atob(idToken.split('.')[1]));
+    return {
+      token: idToken,
+      profile: {
+        name: payload.name || '',
+        email: payload.email || '',
+        photo: payload.picture || '',
+        uid: payload.sub,
+      },
+    };
   },
 
   signOut: async () => {
-    const auth = getFirebaseAuth();
-    if (auth) await signOut(auth);
+    try {
+      const auth = getFirebaseAuth();
+      if (auth) await signOut(auth);
+    } catch (err) {
+      console.warn('Firebase sign out error:', err.message);
+    }
   },
 
   getCurrentUser: () => {
-    const auth = getFirebaseAuth();
-    return auth ? auth.currentUser : null;
+    try {
+      const auth = getFirebaseAuth();
+      return auth ? auth.currentUser : null;
+    } catch {
+      return null;
+    }
   },
 };

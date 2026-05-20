@@ -38,6 +38,13 @@
     "react": {
       "version": "detect"
     }
-  }
+  },
+  "ignorePatterns": [
+    "node_modules",
+    "build",
+    ".expo",
+    "dist",
+    "coverage"
+  ]
 }
 

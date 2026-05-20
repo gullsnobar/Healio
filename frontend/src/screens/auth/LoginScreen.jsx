@@ -1,20 +1,46 @@
 import React, { useCallback, useEffect } from 'react';
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, StatusBar, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import * as Google from 'expo-auth-session/providers/google';
+import * as AuthSession from 'expo-auth-session';
 import LoginForm from '../../components/auth/LoginForm';
-import Alert from '../../components/common/Alert';
+import AlertBanner from '../../components/common/Alert';
 import { loginUser, googleSignIn, clearError } from '../../redux/slices/authSlice';
 import { useAppTheme } from '../../styles/ThemeContext';
 import { firebaseAuth } from '../../services/firebase/firebaseAuth';
 import { authAPI } from '../../services/api/authAPI';
 import { secureStorage } from '../../services/storage/secureStorage';
+import { GOOGLE_WEB_CLIENT_ID, GOOGLE_AUTH_CONFIGURED } from '../../config/googleAuthConfig';
+
+// Required for expo-auth-session to complete the auth flow on Android
+if (Platform.OS !== 'web') {
+  try {
+    const { maybeCompleteAuthSession } = require('expo-web-browser');
+    maybeCompleteAuthSession();
+  } catch (e) {
+    console.warn('expo-web-browser not available');
+  }
+}
 
 const LoginScreen = ({ navigation }) => {
   const { colors, isDark } = useAppTheme();
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
+
+  // Google Auth via expo-auth-session (works in Expo Go on native)
+  // redirectUri must be registered in Google Cloud Console > OAuth 2.0 credentials
+  const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
+  const [googleRequest, googleResponse, promptGoogleAsync] = Google.useIdTokenAuthRequest({
+    clientId: GOOGLE_WEB_CLIENT_ID,
+    redirectUri,
+  });
+
+  // Log the redirect URI in dev so you know what to register in Google Console
+  React.useEffect(() => {
+    if (__DEV__) console.log('[Google Auth] Redirect URI:', redirectUri);
+  }, [redirectUri]);
 
   useFocusEffect(
     useCallback(() => {
@@ -48,12 +74,36 @@ const LoginScreen = ({ navigation }) => {
     }
   }, []);
 
+  // Handle Google Sign-In response on native
+  useEffect(() => {
+    if (googleResponse?.type === 'success') {
+      const idToken = googleResponse.params.id_token;
+      if (idToken) {
+        dispatch(googleSignIn(idToken));
+      }
+    } else if (googleResponse?.type === 'error') {
+      console.error('Google Sign-In error:', googleResponse.error);
+    }
+  }, [googleResponse]);
+
   const handleLogin = async (credentials) => {
     dispatch(loginUser(credentials));
   };
 
   const handleGoogleSignIn = () => {
-    dispatch(googleSignIn());
+    if (!GOOGLE_AUTH_CONFIGURED) {
+      Alert.alert(
+        'Setup Required',
+        'Google Sign-In requires configuration.\n\nPlease set your Google Web Client ID in:\nfrontend/src/config/googleAuthConfig.js\n\nGet it from Firebase Console > Authentication > Sign-in method > Google.',
+      );
+      return;
+    }
+
+    if (Platform.OS === 'web') {
+      dispatch(googleSignIn()); // Web: triggers Firebase redirect
+    } else {
+      promptGoogleAsync({ useProxy: true }); // Native: use Expo auth proxy
+    }
   };
 
   return (
@@ -74,7 +124,7 @@ const LoginScreen = ({ navigation }) => {
           <Text style={[s.title, { color: colors.text }]}>Welcome back!{'\n'}Glad to see you, Again!</Text>
         </View>
 
-        {error && <View style={s.alertWrap}><Alert variant="error" message={error} /></View>}
+        {error && <View style={s.alertWrap}><AlertBanner variant="error" message={error} /></View>}
 
         <LoginForm
           onSubmit={handleLogin}

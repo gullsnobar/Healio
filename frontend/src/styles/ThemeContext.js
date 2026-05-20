@@ -7,7 +7,12 @@ import { lightTheme, darkTheme } from './theme';
 
 // Enable LayoutAnimation on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
+  try {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  } catch (e) {
+    // In React Native New Architecture, this is a no-op
+    console.warn('setLayoutAnimationEnabledExperimental not available');
+  }
 }
 
 const THEME_STORAGE_KEY = '@healio_theme_mode';

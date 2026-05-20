@@ -1,19 +1,7 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "moduleResolution": "bundler",
-    "strict": false,
-    "skipLibCheck": true,
-    "resolveJsonModule": true
+    "strict": true
   },
-  "include": [
-    "src/**/*",
-    "App.js",
-    "firebase.js"
-  ],
-  "exclude": [
-    "node_modules",
-    "build",
-    ".expo"
-  ]
+  "include": ["**/*.ts", "**/*.tsx"]
 }

@@ -7,8 +7,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { reminderAPI } from '../../services/api/reminderAPI';
 import { deleteReminder, completeReminder, snoozeReminder } from '../../redux/slices/reminderSlice';
+import { fetchMedications } from '../../redux/slices/medicationSlice';
 import { useAppTheme } from '../../styles/ThemeContext';
-import Button from '../../components/common/Button';
+
 
 const { width: SCREEN_W } = Dimensions.get('window');
 const IS_SMALL = SCREEN_W < 400;
@@ -54,8 +55,9 @@ const ReminderDetailsScreen = ({ navigation, route }) => {
       // If medication reminder, also record dose in adherence history
       if (reminder.reminderType === 'medication') {
         try {
+          // Refresh medications list so Home screen stats reflect this change
+          dispatch(fetchMedications());
           // Save dose to medication adherence history (optional - for tracking)
-          // This would be called if you have a linked medication ID
           Alert.alert('✓ Medicine Taken', `${reminder.medicationName} recorded as taken at ${new Date().toLocaleTimeString()}`);
         } catch (err) {
           console.error('Failed to record adherence:', err);
@@ -164,44 +166,31 @@ const ReminderDetailsScreen = ({ navigation, route }) => {
       {/* Bottom action bar */}
       {!reminder.isCompleted && (
         <View style={[s.actionBar, { backgroundColor: bg, borderTopColor: isDark ? '#334155' : '#E2E8F0' }]}>
-          <View style={{ flex: 1, marginHorizontal: 4 }}>
-            <Button
-              variant="secondary"
-              size="medium"
-              onPress={handleSnooze}
-              icon="alarm-outline"
-              colors={colors}
-            >
-              Snooze
-            </Button>
-            <Text style={[s.buttonDesc, { color: subColor }]}>Remind me later</Text>
-          </View>
-          <View style={{ flex: 1.2, marginHorizontal: 4 }}>
-            <Button
-              variant="primary"
-              size="medium"
-              onPress={handleComplete}
-              icon="checkmark-circle-outline"
-              colors={colors}
-            >
-              {reminder.reminderType === 'medication' ? 'Taken ✓' : 'Complete'}
-            </Button>
-            <Text style={[s.buttonDesc, { color: subColor }]}> 
+          <TouchableOpacity style={s.actionBtn} onPress={handleSnooze} activeOpacity={0.7}>
+            <View style={[s.actionIconWrap, { backgroundColor: isDark ? '#1E3A5F' : '#E0F2FE' }]}>
+              <Ionicons name="alarm-outline" size={22} color={colors.primary} />
+            </View>
+            <Text style={[s.actionLabel, { color: textColor }]}>Snooze</Text>
+            <Text style={[s.actionSub, { color: subColor }]}>Remind later</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={s.actionBtn} onPress={handleComplete} activeOpacity={0.7}>
+            <View style={[s.actionIconWrap, { backgroundColor: '#D1FAE5' }]}>
+              <Ionicons name="checkmark-circle-outline" size={22} color="#10B981" />
+            </View>
+            <Text style={[s.actionLabel, { color: textColor }]}>
+              {reminder.reminderType === 'medication' ? 'Taken' : 'Complete'}
+            </Text>
+            <Text style={[s.actionSub, { color: subColor }]}>
               {reminder.reminderType === 'medication' ? 'Mark as taken' : 'Mark as done'}
             </Text>
-          </View>
-          <View style={{ flex: 1, marginHorizontal: 4 }}>
-            <Button
-              variant="danger"
-              size="medium"
-              onPress={handleDelete}
-              icon="trash-outline"
-              colors={colors}
-            >
-              Delete
-            </Button>
-            <Text style={[s.buttonDesc, { color: subColor }]}>Remove reminder</Text>
-          </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={s.actionBtn} onPress={handleDelete} activeOpacity={0.7}>
+            <View style={[s.actionIconWrap, { backgroundColor: isDark ? '#3B1A1A' : '#FEE2E2' }]}>
+              <Ionicons name="trash-outline" size={22} color="#EF4444" />
+            </View>
+            <Text style={[s.actionLabel, { color: textColor }]}>Delete</Text>
+            <Text style={[s.actionSub, { color: subColor }]}>Remove</Text>
+          </TouchableOpacity>
         </View>
       )}
     </View>
@@ -223,12 +212,25 @@ const s = StyleSheet.create({
   infoValue: { fontSize: IS_SMALL ? 13 : 14, marginTop: 2 },
   actionBar: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingVertical: IS_SMALL ? 10 : 12, paddingHorizontal: IS_SMALL ? 8 : 12, borderTopWidth: 1,
+    flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-evenly',
+    paddingVertical: IS_SMALL ? 10 : 14, paddingHorizontal: IS_SMALL ? 8 : 16, borderTopWidth: 1,
     elevation: 8,
-    gap: IS_SMALL ? 4 : 8,
   },
-  buttonDesc: { fontSize: IS_SMALL ? 9 : 10, textAlign: 'center', marginTop: 2, lineHeight: IS_SMALL ? 12 : 14 },
+  actionBtn: {
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  actionIconWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 6,
+  },
+  actionLabel: { fontSize: 13, fontWeight: '700', textAlign: 'center' },
+  actionSub: { fontSize: 10, textAlign: 'center', marginTop: 2, lineHeight: 14 },
 });
 
 export default ReminderDetailsScreen;

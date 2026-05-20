@@ -10,4 +10,6 @@ export const medicationAPI = {
   recordAdherence: (id, data) => api.post('/medications/' + id + '/adherence', data),
   getAdherenceHistory: (id, params) => api.get('/medications/' + id + '/adherence/history', { params }),
   getAdherenceStats: () => api.get('/medications/stats/adherence'),
+  getTodaysMedications: () => api.get('/medications/today'),
+  getTodayProgress: () => api.get('/medications/today/progress'),
 };

@@ -52,19 +52,25 @@ export const logoutUser = createAsyncThunk('auth/logout', async () => {
   await secureStorage.removeRefreshToken();
 });
 
-export const googleSignIn = createAsyncThunk('auth/googleSignIn', async (_, { rejectWithValue }) => {
+export const googleSignIn = createAsyncThunk('auth/googleSignIn', async (googleIdToken, { rejectWithValue }) => {
   try {
-    // Step 1: Firebase sign-in (web redirects, native returns result)
-    const result = await firebaseAuth.signInWithGoogle();
-    
-    // If web platform, signInWithGoogle redirects - will return null
-    // The redirect result will be handled by the login screen's useEffect
-    if (result === null) {
-      // Web redirect flow - just return, let useEffect handle redirect result
-      return null;
+    let result;
+
+    if (googleIdToken) {
+      // Native flow: token provided by expo-auth-session from the component
+      result = await firebaseAuth.processGoogleToken(googleIdToken);
+    } else {
+      // Web flow: redirect to Google via Firebase
+      await firebaseAuth.signInWithGoogleWeb();
+      // Page redirects — result handled by handleRedirectResult() on reload
+      return { cancelled: true };
     }
-    
-    // Step 2: Send to backend (native flow)
+
+    if (!result) {
+      return { cancelled: true };
+    }
+
+    // Send to backend
     const { token, profile } = result;
     const res = await authAPI.googleAuth(token, profile);
     const { user, accessToken, refreshToken } = res.data.data;
@@ -158,7 +164,13 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(googleSignIn.pending, (state) => { state.loading = true; state.error = null; })
-      .addCase(googleSignIn.fulfilled, (state, action) => { state.loading = false; state.isAuthenticated = true; state.user = action.payload.user; state.token = action.payload.accessToken; })
+      .addCase(googleSignIn.fulfilled, (state, action) => {
+        state.loading = false;
+        if (action.payload?.cancelled) return; // User cancelled or web redirect
+        state.isAuthenticated = true;
+        state.user = action.payload.user;
+        state.token = action.payload.accessToken;
+      })
       .addCase(googleSignIn.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
   },
 });

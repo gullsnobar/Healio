@@ -1,24 +1,57 @@
-import React, { useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity, StatusBar } from 'react-native';
+import React, { useCallback, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity, StatusBar, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import * as Google from 'expo-auth-session/providers/google';
+import * as AuthSession from 'expo-auth-session';
 import RegisterForm from '../../components/auth/RegisterForm';
-import Alert from '../../components/common/Alert';
+import AlertBanner from '../../components/common/Alert';
 import Loading from '../../components/common/Loading';
 import { registerUser, googleSignIn, clearError } from '../../redux/slices/authSlice';
 import { useAppTheme } from '../../styles/ThemeContext';
+import { GOOGLE_WEB_CLIENT_ID, GOOGLE_AUTH_CONFIGURED } from '../../config/googleAuthConfig';
+
+// Required for expo-auth-session to complete the auth flow on Android
+if (Platform.OS !== 'web') {
+  try {
+    const { maybeCompleteAuthSession } = require('expo-web-browser');
+    maybeCompleteAuthSession();
+  } catch (e) {
+    console.warn('expo-web-browser not available');
+  }
+}
 
 const RegisterScreen = ({ navigation }) => {
   const { colors, isDark } = useAppTheme();
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
 
+  // Google Auth via expo-auth-session (works in Expo Go on native)
+  // redirectUri must be registered in Google Cloud Console > OAuth 2.0 credentials
+  const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
+  const [googleRequest, googleResponse, promptGoogleAsync] = Google.useIdTokenAuthRequest({
+    clientId: GOOGLE_WEB_CLIENT_ID,
+    redirectUri,
+  });
+
   useFocusEffect(
     useCallback(() => {
       dispatch(clearError());
     }, [dispatch])
   );
+
+  // Handle Google Sign-In response on native
+  useEffect(() => {
+    if (googleResponse?.type === 'success') {
+      const idToken = googleResponse.params.id_token;
+      if (idToken) {
+        dispatch(googleSignIn(idToken));
+      }
+    } else if (googleResponse?.type === 'error') {
+      console.error('Google Sign-In error:', googleResponse.error);
+    }
+  }, [googleResponse]);
 
   const handleRegister = async (data) => {
     const result = await dispatch(registerUser(data));
@@ -33,7 +66,19 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   const handleGoogleSignIn = () => {
-    dispatch(googleSignIn());
+    if (!GOOGLE_AUTH_CONFIGURED) {
+      Alert.alert(
+        'Setup Required',
+        'Google Sign-In requires configuration.\n\nPlease set your Google Web Client ID in:\nfrontend/src/config/googleAuthConfig.js\n\nGet it from Firebase Console > Authentication > Sign-in method > Google.',
+      );
+      return;
+    }
+
+    if (Platform.OS === 'web') {
+      dispatch(googleSignIn()); // Web: triggers Firebase redirect
+    } else {
+      promptGoogleAsync({ useProxy: true }); // Native: use Expo auth proxy
+    }
   };
 
   return (
@@ -54,7 +99,7 @@ const RegisterScreen = ({ navigation }) => {
           <Text style={[s.title, { color: colors.text }]}>Hello! Register to{'\n'}get started</Text>
         </View>
 
-        {error && <View style={s.alertWrap}><Alert variant="error" message={error} /></View>}
+        {error && <View style={s.alertWrap}><AlertBanner variant="error" message={error} /></View>}
 
         <RegisterForm
           onSubmit={handleRegister}
