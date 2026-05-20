@@ -26,6 +26,7 @@ function ThemedApp() {
   useEffect(() => {
     LogBox.ignoreLogs([
       'expo-notifications: Android Push notifications (remote notifications) functionality provided by expo-notifications was removed from Expo Go',
+      'setLayoutAnimationEnabledExperimental is currently a no-op in the New Architecture',
     ]);
     dispatch(checkAuth());
   }, [dispatch]);

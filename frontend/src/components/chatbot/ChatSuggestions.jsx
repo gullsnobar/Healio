@@ -45,9 +45,9 @@ const ChatSuggestions = ({ suggestions = [], onSelect }) => {
       {suggestionItems.map((item) => (
         <TouchableOpacity 
           key={item.id}
-          style={[s.chip, { backgroundColor: colors.primaryLight }]} 
+          style={[s.chip, { backgroundColor: colors.primaryLight, borderColor: colors.primary + '30' }]} 
           onPress={() => handleSelect(item.text)}
-          activeOpacity={0.7}
+          activeOpacity={0.75}
         >
           <Ionicons 
             name={item.icon} 
@@ -65,17 +65,18 @@ const ChatSuggestions = ({ suggestions = [], onSelect }) => {
 };
 
 const s = StyleSheet.create({
-  c: { maxHeight: 50, marginBottom: 4 },
-  cc: { paddingHorizontal: 16, gap: 8, alignItems: 'center' },
+  c: { maxHeight: 56, marginBottom: 6 },
+  cc: { paddingHorizontal: 16, gap: 10, alignItems: 'center', paddingVertical: 6 },
   chip: { 
     flexDirection: 'row', 
     alignItems: 'center', 
     paddingHorizontal: 14, 
-    paddingVertical: 8, 
-    borderRadius: 20 
+    paddingVertical: 9, 
+    borderRadius: 22,
+    borderWidth: 1,
   },
-  chipIcon: { marginRight: 6 },
-  text: { fontSize: 13, fontWeight: '500' },
+  chipIcon: { marginRight: 7 },
+  text: { fontSize: 13, fontWeight: '600', letterSpacing: 0.2 },
 });
 
 export default React.memo(ChatSuggestions);

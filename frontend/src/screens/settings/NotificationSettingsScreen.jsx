@@ -53,7 +53,7 @@ const NotificationSettingsScreen = () => {
       <View style={[s.banner, { backgroundColor: colors.primary + '12', borderColor: colors.primary + '30' }]}>
         <Ionicons name="information-circle-outline" size={20} color={colors.primary} />
         <Text style={[s.bannerText, { color: colors.textSecondary }]}>
-          Control which notifications Healio sends you. Changes take effect immediately.
+          Control which notifications MR & FT sends you. Changes take effect immediately.
         </Text>
       </View>
 

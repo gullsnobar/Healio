@@ -38,7 +38,7 @@ const SECTIONS = [
   {
     title: 'Support',
     items: [
-      { icon: 'information-circle-outline', label: 'About Healio', desc: 'Version info & credits', route: 'About', iconBg: '#0EA5E918', iconColor: '#0EA5E9' },
+      { icon: 'information-circle-outline', label: 'About MR & FT', desc: 'Version info & credits', route: 'About', iconBg: '#0EA5E918', iconColor: '#0EA5E9' },
     ],
   },
 ];

@@ -1,16 +1,78 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
 import { useAppTheme } from '../../styles/ThemeContext';
+
 const ContactAlertSettings = ({ settings, onUpdate }) => {
   const { colors } = useAppTheme();
-  const [s2, setS] = useState(settings || { missedDose: true, appointment: true, emergency: true });
-  const toggle = (k) => { const n = { ...s2, [k]: !s2[k] }; setS(n); onUpdate?.(n); };
+
+  const [s2, setS] = useState(
+    settings || { missedDose: true, appointment: true, emergency: true }
+  );
+
+  // FIX: sync props → state
+  useEffect(() => {
+    if (settings) setS(settings);
+  }, [settings]);
+
+  const toggle = (k) => {
+    const n = { ...s2, [k]: !s2[k] };
+    setS(n);
+    onUpdate?.(n);
+  };
+
   return (
-    <View style={[s.c, { backgroundColor: colors.card }]}><Text style={[s.t, { color: colors.text }]}>Alert Settings</Text>
-    {[['missedDose','Missed Dose Alerts'],['appointment','Appointment Alerts'],['emergency','Emergency Alerts']].map(([k,l])=>(
-      <View key={k} style={[s.r, { borderBottomColor: colors.borderLight }]}><Text style={[s.l, { color: colors.text }]}>{l}</Text><Switch value={s2[k]} onValueChange={()=>toggle(k)} trackColor={{true:colors.primary}} /></View>
-    ))}</View>
+    <View style={[s.c, { backgroundColor: colors.card }]}>
+      <Text style={[s.t, { color: colors.text }]}>Alert Settings</Text>
+
+      {[
+        ['missedDose', 'Missed Dose Alerts'],
+        ['appointment', 'Appointment Alerts'],
+        ['emergency', 'Emergency Alerts'],
+      ].map(([k, l]) => (
+        <View
+          key={k}
+          style={[
+            s.r,
+            { borderBottomColor: colors.borderLight || colors.border },
+          ]}
+        >
+          <Text style={[s.l, { color: colors.text }]}>{l}</Text>
+
+          <Switch
+            value={s2[k]}
+            onValueChange={() => toggle(k)}
+            trackColor={{
+              false: '#ccc',
+              true: colors.primary,
+            }}
+          />
+        </View>
+      ))}
+    </View>
   );
 };
-const s = StyleSheet.create({c:{borderRadius:12,padding:16,elevation:2},t:{fontSize:16,fontWeight:'600',marginBottom:12},r:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',paddingVertical:12,borderBottomWidth:1},l:{fontSize:15}});
+
+const s = StyleSheet.create({
+  c: {
+    borderRadius: 12,
+    padding: 16,
+    elevation: 2,
+  },
+  t: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  r: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+  },
+  l: {
+    fontSize: 15,
+  },
+});
+
 export default ContactAlertSettings;

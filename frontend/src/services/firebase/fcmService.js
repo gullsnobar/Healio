@@ -1,11 +1,18 @@
-import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
+
+// Load notifications at runtime only when not running in Expo Go (SDK 53+)
+let Notifications = null;
+try {
+  if (Constants.appOwnership !== 'expo') Notifications = require('expo-notifications');
+} catch (e) {
+  Notifications = null;
+}
 import { notificationAPI } from '../api/notificationAPI';
 
 // Configure how foreground notifications are displayed (only if not in Expo Go)
-if (Constants.appOwnership !== 'expo') {
+if (Constants.appOwnership !== 'expo' && Notifications) {
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
@@ -17,7 +24,7 @@ if (Constants.appOwnership !== 'expo') {
 
 export const registerForPushNotifications = async () => {
   // Skip notification setup in Expo Go (SDK 53+ removed support)
-  if (Constants.appOwnership === 'expo') {
+  if (Constants.appOwnership === 'expo' || !Notifications) {
     console.warn('Push notifications are not supported in Expo Go. Use a development build instead.');
     return null;
   }

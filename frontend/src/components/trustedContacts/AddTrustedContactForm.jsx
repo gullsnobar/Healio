@@ -99,7 +99,7 @@ const AddTrustedContactForm = ({ onSubmit }) => {
         colors={colors}
         style={{ marginTop: 8 }}
       >
-        Add Contact
+        <Text>Add Contact</Text>
       </Button>
     </ScrollView>
   );

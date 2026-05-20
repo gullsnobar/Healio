@@ -25,26 +25,52 @@ const ChatMessage = ({ message }) => {
   
   // Memoize styles to prevent unnecessary re-renders
   const botBubbleStyle = useMemo(() => ({
-    borderBottomLeftRadius: 4,
+    borderBottomLeftRadius: 6,
+    borderWidth: 1,
+    borderColor: colors.border,
     ...(Platform.OS === 'web' ? {
-      boxShadow: '0 1px 4px rgba(0, 0, 0, 0.06)',
+      boxShadow: '0 4px 18px rgba(15, 23, 42, 0.06)',
     } : {
-      elevation: 1,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.06,
-      shadowRadius: 4,
+      elevation: 2,
+      shadowColor: '#0F172A',
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.07,
+      shadowRadius: 10,
     }),
-  }), []);
+  }), [colors.border]);
+
+  const userBubbleStyle = useMemo(() => ({
+    ...(Platform.OS === 'web' ? {
+      boxShadow: `0 6px 18px ${colors.primary}40`,
+    } : {
+      elevation: 3,
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.28,
+      shadowRadius: 10,
+    }),
+  }), [colors.primary]);
+
+  const avatarBotShadow = useMemo(() => (
+    Platform.OS === 'web' ? {
+      boxShadow: `0 4px 12px ${colors.primary}33`,
+    } : {
+      elevation: 2,
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 6,
+    }
+  ), [colors.primary]);
 
   return (
     <View style={[s.row, isUser && s.rowUser]}>
       {!isUser && (
-        <View style={[s.avatarBot, { backgroundColor: colors.aiBot }]}>
-          <Ionicons name="medical" size={18} color={colors.aiBotIcon} />
+        <View style={[s.avatarBot, { backgroundColor: colors.aiBot, borderColor: colors.primary + '22' }, avatarBotShadow]}>
+          <Ionicons name="sparkles" size={16} color={colors.aiBotIcon} />
         </View>
       )}
-      <View style={[s.bubble, isUser ? [s.user, { backgroundColor: colors.primary }] : [s.bot, botBubbleStyle, { backgroundColor: colors.card }]]}>
+      <View style={[s.bubble, isUser ? [s.user, userBubbleStyle, { backgroundColor: colors.primary }] : [s.bot, botBubbleStyle, { backgroundColor: colors.card }]]}>
         <Text style={[s.text, { color: colors.text }, isUser && s.userText]}>{message.content || message.text}</Text>
         {formattedTime && (
           <Text style={[s.time, isUser && s.timeUser, !isUser && { color: colors.textTertiary }]}>
@@ -53,8 +79,8 @@ const ChatMessage = ({ message }) => {
         )}
       </View>
       {isUser && (
-        <View style={[s.avatarUser, { backgroundColor: colors.primary }]}>
-          <Ionicons name="person" size={16} color="#FFF" />
+        <View style={[s.avatarUser, { backgroundColor: colors.primary, borderColor: colors.primary + '33' }, avatarBotShadow]}>
+          <Ionicons name="person" size={15} color="#FFF" />
         </View>
       )}
     </View>
@@ -62,17 +88,17 @@ const ChatMessage = ({ message }) => {
 };
 
 const s = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'flex-end', marginBottom: 8 },
+  row: { flexDirection: 'row', alignItems: 'flex-end', marginBottom: 14 },
   rowUser: { justifyContent: 'flex-end' },
-  avatarBot: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', marginRight: 8, marginBottom: 2 },
-  avatarUser: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginLeft: 8, marginBottom: 2 },
-  bubble: { maxWidth: '75%', padding: 12, borderRadius: 16 },
-  user: { borderBottomRightRadius: 4 },
-  bot: { borderBottomLeftRadius: 4 },
-  text: { fontSize: 15, lineHeight: 22 },
-  userText: { color: '#FFF' },
-  time: { fontSize: 10, marginTop: 4, alignSelf: 'flex-end' },
-  timeUser: { color: 'rgba(255,255,255,0.7)' },
+  avatarBot: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', marginRight: 10, marginBottom: 2, borderWidth: 1 },
+  avatarUser: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', marginLeft: 10, marginBottom: 2, borderWidth: 1 },
+  bubble: { maxWidth: '78%', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 22 },
+  user: { borderBottomRightRadius: 6 },
+  bot: { borderBottomLeftRadius: 6 },
+  text: { fontSize: 15, lineHeight: 22, fontWeight: '400', letterSpacing: 0.1 },
+  userText: { color: '#FFF', fontWeight: '500' },
+  time: { fontSize: 10, marginTop: 6, alignSelf: 'flex-end', fontWeight: '500', letterSpacing: 0.3 },
+  timeUser: { color: 'rgba(255,255,255,0.75)' },
 });
 
 export default ChatMessage;

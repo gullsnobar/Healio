@@ -40,10 +40,22 @@ exports.getDashboardData = async (req, res, next) => {
     const adherenceRate = medications.length ? Math.round(medications.reduce((a, m) => a + m.adherenceRate, 0) / medications.length) : 0;
 
     // Today's medication dose tracking
+    let totalTaken = 0;
+    let totalMissed = 0;
+    let totalPending = 0;
+
     const todayAdherence = medications.map((m) => {
-      const todayEntries = m.adherenceHistory.filter((h) => h.date >= today);
+      const todayEntries = m.adherenceHistory.filter((h) => h.date >= today && h.date <= endOfDay);
       const taken = todayEntries.filter((h) => h.status === 'taken').length;
-      return { id: m._id, name: m.name, dosage: m.dosage, times: m.times, taken, total: m.times?.length || 1 };
+      const missed = todayEntries.filter((h) => h.status === 'missed').length;
+      const total = m.times?.length || 1;
+      const pending = Math.max(0, total - taken - missed);
+
+      totalTaken += taken;
+      totalMissed += missed;
+      totalPending += pending;
+
+      return { id: m._id, name: m.name, dosage: m.dosage, times: m.times, taken, missed, pending, total };
     });
 
     // Weekly progress (for chart)
@@ -78,7 +90,7 @@ exports.getDashboardData = async (req, res, next) => {
     res.json({
       success: true,
       data: {
-        medications: { count: medications.length, adherenceRate, todayDoses: todayAdherence },
+        medications: { count: medications.length, adherenceRate, todayDoses: todayAdherence, taken: totalTaken, missed: totalMissed, pending: totalPending },
         appointments: { upcoming: appointments },
         fitness: {
           steps: fitness?.steps?.count || 0,
