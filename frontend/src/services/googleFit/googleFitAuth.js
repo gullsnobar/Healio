@@ -1,5 +1,12 @@
-﻿import GoogleFit from 'react-native-google-fit';
-import { Platform } from 'react-native';
+﻿import { Platform } from 'react-native';
+
+// react-native-google-fit is a native module — only available on Android/iOS
+let GoogleFit = null;
+if (Platform.OS === 'android' || Platform.OS === 'ios') {
+  try { GoogleFit = require('react-native-google-fit').default; } catch (_) {}
+}
+
+const IS_NATIVE = Platform.OS === 'android' || Platform.OS === 'ios';
 
 // Define required scopes for Google Fit
 const GOOGLE_FIT_SCOPES = [
@@ -15,15 +22,16 @@ export const googleFitAuth = {
    */
   initialize: async () => {
     try {
-      if (Platform.OS !== 'android' && Platform.OS !== 'ios') {
-        throw new Error('Google Fit is only available on Android and iOS');
+      if (!IS_NATIVE || !GoogleFit) {
+        console.warn('[GoogleFit] Not available on this platform');
+        return false;
       }
-      
+
       // Request permissions from the device
       const authorized = await GoogleFit.authorize({
         scopes: GOOGLE_FIT_SCOPES,
       });
-      
+
       return authorized;
     } catch (error) {
       console.error('[GoogleFit] Auth initialization failed:', error);
@@ -36,6 +44,7 @@ export const googleFitAuth = {
    */
   isSignedIn: async () => {
     try {
+      if (!IS_NATIVE || !GoogleFit) return false;
       const result = await GoogleFit.isAuthorized();
       return result;
     } catch (error) {
@@ -49,9 +58,8 @@ export const googleFitAuth = {
    */
   signOut: async () => {
     try {
+      if (!IS_NATIVE || !GoogleFit) return true;
       await GoogleFit.removeAllListeners();
-      // Note: react-native-google-fit doesn't have explicit signOut
-      // User must revoke access in Google Account settings
       return true;
     } catch (error) {
       console.error('[GoogleFit] Sign out failed:', error);
@@ -63,8 +71,6 @@ export const googleFitAuth = {
    * Get access token for Google Fit (note: react-native-google-fit manages tokens internally)
    */
   getAccessToken: async () => {
-    // react-native-google-fit handles tokens internally
-    // Token is not directly exposed, always returns null
     return null;
   },
 };

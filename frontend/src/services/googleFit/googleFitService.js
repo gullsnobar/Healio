@@ -1,6 +1,14 @@
 ﻿// Google Fit integration service
-import GoogleFit from 'react-native-google-fit';
+import { Platform } from 'react-native';
 import { googleFitAuth } from './googleFitAuth';
+
+// react-native-google-fit is a native module — only available on Android/iOS
+let GoogleFit = null;
+if (Platform.OS === 'android' || Platform.OS === 'ios') {
+  try { GoogleFit = require('react-native-google-fit').default; } catch (_) {}
+}
+
+const IS_NATIVE = Platform.OS === 'android' || Platform.OS === 'ios';
 
 class GoogleFitService {
   constructor() {
@@ -12,6 +20,10 @@ class GoogleFitService {
    */
   async initialize() {
     try {
+      if (!IS_NATIVE || !GoogleFit) {
+        console.warn('[GoogleFit] Not available on this platform');
+        return false;
+      }
       if (this.isInitialized) return true;
       
       const authorized = await googleFitAuth.initialize();
@@ -33,6 +45,7 @@ class GoogleFitService {
    */
   async requestPermissions() {
     try {
+      if (!IS_NATIVE || !GoogleFit) return false;
       const result = await googleFitAuth.initialize();
       return result;
     } catch (error) {
@@ -43,26 +56,18 @@ class GoogleFitService {
 
   /**
    * Fetch step count for a date range
-   * @param {Date} startDate - Start date
-   * @param {Date} endDate - End date
-   * @returns {Promise<number>} Total steps
    */
   async getSteps(startDate, endDate) {
     try {
+      if (!IS_NATIVE || !GoogleFit) return 0;
       const opts = {
         startDate: startDate.getTime(),
         endDate: endDate.getTime(),
         bucketUnit: 'DAY',
         bucketInterval: 1,
       };
-
       const result = await GoogleFit.getDailyStepCountSample(opts);
-      
-      // Sum up all steps from the result
-      const totalSteps = result.reduce((sum, day) => {
-        return sum + (day.value || 0);
-      }, 0);
-
+      const totalSteps = result.reduce((sum, day) => sum + (day.value || 0), 0);
       console.log('[GoogleFit] Steps fetched:', totalSteps);
       return totalSteps;
     } catch (error) {
@@ -73,32 +78,25 @@ class GoogleFitService {
 
   /**
    * Fetch sleep data for a date range
-   * @param {Date} startDate - Start date
-   * @param {Date} endDate - End date
-   * @returns {Promise<object>} Sleep data with duration
    */
   async getSleep(startDate, endDate) {
     try {
+      if (!IS_NATIVE || !GoogleFit) return { duration: 0, samples: [] };
       const opts = {
         startDate: startDate.getTime(),
         endDate: endDate.getTime(),
       };
-
       const result = await GoogleFit.getSleepSamples(opts);
-      
       if (!result || result.length === 0) {
         return { duration: 0, samples: [] };
       }
-
-      // Calculate total sleep duration in minutes
       let totalDuration = 0;
       result.forEach((sleep) => {
-        const duration = (sleep.endDate - sleep.startDate) / (1000 * 60); // Convert to minutes
+        const duration = (sleep.endDate - sleep.startDate) / (1000 * 60);
         totalDuration += duration;
       });
-
       console.log('[GoogleFit] Sleep fetched:', totalDuration, 'minutes');
-      return { duration: Math.round(totalDuration / 60), samples: result }; // Convert to hours
+      return { duration: Math.round(totalDuration / 60), samples: result };
     } catch (error) {
       console.error('[GoogleFit] getSleep error:', error);
       return { duration: 0, samples: [] };
@@ -107,26 +105,18 @@ class GoogleFitService {
 
   /**
    * Fetch calories burned for a date range
-   * @param {Date} startDate - Start date
-   * @param {Date} endDate - End date
-   * @returns {Promise<number>} Total calories burned
    */
   async getCalories(startDate, endDate) {
     try {
+      if (!IS_NATIVE || !GoogleFit) return 0;
       const opts = {
         startDate: startDate.getTime(),
         endDate: endDate.getTime(),
         bucketUnit: 'DAY',
         bucketInterval: 1,
       };
-
       const result = await GoogleFit.getDailyCalorieBurnedSamples(opts);
-      
-      // Sum up all calories from the result
-      const totalCalories = result.reduce((sum, day) => {
-        return sum + (day.value || 0);
-      }, 0);
-
+      const totalCalories = result.reduce((sum, day) => sum + (day.value || 0), 0);
       console.log('[GoogleFit] Calories fetched:', totalCalories);
       return totalCalories;
     } catch (error) {
@@ -137,26 +127,20 @@ class GoogleFitService {
 
   /**
    * Fetch heart rate data for a date range
-   * @param {Date} startDate - Start date
-   * @param {Date} endDate - End date
-   * @returns {Promise<object>} Heart rate data
    */
   async getHeartRate(startDate, endDate) {
     try {
+      if (!IS_NATIVE || !GoogleFit) return { average: 0, samples: [] };
       const opts = {
         startDate: startDate.getTime(),
         endDate: endDate.getTime(),
       };
-
       const result = await GoogleFit.getHeartRateSamples(opts);
-      
       if (!result || result.length === 0) {
         return { average: 0, samples: [] };
       }
-
       const values = result.map((r) => r.value).filter((v) => v);
       const average = values.length > 0 ? Math.round(values.reduce((a, b) => a + b, 0) / values.length) : 0;
-
       console.log('[GoogleFit] Heart rate fetched - Average:', average);
       return { average, samples: result };
     } catch (error) {
@@ -167,11 +151,21 @@ class GoogleFitService {
 
   /**
    * Sync all available fitness data
-   * @returns {Promise<object>} All synced data
    */
   async syncAll() {
     try {
-      // Get yesterday's data to sync
+      if (!IS_NATIVE || !GoogleFit) {
+        console.warn('[GoogleFit] syncAll skipped — not available on this platform');
+        return {
+          date: new Date().toISOString().split('T')[0],
+          steps: { count: 0, goal: 10000 },
+          sleep: { duration: 0, goal: 8 },
+          calories: { burned: 0, goal: 2500 },
+          heartRate: { average: 0 },
+          source: 'manual',
+          syncedAt: new Date(),
+        };
+      }
       const endDate = new Date();
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - 1);

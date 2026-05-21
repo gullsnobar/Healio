@@ -11,6 +11,10 @@ const PermissionsAndroid = Platform.OS === 'android' ? require('react-native').P
  */
 export const requestFitnessPermissions = async () => {
   try {
+    if (Platform.OS === 'web') {
+      console.warn('[Permissions] Google Fit not available on web');
+      return false;
+    }
     if (Platform.OS === 'android') {
       // Request ACTIVITY_RECOGNITION permission on Android
       const granted = await PermissionsAndroid.request(
@@ -50,6 +54,10 @@ export const requestFitnessPermissions = async () => {
  */
 export const checkFitnessPermissions = async () => {
   try {
+    if (Platform.OS === 'web') {
+      console.warn('[Permissions] Google Fit not available on web');
+      return false;
+    }
     if (Platform.OS === 'android') {
       const status = await PermissionsAndroid.check(
         PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION,

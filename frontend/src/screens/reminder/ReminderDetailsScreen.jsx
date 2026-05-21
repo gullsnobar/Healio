@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { reminderAPI } from '../../services/api/reminderAPI';
 import { deleteReminder, completeReminder, snoozeReminder } from '../../redux/slices/reminderSlice';
 import { fetchMedications } from '../../redux/slices/medicationSlice';
+import { fetchDashboardData } from '../../redux/slices/userSlice';
 import { useAppTheme } from '../../styles/ThemeContext';
 
 
@@ -55,9 +56,9 @@ const ReminderDetailsScreen = ({ navigation, route }) => {
       // If medication reminder, also record dose in adherence history
       if (reminder.reminderType === 'medication') {
         try {
-          // Refresh medications list so Home screen stats reflect this change
+          // Refresh medications list and dashboard so Home screen stats reflect this change
           dispatch(fetchMedications());
-          // Save dose to medication adherence history (optional - for tracking)
+          dispatch(fetchDashboardData());
           Alert.alert('✓ Medicine Taken', `${reminder.medicationName} recorded as taken at ${new Date().toLocaleTimeString()}`);
         } catch (err) {
           console.error('Failed to record adherence:', err);

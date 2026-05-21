@@ -353,10 +353,11 @@ const HomeScreen = ({ navigation }) => {
                 key={item._id || i}
                 style={[st.schedItem, {
                   backgroundColor: colors.card,
-                  borderColor: colors.borderLight,
+                  borderColor: colors.border,
                   ...Platform.select({
-                    ios: { shadowColor: colors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4 },
-                    android: { elevation: 1 },
+                    ios: { shadowColor: '#0F172A', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8 },
+                    android: { elevation: 2 },
+                    web: { boxShadow: '0 2px 8px rgba(15, 23, 42, 0.06)' },
                   }),
                 }]}
                 activeOpacity={0.8}
@@ -475,7 +476,7 @@ const st = StyleSheet.create({
 
   /* Schedule */
   schedSection: { paddingHorizontal: IS_SMALL ? 16 : 20, marginTop: 8 },
-  schedItem: { flexDirection: 'row', alignItems: 'center', borderRadius: 16, padding: IS_SMALL ? 12 : 14, marginBottom: 10, borderWidth: 1 },
+  schedItem: { flexDirection: 'row', alignItems: 'center', borderRadius: 16, padding: IS_SMALL ? 12 : 14, marginBottom: 10, borderWidth: StyleSheet.hairlineWidth },
   schedIcon: { width: IS_SMALL ? 40 : 44, height: IS_SMALL ? 40 : 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: 12 },
   schedInfo: { flex: 1 },
   schedName: { fontSize: IS_SMALL ? 14 : 15, fontWeight: '700' },

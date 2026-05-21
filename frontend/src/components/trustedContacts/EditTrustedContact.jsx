@@ -4,6 +4,7 @@ import { useAppTheme } from '../../styles/ThemeContext';
 const EditTrustedContact = ({ contact, onSubmit, onDelete }) => {
   const { colors } = useAppTheme();
   const [form, setForm] = useState(contact || {});
+  
   const u = (k, v) => setForm({ ...form, [k]: v });
   return (
     <ScrollView style={s.c}>

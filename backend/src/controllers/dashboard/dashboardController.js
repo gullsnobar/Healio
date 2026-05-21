@@ -6,6 +6,7 @@ const Recommendation = require('../../models/Recommendation');
 const DietLog = require('../../models/DietLog');
 const WaterIntake = require('../../models/WaterIntake');
 const HealthInsight = require('../../models/HealthInsight');
+const { Reminder, MedicationReminder } = require('../../models/Reminder');
 
 exports.getDashboardData = async (req, res, next) => {
   try {
@@ -24,7 +25,7 @@ exports.getDashboardData = async (req, res, next) => {
     const weekAgo = new Date(today); weekAgo.setDate(today.getDate() - 6); weekAgo.setHours(0,0,0,0);
     const monthStart = new Date(today); monthStart.setDate(today.getDate() - 27); monthStart.setHours(0,0,0,0);
 
-    const [medications, appointments, fitness, recentReports, recommendations, todayDiet, todayWater, weeklyFitness, monthlyFitness, insights] = await Promise.all([
+    const [medications, appointments, fitness, recentReports, recommendations, todayDiet, todayWater, weeklyFitness, monthlyFitness, insights, medicationReminders] = await Promise.all([
       Medication.find({ user: req.userId, isActive: true }),
       Appointment.find({ user: req.userId, date: { $gte: today }, status: 'upcoming' }).sort({ date: 1 }).limit(5),
       FitnessData.findOne({ user: req.userId, date: { $gte: today, $lte: endOfDay } }),
@@ -35,6 +36,7 @@ exports.getDashboardData = async (req, res, next) => {
       FitnessData.find({ user: req.userId, date: { $gte: weekAgo, $lte: endOfDay } }).sort({ date: 1 }),
       FitnessData.find({ user: req.userId, date: { $gte: monthStart, $lte: endOfDay } }).sort({ date: 1 }),
       HealthInsight.find({ user: req.userId, isDismissed: false }).sort({ createdAt: -1 }).limit(3),
+      MedicationReminder.find({ user: req.userId, date: { $gte: today, $lte: endOfDay } }),
     ]);
 
     const adherenceRate = medications.length ? Math.round(medications.reduce((a, m) => a + m.adherenceRate, 0) / medications.length) : 0;
@@ -56,6 +58,28 @@ exports.getDashboardData = async (req, res, next) => {
       totalPending += pending;
 
       return { id: m._id, name: m.name, dosage: m.dosage, times: m.times, taken, missed, pending, total };
+    });
+
+    // Also include medication reminders for the day so the dashboard reflects
+    // user actions taken via the Reminders flow (where users mark Taken/Pending/Missed).
+    console.log('[Dashboard] medications:', medications.length, '| medReminders:', medicationReminders.length, '| date range:', today.toISOString(), '-', endOfDay.toISOString());
+    const nowDate = new Date();
+    const isTargetToday = today.getTime() === new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate()).getTime();
+    const nowMinutes = nowDate.getHours() * 60 + nowDate.getMinutes();
+    medicationReminders.forEach((r) => {
+      if (r.isCompleted) {
+        totalTaken += 1;
+      } else {
+        const [hh, mm] = (r.time || '00:00').split(':').map((v) => parseInt(v, 10) || 0);
+        const reminderMinutes = hh * 60 + mm;
+        if (isTargetToday && reminderMinutes < nowMinutes) {
+          totalMissed += 1;
+        } else if (!isTargetToday && today < new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate())) {
+          totalMissed += 1;
+        } else {
+          totalPending += 1;
+        }
+      }
     });
 
     // Weekly progress (for chart)
